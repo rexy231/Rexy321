@@ -1,250 +1,361 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS V4</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>J.A.R.V.I.S. V5</title>
 
 <style>
 *{box-sizing:border-box}
 
 body{
-margin:0;
-min-height:100vh;
-background:#050b14;
-color:#00eaff;
-font-family:Arial,sans-serif;
-display:flex;
-justify-content:center;
-align-items:center;
+  margin:0;
+  min-height:100vh;
+  background:#02070d;
+  color:#8feaff;
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
 }
 
-.jarvis{
-width:94%;
-max-width:650px;
-text-align:center;
-border:1px solid #00eaff;
-border-radius:25px;
-padding:25px 18px;
-box-shadow:0 0 30px #006dff;
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(0,190,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,190,255,.035) 1px,transparent 1px);
+  background-size:35px 35px;
+  pointer-events:none;
+}
+
+.header{
+  text-align:center;
+  padding:18px 10px 5px;
+}
+
+.title{
+  font-size:28px;
+  letter-spacing:7px;
+  font-weight:bold;
+  text-shadow:0 0 12px #00cfff;
+}
+
+.status{
+  font-size:11px;
+  letter-spacing:3px;
+  color:#54dfff;
+  margin-top:5px;
 }
 
 .core{
-width:130px;
-height:130px;
-margin:18px auto;
-border:5px solid #00eaff;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-box-shadow:0 0 35px #00eaff;
+  width:145px;
+  height:145px;
+  margin:25px auto 20px;
+  border:2px solid #00d9ff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 15px #00cfff, inset 0 0 20px #006d8c;
+  position:relative;
 }
 
-h1{
-letter-spacing:8px;
-margin-bottom:5px;
+.core:before,
+.core:after{
+  content:"";
+  position:absolute;
+  border:1px solid #00aee0;
+  border-radius:50%;
 }
 
-#status{
-color:#8ff6ff;
-margin-bottom:20px;
+.core:before{width:105px;height:105px}
+.core:after{width:55px;height:55px}
+
+.coreText{
+  z-index:2;
+  font-size:13px;
+  letter-spacing:3px;
+}
+
+.panel{
+  width:min(900px,94%);
+  margin:auto;
+  border:1px solid #075c78;
+  background:rgba(2,14,23,.88);
+  padding:15px;
+  box-shadow:0 0 12px rgba(0,200,255,.12);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:10px;
 }
 
 button{
-background:transparent;
-color:#00eaff;
-border:1px solid #00eaff;
-border-radius:12px;
-padding:12px 15px;
-margin:5px;
-font-size:14px;
+  border:1px solid #0787ae;
+  background:#03131e;
+  color:#8feaff;
+  padding:12px 8px;
+  cursor:pointer;
+  font-weight:bold;
+  letter-spacing:1px;
+  transition:.15s;
 }
 
-button:active{
-background:#00eaff;
-color:#001018;
+button:hover{
+  background:#063044;
+  box-shadow:0 0 10px #00bde8;
 }
 
-#output{
-margin-top:20px;
-min-height:55px;
-border:1px solid #174b63;
-border-radius:12px;
-padding:15px;
-color:white;
+.output{
+  margin-top:14px;
+  min-height:80px;
+  border:1px solid #075c78;
+  padding:12px;
+  color:#baf3ff;
+  font-size:14px;
+  line-height:1.5;
+  white-space:pre-wrap;
 }
 
-#calculator{
-display:none;
-margin-top:20px;
-padding:15px;
-border:1px solid #174b63;
-border-radius:15px;
+input,select{
+  width:100%;
+  background:#020b12;
+  color:#a9efff;
+  border:1px solid #087a9d;
+  padding:11px;
+  margin-bottom:8px;
+  outline:none;
 }
 
-#display{
-width:100%;
-padding:15px;
-font-size:22px;
-background:#02070d;
-color:#00eaff;
-border:1px solid #00eaff;
-border-radius:10px;
-text-align:right;
-margin-bottom:10px;
+.section{
+  margin-top:14px;
+  display:none;
 }
 
-.calc-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:7px;
+.section.active{
+  display:block;
 }
 
-.calc-grid button{
-margin:0;
-padding:14px 5px;
-font-size:15px;
+.small{
+  color:#55b9d2;
+  font-size:11px;
 }
 
 .history{
-margin-top:15px;
-text-align:left;
-color:white;
-max-height:130px;
-overflow:auto;
-font-size:13px;
+  max-height:120px;
+  overflow:auto;
+  font-size:12px;
+  color:#75d8ed;
+  margin-top:8px;
+}
+
+.footer{
+  text-align:center;
+  padding:20px;
+  color:#397c91;
+  font-size:10px;
+  letter-spacing:2px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="jarvis">
+<div class="header">
+  <div class="title">J.A.R.V.I.S.</div>
+  <div class="status">V5 // FAST KNOWLEDGE SYSTEM // ONLINE</div>
+</div>
 
-<h1>J.A.R.V.I.S</h1>
+<div class="core">
+  <div class="coreText">ONLINE</div>
+</div>
 
-<div id="status">SYSTEM ONLINE</div>
+<div class="panel">
 
-<div class="core">J</div>
+<div class="grid">
+<button onclick="testVoice()">🔊 TEST VOICE</button>
+<button onclick="showTime()">🕐 TIME</button>
+<button onclick="studyMode()">📚 STUDY MODE</button>
+<button onclick="startVoice()">🎙️ VOICE COMMAND</button>
+<button onclick="toggleCalc()">🧮 CALCULATOR</button>
+<button onclick="toggleKnowledge()">🧠 KNOWLEDGE</button>
+</div>
 
-<button onclick="speak('Hello. I am JARVIS.')">
-🔊 TEST VOICE
-</button>
-
-<button onclick="tellTime()">
-🕐 TIME
-</button>
-
-<button onclick="studyMode()">
-📚 STUDY MODE
-</button>
-
-<button onclick="startListening()">
-🎙️ VOICE COMMAND
-</button>
-
-<button onclick="toggleCalculator()">
-🧮 CALCULATOR
-</button>
-
-<div id="output">
+<div id="output" class="output">
+JARVIS V5 online.
 Awaiting command...
 </div>
 
+<!-- CALCULATOR -->
+<div id="calc" class="section">
 
-<!-- ADVANCED CALCULATOR -->
+<input id="calcInput" placeholder="Example: 25+5*2">
 
-<div id="calculator">
+<div class="grid">
+<button onclick="calculate()">CALCULATE</button>
+<button onclick="addCalc('Math.PI')">π</button>
+<button onclick="addCalc('Math.sqrt(')">√</button>
+<button onclick="addCalc('**')">xʸ</button>
+<button onclick="addCalc('%')">%</button>
+<button onclick="clearCalc()">CLEAR</button>
+</div>
 
-<input id="display" readonly>
-
-<div class="calc-grid">
-
-<button onclick="clearCalc()">AC</button>
-<button onclick="backspace()">⌫</button>
-<button onclick="add('%')">%</button>
-<button onclick="add('/')">÷</button>
-
-<button onclick="add('7')">7</button>
-<button onclick="add('8')">8</button>
-<button onclick="add('9')">9</button>
-<button onclick="add('*')">×</button>
-
-<button onclick="add('4')">4</button>
-<button onclick="add('5')">5</button>
-<button onclick="add('6')">6</button>
-<button onclick="add('-')">−</button>
-
-<button onclick="add('1')">1</button>
-<button onclick="add('2')">2</button>
-<button onclick="add('3')">3</button>
-<button onclick="add('+')">+</button>
-
-<button onclick="add('0')">0</button>
-<button onclick="add('.')">.</button>
-<button onclick="add('(')">(</button>
-<button onclick="add(')')">)</button>
-
-<button onclick="square()">x²</button>
-<button onclick="power()">xʸ</button>
-<button onclick="sqrtCalc()">√</button>
-<button onclick="calculate()">=</button>
-
-<button onclick="sinCalc()">sin</button>
-<button onclick="cosCalc()">cos</button>
-<button onclick="tanCalc()">tan</button>
-<button onclick="reciprocal()">1/x</button>
-
-<button onclick="logCalc()">log</button>
-<button onclick="lnCalc()">ln</button>
-<button onclick="add('Math.PI')">π</button>
-<button onclick="add('Math.E')">e</button>
+<div class="small">History</div>
+<div id="history" class="history"></div>
 
 </div>
 
-<div class="history">
-<b>History</b>
-<div id="history"></div>
+<!-- KNOWLEDGE -->
+<div id="knowledge" class="section">
+
+<input id="question"
+placeholder="Ask JARVIS: Newton's second law, atom, velocity...">
+
+<button onclick="askKnowledge()">ASK JARVIS 🧠</button>
+
+<div class="small">
+Fast local knowledge base — no internet required.
 </div>
 
 </div>
 
 </div>
 
+<div class="footer">
+J.A.R.V.I.S. V5 // FAST MODE
+</div>
 
 <script>
+
+/* =========================
+   CORE OUTPUT
+========================= */
+
+const output=document.getElementById("output");
+
+function reply(text,speak=true){
+  output.textContent=text;
+
+  if(speak && "speechSynthesis" in window){
+    speechSynthesis.cancel();
+
+    const msg=new SpeechSynthesisUtterance(text);
+    msg.rate=1.12;
+    msg.pitch=.95;
+    msg.volume=1;
+
+    speechSynthesis.speak(msg);
+  }
+}
 
 /* =========================
    VOICE
 ========================= */
 
-function speak(text){
-
-document.getElementById("output").innerText=text;
-
-speechSynthesis.cancel();
-
-const voice=new SpeechSynthesisUtterance(text);
-
-voice.rate=.95;
-voice.pitch=.8;
-
-speechSynthesis.speak(voice);
+function testVoice(){
+  reply("Hello. JARVIS V5 is online.",true);
 }
 
+function startVoice(){
+
+  const SpeechRecognition=
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+    reply("Voice recognition is not supported in this browser.",false);
+    return;
+  }
+
+  const recognition=new SpeechRecognition();
+
+  recognition.lang="en-IN";
+  recognition.continuous=false;
+  recognition.interimResults=false;
+
+  reply("Listening...",false);
+
+  recognition.start();
+
+  recognition.onresult=function(event){
+
+    const command=
+      event.results[0][0].transcript
+      .toLowerCase()
+      .trim();
+
+    handleCommand(command);
+  };
+
+  recognition.onerror=function(){
+    reply("Voice command failed. Please try again.",false);
+  };
+}
+
+/* =========================
+   COMMAND SYSTEM
+========================= */
+
+function handleCommand(command){
+
+  if(command.includes("hello") ||
+     command.includes("hi jarvis")){
+
+    reply("Hello. How can I assist you?");
+    return;
+  }
+
+  if(command.includes("time")){
+
+    showTime();
+    return;
+  }
+
+  if(command.includes("study")){
+
+    studyMode();
+    return;
+  }
+
+  if(command.includes("calculator") ||
+     command.includes("calculate")){
+
+    toggleCalc();
+    reply("Calculator ready.",false);
+    return;
+  }
+
+  if(command.includes("knowledge")){
+
+    toggleKnowledge();
+    reply("Knowledge system ready.",false);
+    return;
+  }
+
+  askKnowledge(command);
+}
 
 /* =========================
    TIME
 ========================= */
 
-function tellTime(){
+function showTime(){
 
-const time=new Date().toLocaleTimeString();
+  const now=new Date();
 
-speak("The current time is "+time);
+  const time=now.toLocaleTimeString(
+    "en-IN",
+    {
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit"
+    }
+  );
+
+  reply("Current time is "+time,false);
 }
-
 
 /* =========================
    STUDY MODE
@@ -252,409 +363,374 @@ speak("The current time is "+time);
 
 function studyMode(){
 
-speak("Study mode activated. Let's begin.");
-}
+  reply(
+`STUDY MODE ACTIVATED
 
+Focus: JEE / Class 11 PCM
+
+Recommended:
+• Concept revision
+• Formula revision
+• 10–20 questions
+• Error analysis
+• Short breaks
+
+Stay consistent.`
+  );
+}
 
 /* =========================
    CALCULATOR
 ========================= */
 
-const display=document.getElementById("display");
+function toggleCalc(){
 
-function add(value){
-
-display.value+=value;
+  document
+    .getElementById("calc")
+    .classList.toggle("active");
 }
 
+function addCalc(value){
+
+  document.getElementById("calcInput").value+=value;
+}
 
 function clearCalc(){
 
-display.value="";
+  document.getElementById("calcInput").value="";
 }
-
-
-function backspace(){
-
-display.value=display.value.slice(0,-1);
-}
-
-
-function safeExpression(expression){
-
-return /^[0-9+\-*/().%\sA-Za-z]+$/.test(expression);
-}
-
 
 function calculate(){
 
-const expression=display.value;
+  const input=
+    document.getElementById("calcInput")
+    .value
+    .trim();
 
-if(!expression) return;
+  if(!input){
+    reply("Enter a calculation first.",false);
+    return;
+  }
 
-if(!safeExpression(expression)){
+  /*
+   Only allow calculator characters.
+   */
+  if(!/^[0-9+\-*/().%\s^π√a-zA-Z]+$/.test(input)){
+    reply("Invalid calculator input.",false);
+    return;
+  }
 
-speak("Invalid calculation.");
-return;
+  try{
+
+    let exp=input
+      .replace(/π/g,"Math.PI")
+      .replace(/√/g,"Math.sqrt")
+      .replace(/\^/g,"**");
+
+    /*
+      Only permit known Math functions.
+    */
+    exp=exp.replace(
+      /\b(sin|cos|tan|log|ln)\b/g,
+      function(fn){
+
+        const map={
+          sin:"Math.sin",
+          cos:"Math.cos",
+          tan:"Math.tan",
+          log:"Math.log10",
+          ln:"Math.log"
+        };
+
+        return map[fn];
+      }
+    );
+
+    /*
+      Reject unexpected letters.
+    */
+    if(/[a-zA-Z]/.test(
+      exp.replace(/Math\.(PI|sqrt|sin|cos|tan|log10|log)/g,"")
+    )){
+      throw new Error();
+    }
+
+    const result=Function(
+      '"use strict";return ('+exp+')'
+    )();
+
+    if(!Number.isFinite(result)){
+      throw new Error();
+    }
+
+    reply("Result: "+result,false);
+
+    addHistory(input+" = "+result);
+
+  }catch{
+
+    reply("I couldn't calculate that.",false);
+  }
 }
-
-try{
-
-const result=Function(
-'"use strict"; return ('+expression+')'
-)();
-
-if(!Number.isFinite(result)){
-
-speak("Invalid result.");
-return;
-}
-
-display.value=result;
-
-addHistory(expression+" = "+result);
-
-speak("The answer is "+result);
-
-}catch{
-
-speak("I could not calculate that.");
-}
-
-}
-
-
-function square(){
-
-if(!display.value) return;
-
-try{
-
-const x=Number(display.value);
-
-const result=x*x;
-
-display.value=result;
-
-addHistory(x+"² = "+result);
-
-}catch{
-
-speak("Invalid number.");
-}
-
-}
-
-
-function power(){
-
-const x=prompt("Enter base:");
-
-if(x===null)return;
-
-const y=prompt("Enter power:");
-
-if(y===null)return;
-
-const result=Math.pow(Number(x),Number(y));
-
-display.value=result;
-
-addHistory(x+"^"+y+" = "+result);
-
-speak("The answer is "+result);
-}
-
-
-function sqrtCalc(){
-
-const x=Number(display.value);
-
-if(x<0){
-
-speak("Square root of a negative number is not supported.");
-
-return;
-}
-
-const result=Math.sqrt(x);
-
-display.value=result;
-
-addHistory("√"+x+" = "+result);
-
-speak("The answer is "+result);
-}
-
-
-function sinCalc(){
-
-const x=Number(display.value);
-
-const result=Math.sin(x*Math.PI/180);
-
-display.value=result;
-
-addHistory("sin("+x+"°) = "+result);
-}
-
-
-function cosCalc(){
-
-const x=Number(display.value);
-
-const result=Math.cos(x*Math.PI/180);
-
-display.value=result;
-
-addHistory("cos("+x+"°) = "+result);
-}
-
-
-function tanCalc(){
-
-const x=Number(display.value);
-
-const result=Math.tan(x*Math.PI/180);
-
-display.value=result;
-
-addHistory("tan("+x+"°) = "+result);
-}
-
-
-function logCalc(){
-
-const x=Number(display.value);
-
-if(x<=0){
-
-speak("Log requires a positive number.");
-
-return;
-}
-
-const result=Math.log10(x);
-
-display.value=result;
-
-addHistory("log("+x+") = "+result);
-}
-
-
-function lnCalc(){
-
-const x=Number(display.value);
-
-if(x<=0){
-
-speak("Natural log requires a positive number.");
-
-return;
-}
-
-const result=Math.log(x);
-
-display.value=result;
-
-addHistory("ln("+x+") = "+result);
-}
-
-
-function reciprocal(){
-
-const x=Number(display.value);
-
-if(x===0){
-
-speak("Division by zero is not allowed.");
-
-return;
-}
-
-const result=1/x;
-
-display.value=result;
-
-addHistory("1/"+x+" = "+result);
-}
-
 
 function addHistory(text){
 
-const history=document.getElementById("history");
+  const history=
+    document.getElementById("history");
 
-const item=document.createElement("div");
+  const item=
+    document.createElement("div");
 
-item.innerText=text;
+  item.textContent=text;
 
-history.prepend(item);
+  history.prepend(item);
 }
-
-
-function toggleCalculator(){
-
-const calculator=document.getElementById("calculator");
-
-if(calculator.style.display==="block"){
-
-calculator.style.display="none";
-
-}else{
-
-calculator.style.display="block";
-
-}
-
-}
-
 
 /* =========================
-   VOICE RECOGNITION
+   KNOWLEDGE BRAIN
 ========================= */
 
-const SpeechRecognition=
-window.SpeechRecognition||
-window.webkitSpeechRecognition;
+const knowledge={
 
-let recognition;
+"newton second law":
+`Newton's Second Law:
 
-if(SpeechRecognition){
+F = ma
 
-recognition=new SpeechRecognition();
+Net force produces acceleration.
 
-recognition.lang="en-IN";
+F = net force
+m = mass
+a = acceleration`,
 
-recognition.continuous=false;
+"newton first law":
+`Newton's First Law:
 
-recognition.interimResults=false;
+An object remains at rest or moves with constant velocity unless acted upon by a net external force.`,
 
+"newton third law":
+`Newton's Third Law:
 
-recognition.onstart=function(){
+For every action force, there is an equal and opposite reaction force.
 
-document.getElementById("status").innerText=
-"LISTENING... 🎙️";
+F(A on B) = -F(B on A)`,
+
+"velocity":
+`Velocity is the rate of change of displacement.
+
+v = Δx / Δt
+
+It is a vector quantity, so it has magnitude and direction.`,
+
+"speed":
+`Speed is the rate at which distance is covered.
+
+Speed = distance / time
+
+Speed is a scalar quantity.`,
+
+"acceleration":
+`Acceleration is the rate of change of velocity.
+
+a = Δv / Δt
+
+SI unit: m/s²`,
+
+"momentum":
+`Linear momentum:
+
+p = mv
+
+p = momentum
+m = mass
+v = velocity`,
+
+"kinetic energy":
+`Kinetic Energy:
+
+KE = ½mv²
+
+It depends on mass and the square of velocity.`,
+
+"potential energy":
+`Gravitational Potential Energy:
+
+PE = mgh
+
+m = mass
+g = acceleration due to gravity
+h = height`,
+
+"ohm":
+`Ohm's Law:
+
+V = IR
+
+V = voltage
+I = current
+R = resistance`,
+
+"photoelectric":
+`Photoelectric effect:
+
+Light of sufficient frequency can eject electrons from a metal surface.
+
+Einstein's equation:
+
+Kmax = hν − φ`,
+
+"de broglie":
+`de Broglie wavelength:
+
+λ = h/p
+
+For a particle of momentum p.`,
+
+"bohr":
+`Bohr's model:
+
+Electrons occupy permitted stationary orbits.
+
+For hydrogen-like species:
+
+Eₙ = −13.6 Z²/n² eV`,
+
+"atomic number":
+`Atomic number Z = number of protons.
+
+For a neutral atom:
+
+number of electrons = number of protons = Z.`,
+
+"mass number":
+`Mass number:
+
+A = Z + N
+
+Z = protons
+N = neutrons`,
+
+"quadratic":
+`For ax² + bx + c = 0:
+
+x = (-b ± √(b²−4ac)) / 2a`,
+
+"trigonometry":
+`Basic identity:
+
+sin²θ + cos²θ = 1
+
+Also:
+
+tanθ = sinθ / cosθ`,
+
+"derivative":
+`Derivative measures instantaneous rate of change.
+
+For y=f(x):
+
+dy/dx = rate of change of y with respect to x.`,
+
+"jee":
+`JEE preparation basics:
+
+1. Build concepts.
+2. Solve class examples.
+3. Practice questions.
+4. Analyze mistakes.
+5. Revise formulas.
+6. Take tests regularly.
+
+Consistency matters more than one unusually long study session.`
 
 };
 
+function toggleKnowledge(){
 
-recognition.onresult=function(event){
-
-const command=
-event.results[0][0].transcript.toLowerCase();
-
-document.getElementById("output").innerText=
-"You: "+command;
-
-processCommand(command);
-};
-
-
-recognition.onerror=function(){
-
-document.getElementById("status").innerText=
-"SYSTEM ONLINE";
-
-speak("Sorry, I couldn't understand that.");
-};
-
-
-recognition.onend=function(){
-
-document.getElementById("status").innerText=
-"SYSTEM ONLINE";
-};
-
+  document
+    .getElementById("knowledge")
+    .classList.toggle("active");
 }
 
+function askKnowledge(customQuestion=null){
 
-function startListening(){
+  const input=
+    customQuestion ||
+    document.getElementById("question").value
+    .toLowerCase()
+    .trim();
 
-if(!recognition){
+  if(!input){
 
-speak("Voice recognition is not supported.");
+    reply(
+      "Ask me something from my current knowledge base.",
+      false
+    );
 
-return;
+    return;
+  }
+
+  let found=null;
+
+  for(const key in knowledge){
+
+    if(input.includes(key)){
+      found=knowledge[key];
+      break;
+    }
+  }
+
+  if(found){
+
+    reply(found,true);
+
+  }else{
+
+    reply(
+`I don't have that topic in my local knowledge base yet.
+
+Try:
+• Newton second law
+• Velocity
+• Momentum
+• Photoelectric effect
+• Bohr model
+• JEE
+• Trigonometry`,
+      false
+    );
+  }
 }
-
-recognition.start();
-}
-
 
 /* =========================
-   COMMAND SYSTEM
+   ENTER KEY
 ========================= */
 
-function processCommand(command){
+document
+  .getElementById("question")
+  .addEventListener(
+    "keydown",
+    function(e){
 
-if(
-command.includes("hello")||
-command.includes("hi jarvis")||
-command.includes("hey jarvis")
-){
+      if(e.key==="Enter"){
+        askKnowledge();
+      }
 
-speak("Hello. How can I help you?");
+    }
+  );
 
-return;
-}
+document
+  .getElementById("calcInput")
+  .addEventListener(
+    "keydown",
+    function(e){
 
+      if(e.key==="Enter"){
+        calculate();
+      }
 
-if(
-command.includes("time")||
-command.includes("what time")
-){
-
-tellTime();
-
-return;
-}
-
-
-if(
-command.includes("study mode")||
-command.includes("start studying")||
-command.includes("activate study")
-){
-
-studyMode();
-
-return;
-}
-
-
-if(
-command.includes("calculator")||
-command.includes("calculate")
-){
-
-toggleCalculator();
-
-speak("Calculator activated.");
-
-return;
-}
-
-
-if(
-command.includes("stop")||
-command.includes("cancel")
-){
-
-speechSynthesis.cancel();
-
-document.getElementById("output").innerText=
-"Command cancelled.";
-
-return;
-}
-
-
-speak(
-"I heard "+command+
-". But I don't know that command yet."
-);
-
-}
+    }
+  );
 
 </script>
 
