@@ -2,187 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JARVIS</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
 
 body{
-  margin:0;
   min-height:100vh;
-  background:#02070d;
-  color:#8feaff;
-  font-family:Arial,sans-serif;
-  overflow-x:hidden;
-}
-
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(rgba(0,190,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,190,255,.035) 1px,transparent 1px);
-  background-size:35px 35px;
-  pointer-events:none;
-}
-
-.header{
+  background:#02070b;
+  color:#00eaff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   text-align:center;
-  padding:22px 10px 5px;
 }
 
-.title{
-  font-size:30px;
+.container{
+  width:90%;
+  max-width:600px;
+}
+
+h1{
+  font-size:42px;
   letter-spacing:8px;
-  font-weight:bold;
-  text-shadow:
-    0 0 8px #00cfff,
-    0 0 20px #0088aa;
+  margin-bottom:35px;
+  text-shadow:0 0 20px #00eaff;
 }
 
 .core{
-  width:145px;
-  height:145px;
-  margin:28px auto 25px;
-  border:2px solid #00d9ff;
+  width:180px;
+  height:180px;
+  margin:0 auto 35px;
   border-radius:50%;
-  position:relative;
+  border:3px solid #00eaff;
+  box-shadow:
+    0 0 20px #00eaff,
+    inset 0 0 25px #00eaff;
   display:flex;
-  align-items:center;
   justify-content:center;
-  box-shadow:
-    0 0 12px #00cfff,
-    inset 0 0 22px #006d8c;
+  align-items:center;
 }
 
-.core:before,
-.core:after{
+.core::after{
   content:"";
-  position:absolute;
-  border:1px solid #00aee0;
+  width:35px;
+  height:35px;
+  background:#00eaff;
   border-radius:50%;
-}
-
-.core:before{
-  width:105px;
-  height:105px;
-}
-
-.core:after{
-  width:55px;
-  height:55px;
-}
-
-.coreDot{
-  width:18px;
-  height:18px;
-  background:#8ff4ff;
-  border-radius:50%;
-  box-shadow:
-    0 0 10px #00eaff,
-    0 0 25px #00cfff;
-  z-index:2;
-}
-
-.panel{
-  width:min(900px,94%);
-  margin:auto;
-  border:1px solid #075c78;
-  background:rgba(2,14,23,.9);
-  padding:15px;
-  box-shadow:0 0 12px rgba(0,200,255,.12);
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-  gap:10px;
+  box-shadow:0 0 30px #00eaff;
 }
 
 button{
-  border:1px solid #0787ae;
-  background:#03131e;
-  color:#8feaff;
-  padding:12px 8px;
+  width:90%;
+  max-width:350px;
+  margin:8px;
+  padding:14px;
+  border:1px solid #00eaff;
+  border-radius:10px;
+  background:#03131a;
+  color:#00eaff;
+  font-size:16px;
   cursor:pointer;
-  font-weight:bold;
-  letter-spacing:1px;
-  transition:.15s;
+  box-shadow:0 0 10px #003d4a;
 }
 
 button:hover{
-  background:#063044;
-  box-shadow:0 0 10px #00bde8;
+  background:#07303a;
+  box-shadow:0 0 20px #00eaff;
 }
 
-.output{
-  margin-top:14px;
-  min-height:85px;
-  border:1px solid #075c78;
-  padding:12px;
-  color:#baf3ff;
-  font-size:14px;
-  line-height:1.5;
-  white-space:pre-wrap;
+#output{
+  margin-top:25px;
+  min-height:30px;
+  color:#fff;
 }
 
-.section{
-  margin-top:14px;
+#calculator{
   display:none;
+  margin:25px auto;
+  padding:15px;
+  border:1px solid #00eaff;
+  border-radius:12px;
+  max-width:350px;
 }
 
-.section.active{
-  display:block;
-}
-
-input{
+#display{
   width:100%;
-  background:#020b12;
-  color:#a9efff;
-  border:1px solid #087a9d;
-  padding:11px;
-  margin-bottom:8px;
-  outline:none;
+  padding:12px;
+  background:#000;
+  color:#00eaff;
+  border:1px solid #00eaff;
+  border-radius:8px;
+  font-size:20px;
+  margin-bottom:10px;
 }
 
-.small{
-  color:#55b9d2;
-  font-size:11px;
+.calcbtn{
+  width:60px;
+  margin:3px;
+  padding:12px 5px;
 }
 
 .history{
+  margin-top:15px;
+  text-align:left;
   max-height:120px;
   overflow:auto;
-  font-size:12px;
-  color:#75d8ed;
-  margin-top:8px;
+  color:#aaa;
+  font-size:13px;
 }
 
-.footer{
-  text-align:center;
-  padding:20px;
-  color:#397c91;
-  font-size:10px;
-  letter-spacing:2px;
+footer{
+  margin-top:25px;
+  color:#47747c;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="title">JARVIS</div>
-</div>
+<div class="container">
 
-<div class="core">
-  <div class="coreDot"></div>
-</div>
+<h1>JARVIS</h1>
 
-<div class="panel">
-
-<div class="grid">
+<div class="core"></div>
 
 <button onclick="testVoice()">🔊 TEST VOICE</button>
 
@@ -192,687 +142,28 @@ input{
 
 <button onclick="startVoice()">🎙️ VOICE COMMAND</button>
 
-<button onclick="toggleCalc()">🧮 CALCULATOR</button>
+<button onclick="toggleCalculator()">🧮 CALCULATOR</button>
 
+<div id="calculator">
+
+<input id="display" type="text" placeholder="Enter calculation">
+
+<div>
+<button class="calcbtn" onclick="add('7')">7</button>
+<button class="calcbtn" onclick="add('8')">8</button>
+<button class="calcbtn" onclick="add('9')">9</button>
+<button class="calcbtn" onclick="add('/')">÷</button>
 </div>
 
-<div id="output" class="output">
-JARVIS online.
-Awaiting command...
+<div>
+<button class="calcbtn" onclick="add('4')">4</button>
+<button class="calcbtn" onclick="add('5')">5</button>
+<button class="calcbtn" onclick="add('6')">6</button>
+<button class="calcbtn" onclick="add('*')">×</button>
 </div>
 
-
-<!-- CALCULATOR -->
-
-<div id="calc" class="section">
-
-<input
-id="calcInput"
-placeholder="Example: 25+5*2">
-
-<div class="grid">
-
-<button onclick="calculate()">CALCULATE</button>
-
-<button onclick="addCalc('Math.PI')">π</button>
-
-<button onclick="addCalc('Math.sqrt(')">√</button>
-
-<button onclick="addCalc('**')">xʸ</button>
-
-<button onclick="addCalc('%')">%</button>
-
-<button onclick="clearCalc()">CLEAR</button>
-
-</div>
-
-<div class="small">History</div>
-
-<div id="history" class="history"></div>
-
-</div>
-
-</div>
-
-
-<div class="footer">
-JARVIS // SYSTEM READY
-</div>
-
-
-<script>
-
-/* =========================
-   JARVIS RESPONSE
-========================= */
-
-function reply(text,speak=true){
-
-  const output=document.getElementById("output");
-
-  output.textContent=text;
-
-  if(speak && "speechSynthesis" in window){
-
-    speechSynthesis.cancel();
-
-    const msg=new SpeechSynthesisUtterance(text);
-
-    /* Better JARVIS-like voice */
-
-    msg.rate=0.94;
-    msg.pitch=0.72;
-    msg.volume=1;
-
-    const voices=speechSynthesis.getVoices();
-
-    const jarvisVoice=voices.find(v =>
-      /Microsoft David|
-       Microsoft Mark|
-       Google UK English Male|
-       Daniel/i.test(v.name)
-    );
-
-    if(jarvisVoice){
-      msg.voice=jarvisVoice;
-    }
-
-    speechSynthesis.speak(msg);
-  }
-}
-
-
-/* =========================
-   TEST VOICE
-========================= */
-
-function testVoice(){
-
-  reply(
-    "Hello. I am Jarvis. How may I assist you?",
-    true
-  );
-
-}
-
-
-/* =========================
-   TIME
-========================= */
-
-function showTime(){
-
-  const now=new Date();
-
-  const time=now.toLocaleTimeString(
-    "en-IN",
-    {
-      hour:"2-digit",
-      minute:"2-digit",
-      second:"2-digit"
-    }
-  );
-
-  reply(
-    "The current time is "+time,
-    false
-  );
-
-}
-
-
-/* =========================
-   STUDY MODE
-========================= */
-
-function studyMode(){
-
-  reply(
-`STUDY MODE ACTIVATED
-
-Focus:
-JEE / Class 11 PCM
-
-Recommended:
-• Revise concepts
-• Revise formulas
-• Solve questions
-• Analyse mistakes
-• Take short breaks
-
-Stay consistent.`,
-  true
-  );
-
-}
-
-
-/* =========================
-   VOICE COMMAND
-========================= */
-
-function startVoice(){
-
-  const SpeechRecognition=
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if(!SpeechRecognition){
-
-    reply(
-      "Voice recognition is not supported in this browser.",
-      false
-    );
-
-    return;
-  }
-
-  const recognition=new SpeechRecognition();
-
-  recognition.lang="en-IN";
-  recognition.continuous=false;
-  recognition.interimResults=false;
-
-  reply("Listening...",false);
-
-  recognition.start();
-
-  recognition.onresult=function(event){
-
-    const command=
-      event.results[0][0]
-      .transcript
-      .toLowerCase()
-      .trim();
-
-    handleCommand(command);
-
-  };
-
-  recognition.onerror=function(){
-
-    reply(
-      "I could not hear you. Please try again.",
-      false
-    );
-
-  };
-
-}
-
-
-/* =========================
-   COMMAND HANDLER
-========================= */
-
-function handleCommand(command){
-
-  if(
-    command.includes("hello") ||
-    command.includes("hi jarvis") ||
-    command.includes("hey jarvis")
-  ){
-
-    reply(
-      "Hello. How may I assist you?",
-      true
-    );
-
-    return;
-  }
-
-
-  if(command.includes("time")){
-
-    showTime();
-
-    return;
-  }
-
-
-  if(
-    command.includes("study mode") ||
-    command.includes("study")
-  ){
-
-    studyMode();
-
-    return;
-  }
-
-
-  if(
-    command.includes("calculator") ||
-    command.includes("calculate")
-  ){
-
-    toggleCalc();
-
-    reply(
-      "Calculator is ready.",
-      true
-    );
-
-    return;
-  }
-
-
-  /*
-    Knowledge answers are triggered
-    directly through Voice Command.
-  */
-
-  askKnowledge(command);
-
-}
-
-
-/* =========================
-   CALCULATOR
-========================= */
-
-function toggleCalc(){
-
-  document
-    .getElementById("calc")
-    .classList.toggle("active");
-
-}
-
-
-function addCalc(value){
-
-  document
-    .getElementById("calcInput")
-    .value+=value;
-
-}
-
-
-function clearCalc(){
-
-  document
-    .getElementById("calcInput")
-    .value="";
-
-}
-
-
-function calculate(){
-
-  const input=
-    document
-    .getElementById("calcInput")
-    .value
-    .trim();
-
-  if(!input){
-
-    reply(
-      "Please enter a calculation first.",
-      false
-    );
-
-    return;
-  }
-
-
-  if(
-    !/^[0-9+\-*/().%\s^π√a-zA-Z]+$/.test(input)
-  ){
-
-    reply(
-      "Invalid calculator input.",
-      false
-    );
-
-    return;
-  }
-
-
-  try{
-
-    let exp=input
-
-      .replace(/π/g,"Math.PI")
-
-      .replace(/√/g,"Math.sqrt")
-
-      .replace(/\^/g,"**");
-
-
-    exp=exp.replace(
-      /\b(sin|cos|tan|log|ln)\b/g,
-      function(fn){
-
-        const map={
-
-          sin:"Math.sin",
-
-          cos:"Math.cos",
-
-          tan:"Math.tan",
-
-          log:"Math.log10",
-
-          ln:"Math.log"
-
-        };
-
-        return map[fn];
-
-      }
-    );
-
-
-    if(
-      /[a-zA-Z]/.test(
-        exp.replace(
-          /Math\.(PI|sqrt|sin|cos|tan|log10|log)/g,
-          ""
-        )
-      )
-    ){
-
-      throw new Error();
-
-    }
-
-
-    const result=
-      Function(
-        '"use strict";return ('+
-        exp+
-        ')'
-      )();
-
-
-    if(!Number.isFinite(result)){
-
-      throw new Error();
-
-    }
-
-
-    reply(
-      "Result: "+result,
-      false
-    );
-
-    addHistory(
-      input+" = "+result
-    );
-
-
-  }catch{
-
-    reply(
-      "I could not calculate that.",
-      false
-    );
-
-  }
-
-}
-
-
-function addHistory(text){
-
-  const history=
-    document.getElementById("history");
-
-  const item=
-    document.createElement("div");
-
-  item.textContent=text;
-
-  history.prepend(item);
-
-}
-
-
-/* =========================
-   KNOWLEDGE BRAIN
-   VOICE COMMAND ONLY
-========================= */
-
-const knowledge={
-
-
-"newton second law":
-`Newton's Second Law:
-
-F = ma
-
-Net force produces acceleration.
-
-F = net force
-m = mass
-a = acceleration`,
-
-
-"newton first law":
-`Newton's First Law:
-
-An object remains at rest or moves with constant velocity unless acted upon by a net external force.`,
-
-
-"newton third law":
-`Newton's Third Law:
-
-For every action force, there is an equal and opposite reaction force.`,
-
-
-"velocity":
-`Velocity is the rate of change of displacement.
-
-v = Δx / Δt
-
-Velocity is a vector quantity.`,
-
-
-"speed":
-`Speed is the rate at which distance is covered.
-
-Speed = distance / time
-
-Speed is a scalar quantity.`,
-
-
-"acceleration":
-`Acceleration is the rate of change of velocity.
-
-a = Δv / Δt
-
-SI unit: m/s²`,
-
-
-"momentum":
-`Linear momentum:
-
-p = mv
-
-p = momentum
-m = mass
-v = velocity`,
-
-
-"kinetic energy":
-`Kinetic Energy:
-
-KE = ½mv²
-
-It depends on mass and the square of velocity.`,
-
-
-"potential energy":
-`Gravitational Potential Energy:
-
-PE = mgh
-
-m = mass
-g = acceleration due to gravity
-h = height`,
-
-
-"ohm":
-`Ohm's Law:
-
-V = IR
-
-V = voltage
-I = current
-R = resistance`,
-
-
-"photoelectric":
-`Photoelectric effect:
-
-Light of sufficient frequency can eject electrons from a metal surface.
-
-Einstein's equation:
-
-Kmax = hν − φ`,
-
-
-"de broglie":
-`de Broglie wavelength:
-
-λ = h/p`,
-
-
-"bohr":
-`Bohr's model:
-
-Electrons occupy permitted stationary orbits.
-
-For hydrogen-like species:
-
-Eₙ = −13.6 Z²/n² eV`,
-
-
-"atomic number":
-`Atomic number Z is the number of protons.
-
-For a neutral atom:
-
-Number of electrons = number of protons = Z.`,
-
-
-"mass number":
-`Mass number:
-
-A = Z + N
-
-Z = protons
-N = neutrons`,
-
-
-"quadratic":
-`For ax² + bx + c = 0:
-
-x = (-b ± √(b²−4ac)) / 2a`,
-
-
-"trigonometry":
-`Basic identity:
-
-sin²θ + cos²θ = 1
-
-tanθ = sinθ / cosθ`,
-
-
-"derivative":
-`Derivative measures instantaneous rate of change.
-
-For y=f(x):
-
-dy/dx represents the rate of change of y with respect to x.`,
-
-
-"jee":
-`JEE preparation:
-
-1. Build concepts.
-2. Solve class examples.
-3. Practice questions.
-4. Analyse mistakes.
-5. Revise formulas.
-6. Take tests regularly.
-
-Consistency matters more than one unusually long study session.`
-
-};
-
-
-function askKnowledge(question){
-
-  let found=null;
-
-  for(const key in knowledge){
-
-    if(question.includes(key)){
-
-      found=knowledge[key];
-
-      break;
-
-    }
-
-  }
-
-
-  if(found){
-
-    reply(
-      found,
-      true
-    );
-
-  }else{
-
-    reply(
-`I don't have that topic in my current knowledge base.
-
-Try asking about:
-Newton's laws,
-velocity,
-acceleration,
-momentum,
-kinetic energy,
-Bohr model,
-photoelectric effect,
-trigonometry,
-derivatives,
-or JEE.`,
-      true
-    );
-
-  }
-
-}
-
-
-/* =========================
-   ENTER KEY
-========================= */
-
-document
-.getElementById("calcInput")
-.addEventListener(
-  "keydown",
-  function(e){
-
-    if(e.key==="Enter"){
-
-      calculate();
-
-    }
-
-  }
-);
-
-</script>
-
-</body>
-</html>
+<div>
+<button class="calcbtn" onclick="add('1')">1</button>
+<button class="calcbtn" onclick="add('2')">2</button>
+<button class="calcbtn" onclick="add('3')">3</button>
+<button class="calcbtn" onclick="add('-')">−</button
