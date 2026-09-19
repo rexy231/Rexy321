@@ -2,20 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JARVIS</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
   min-height:100vh;
   background:#02070d;
   color:#00eaff;
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -37,10 +35,9 @@ h1{
   font-size:48px;
   letter-spacing:12px;
   margin:0 0 45px;
-  text-shadow:
-    0 0 10px #00eaff,
-    0 0 25px #00eaff,
-    0 0 50px #007bff;
+  text-shadow:0 0 10px #00eaff,
+              0 0 25px #00eaff,
+              0 0 50px #007bff;
 }
 
 .core{
@@ -48,10 +45,9 @@ h1{
   height:190px;
   border-radius:50%;
   border:3px solid #00eaff;
-  box-shadow:
-    0 0 15px #00eaff,
-    0 0 40px #00eaff,
-    inset 0 0 30px #006eff;
+  box-shadow:0 0 15px #00eaff,
+             0 0 40px #00eaff,
+             inset 0 0 30px #006eff;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -59,7 +55,7 @@ h1{
   position:relative;
 }
 
-.core::before{
+.core:before{
   content:"";
   width:80px;
   height:80px;
@@ -68,23 +64,22 @@ h1{
   box-shadow:0 0 25px #00eaff;
 }
 
-.core::after{
+.core:after{
   content:"";
   position:absolute;
   width:18px;
   height:18px;
   border-radius:50%;
-  background:#ffffff;
-  box-shadow:
-    0 0 10px #00eaff,
-    0 0 25px #00eaff;
+  background:white;
+  box-shadow:0 0 10px #00eaff,
+             0 0 25px #00eaff;
 }
 
 .status{
   margin-top:45px;
   width:100%;
   max-width:600px;
-  min-height:80px;
+  min-height:90px;
   padding:18px;
   border:1px solid rgba(0,234,255,.35);
   border-radius:14px;
@@ -93,27 +88,20 @@ h1{
   text-align:center;
   font-size:17px;
   line-height:1.5;
+  white-space:pre-line;
 }
 
 .listening{
-  color:#ffffff;
+  color:white;
   text-shadow:0 0 10px #00eaff;
 }
 
 @keyframes pulse{
   0%,100%{
     transform:scale(1);
-    box-shadow:
-      0 0 15px #00eaff,
-      0 0 40px #00eaff,
-      inset 0 0 30px #006eff;
   }
   50%{
     transform:scale(1.05);
-    box-shadow:
-      0 0 25px #00eaff,
-      0 0 70px #007bff,
-      inset 0 0 45px #006eff;
   }
 }
 
@@ -139,25 +127,35 @@ h1{
 
 <div class="container">
 
-  <h1>JARVIS</h1>
+<h1>JARVIS</h1>
 
-  <div class="core"></div>
+<div class="core"></div>
 
-  <div id="status" class="status">
-    Initializing...
-  </div>
+<div id="status" class="status">
+Initializing JARVIS...
+</div>
 
 </div>
 
 <script>
 
-/* =========================
-   JARVIS VOICE
-========================= */
+/* =====================================
+   JARVIS V6
+   FULL CONVERSATION MODE
+===================================== */
 
 const statusBox = document.getElementById("status");
 
 let voices = [];
+let recognition = null;
+let isSpeaking = false;
+let shouldListen = true;
+let restartTimer = null;
+
+
+/* =====================================
+   VOICES
+===================================== */
 
 function loadVoices(){
   voices = speechSynthesis.getVoices();
@@ -169,20 +167,27 @@ if("speechSynthesis" in window){
   speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-function speak(text){
+
+/* =====================================
+   SPEAK
+===================================== */
+
+function speak(text, afterSpeak=true){
 
   if(!("speechSynthesis" in window)){
-    statusBox.innerText = text;
+    statusBox.innerText = "JARVIS:\n" + text;
     return;
   }
+
+  isSpeaking = true;
 
   speechSynthesis.cancel();
 
   const msg = new SpeechSynthesisUtterance(text);
 
   msg.lang = "en-IN";
-  msg.rate = 0.92;
-  msg.pitch = 0.75;
+  msg.rate = 0.90;
+  msg.pitch = 0.72;
   msg.volume = 1;
 
   const preferred =
@@ -196,367 +201,402 @@ function speak(text){
     msg.voice = preferred;
   }
 
+  msg.onend = function(){
+
+    isSpeaking = false;
+
+    if(afterSpeak){
+      waitAndListen();
+    }
+  };
+
+  msg.onerror = function(){
+
+    isSpeaking = false;
+
+    if(afterSpeak){
+      waitAndListen();
+    }
+  };
+
   speechSynthesis.speak(msg);
 }
 
 
-/* =========================
-   KNOWLEDGE DATABASE
-========================= */
+/* =====================================
+   NORMALIZE TEXT
+===================================== */
+
+function clean(text){
+
+  return text
+    .toLowerCase()
+    .replace(/[?!.,'"]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+
+/* =====================================
+   CURRENT TIME
+===================================== */
+
+function getTimeAnswer(){
+
+  const now = new Date();
+
+  return "Sir, abhi time hai " +
+    now.toLocaleTimeString("en-IN",{
+      hour:"numeric",
+      minute:"2-digit",
+      second:"2-digit"
+    });
+}
+
+
+/* =====================================
+   EMOTIONAL RESPONSES
+===================================== */
+
+function emotionalAnswer(q){
+
+  if(
+    q.includes("i am sad") ||
+    q.includes("i feel sad") ||
+    q.includes("i am feeling sad") ||
+    q.includes("main sad") ||
+    q.includes("mood off")
+  ){
+    return "I'm sorry sir. Aaj agar mood low hai to thoda break lijiye, paani piye aur khud par zyada pressure mat daliye. Main yahin hoon.";
+  }
+
+  if(
+    q.includes("i am stressed") ||
+    q.includes("i feel stressed") ||
+    q.includes("i am under stress") ||
+    q.includes("main stressed") ||
+    q.includes("bahut stress")
+  ){
+    return "Sir, stress ke time sab kuch ek saath solve karne ki zarurat nahi hai. Ek chhota task choose kijiye aur bas usse complete kijiye. Step by step.";
+  }
+
+  if(
+    q.includes("i am tired") ||
+    q.includes("i feel tired") ||
+    q.includes("main tired") ||
+    q.includes("thak gaya")
+  ){
+    return "Sir, agar aap genuinely tired hain to rest lena weakness nahi hai. Thoda paani piye, relax kijiye aur zarurat ho to proper sleep lijiye.";
+  }
+
+  if(
+    q.includes("i am nervous") ||
+    q.includes("i feel nervous") ||
+    q.includes("main nervous")
+  ){
+    return "Sir, nervous hona normal hai. Dheere saans lijiye, situation ko ek step at a time handle kijiye. Aapko sab kuch ek hi moment mein perfect nahi karna.";
+  }
+
+  if(
+    q.includes("i failed") ||
+    q.includes("i got bad marks") ||
+    q.includes("marks are bad") ||
+    q.includes("main fail")
+  ){
+    return "Sir, ek result aapki capability decide nahi karta. Mistakes identify kijiye, unhe samjhiye aur next attempt ke liye improve kijiye.";
+  }
+
+  if(
+    q.includes("i don't feel like studying") ||
+    q.includes("i dont feel like studying") ||
+    q.includes("padhne ka mann nahi")
+  ){
+    return "Sir, motivation ka wait mat kijiye. Bas 10 minutes ke liye book kholiye aur ek easy question start kijiye. Start karna hi sabse important step hai.";
+  }
+
+  if(
+    q.includes("i am happy") ||
+    q.includes("i feel happy") ||
+    q.includes("main khush")
+  ){
+    return "That's great, sir. Enjoy the moment. Aise positive moments ko remember karna bhi important hai.";
+  }
+
+  if(
+    q.includes("i am bored") ||
+    q.includes("i feel bored") ||
+    q.includes("main bore")
+  ){
+    return "Sir, boredom aa raha hai to activity change kijiye. Thoda walk, music, hobby ya koi small productive task try kar sakte hain.";
+  }
+
+  if(
+    q.includes("motivate me") ||
+    q.includes("motivation") ||
+    q.includes("mujhe motivate")
+  ){
+    return "Sir, progress hamesha dramatic nahi hoti. Kabhi kabhi bas kal se thoda better hona hi progress hai. Keep going.";
+  }
+
+  if(
+    q.includes("are you with me") ||
+    q.includes("will you help me") ||
+    q.includes("tum mere saath")
+  ){
+    return "Of course sir. Jab bhi aap mujhse baat karenge, main jitna possible ho sake utni help karunga.";
+  }
+
+  return null;
+}
+
+
+/* =====================================
+   KNOWLEDGE
+===================================== */
 
 const knowledge = [
 
-/* PHYSICS */
-
 {
- keys:["newton first law","first law of newton","न्यूटन का पहला नियम"],
- answer:"Newton's first law says that an object remains at rest or moves with uniform velocity unless an external unbalanced force acts on it. It is also called the law of inertia."
+keys:["newton first law","first law"],
+answer:"Newton's first law says that an object remains at rest or moves with uniform velocity unless an external unbalanced force acts on it. It is also called the law of inertia."
 },
 
 {
- keys:["newton second law","second law of newton","न्यूटन का दूसरा नियम"],
- answer:"Newton's second law states that the net force on an object equals mass multiplied by acceleration. The formula is F equals m a."
+keys:["newton second law","second law"],
+answer:"Newton's second law states that net force equals mass multiplied by acceleration. The formula is F equals m a."
 },
 
 {
- keys:["newton third law","third law of newton","न्यूटन का तीसरा नियम"],
- answer:"Newton's third law states that for every action, there is an equal and opposite reaction. The two forces act on different objects."
+keys:["newton third law","third law"],
+answer:"Newton's third law states that for every action there is an equal and opposite reaction. The two forces act on different objects."
 },
 
 {
- keys:["velocity"],
- answer:"Velocity is the rate of change of displacement with time. It is a vector quantity and its SI unit is metre per second."
+keys:["velocity"],
+answer:"Velocity is the rate of change of displacement with time. It is a vector quantity and its SI unit is metre per second."
 },
 
 {
- keys:["speed"],
- answer:"Speed is the distance travelled per unit time. It is a scalar quantity and its SI unit is metre per second."
+keys:["speed"],
+answer:"Speed is distance travelled per unit time. It is a scalar quantity and its SI unit is metre per second."
 },
 
 {
- keys:["acceleration"],
- answer:"Acceleration is the rate of change of velocity with time. Its SI unit is metre per second squared."
+keys:["acceleration"],
+answer:"Acceleration is the rate of change of velocity with time. Its SI unit is metre per second squared."
 },
 
 {
- keys:["momentum"],
- answer:"Linear momentum is the product of mass and velocity. Its formula is p equals m v, and its SI unit is kilogram metre per second."
+keys:["momentum"],
+answer:"Linear momentum is mass multiplied by velocity. Its formula is p equals m v."
 },
 
 {
- keys:["kinetic energy"],
- answer:"Kinetic energy is the energy possessed by an object because of its motion. Its formula is one half m v squared."
+keys:["kinetic energy"],
+answer:"Kinetic energy is the energy possessed by an object because of motion. Its formula is one half m v squared."
 },
 
 {
- keys:["potential energy"],
- answer:"Gravitational potential energy is the energy possessed because of height. Near Earth's surface its formula is m g h."
+keys:["potential energy"],
+answer:"Gravitational potential energy depends on mass, gravity and height. Its formula is m g h."
 },
 
 {
- keys:["work done","work in physics"],
- answer:"Mechanical work is done when a force causes displacement. For a constant force, work equals F d cos theta."
+keys:["ohm law","ohm's law"],
+answer:"Ohm's law states that current is directly proportional to potential difference at constant physical conditions. The formula is V equals I R."
 },
 
 {
- keys:["power in physics"],
- answer:"Power is the rate at which work is done. Its SI unit is watt."
+keys:["gravity"],
+answer:"Gravity is the attractive force between masses. Near Earth's surface, acceleration due to gravity is approximately 9.8 metres per second squared."
 },
 
 {
- keys:["ohm law","ohm's law"],
- answer:"Ohm's law states that at constant physical conditions, current is directly proportional to potential difference. The formula is V equals I R."
+keys:["atomic number"],
+answer:"Atomic number is the number of protons present in the nucleus. It is represented by Z."
 },
 
 {
- keys:["gravity"],
- answer:"Gravity is the attractive force between masses. Near Earth's surface, objects experience acceleration due to gravity of approximately 9.8 metres per second squared."
+keys:["mass number"],
+answer:"Mass number is the total number of protons and neutrons in the nucleus."
 },
 
 {
- keys:["centripetal force"],
- answer:"Centripetal force is the inward net force required for circular motion. Its magnitude is m v squared divided by r."
-},
-
-/* CHEMISTRY */
-
-{
- keys:["atomic number","atomic no"],
- answer:"Atomic number is the number of protons present in the nucleus of an atom. It is represented by Z."
+keys:["isotope","isotopes"],
+answer:"Isotopes are atoms of the same element having the same atomic number but different mass numbers."
 },
 
 {
- keys:["mass number"],
- answer:"Mass number is the total number of protons and neutrons in the nucleus. A equals Z plus N."
+keys:["bohr model"],
+answer:"Bohr's model proposed that electrons occupy specific allowed energy levels around the nucleus and can absorb or emit energy when moving between levels."
 },
 
 {
- keys:["proton"],
- answer:"A proton has a positive elementary charge and is present in the atomic nucleus."
+keys:["de broglie"],
+answer:"De Broglie's hypothesis states that moving particles have an associated wavelength. Lambda equals h divided by momentum."
 },
 
 {
- keys:["neutron"],
- answer:"A neutron has no net electric charge and is present in the atomic nucleus."
+keys:["uncertainty principle","heisenberg"],
+answer:"Heisenberg's uncertainty principle says that position and momentum cannot both be known with unlimited precision at the same time."
 },
 
 {
- keys:["electron"],
- answer:"An electron has negative elementary charge and occupies regions around the nucleus called orbitals."
+keys:["photoelectric effect"],
+answer:"The photoelectric effect is the emission of electrons from a metal surface when electromagnetic radiation of sufficiently high frequency falls on it."
 },
 
 {
- keys:["bohr model","bohr atomic model"],
- answer:"Bohr's model proposed that electrons occupy specific allowed energy levels around the nucleus. Electrons can absorb or emit energy when moving between levels."
+keys:["mole"],
+answer:"One mole contains approximately 6.022 times 10 to the power 23 entities."
 },
 
 {
- keys:["de broglie","de broglie wavelength"],
- answer:"According to de Broglie's hypothesis, a moving particle has an associated wavelength. The relation is lambda equals h divided by momentum."
+keys:["molarity"],
+answer:"Molarity is the number of moles of solute present per litre of solution."
 },
 
 {
- keys:["heisenberg uncertainty","uncertainty principle"],
- answer:"Heisenberg's uncertainty principle states that position and momentum cannot both be known with unlimited precision at the same time."
+keys:["quadratic equation"],
+answer:"A quadratic equation has the general form a x squared plus b x plus c equals zero, where a is not zero."
 },
 
 {
- keys:["photoelectric effect"],
- answer:"The photoelectric effect is the emission of electrons from a metal surface when electromagnetic radiation of sufficiently high frequency falls on it."
+keys:["quadratic formula"],
+answer:"The quadratic formula is x equals minus b plus or minus square root of b squared minus four a c, divided by two a."
 },
 
 {
- keys:["photon"],
- answer:"A photon is a quantum of electromagnetic radiation. Its energy is h nu, where h is Planck's constant and nu is frequency."
+keys:["trigonometry"],
+answer:"Trigonometry studies relationships between angles and sides of triangles. The basic ratios are sine, cosine and tangent."
 },
 
 {
- keys:["mole"],
- answer:"One mole contains approximately 6.022 times 10 to the power 23 entities. This number is called Avogadro's constant."
+keys:["pythagoras","pythagorean theorem"],
+answer:"Pythagorean theorem states that in a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides."
 },
 
 {
- keys:["molarity"],
- answer:"Molarity is the number of moles of solute present per litre of solution."
+keys:["derivative"],
+answer:"A derivative represents the instantaneous rate of change of a function. Geometrically, it represents the slope of the tangent to a curve."
 },
 
 {
- keys:["isotope"],
- answer:"Isotopes are atoms of the same element having the same atomic number but different mass numbers."
+keys:["integration"],
+answer:"Integration is the process of finding an antiderivative. Definite integration can represent accumulated quantity or signed area."
 },
 
 {
- keys:["periodic table"],
- answer:"The modern periodic table arranges elements according to increasing atomic number. Elements in the same group generally have similar valence-electron patterns."
-},
-
-/* MATHEMATICS */
-
-{
- keys:["quadratic equation"],
- answer:"A quadratic equation has the general form a x squared plus b x plus c equals zero, where a is not zero. Its roots can be found using the quadratic formula."
+keys:["arithmetic progression","ap"],
+answer:"An arithmetic progression is a sequence in which consecutive terms differ by a constant common difference."
 },
 
 {
- keys:["quadratic formula"],
- answer:"The quadratic formula is x equals minus b plus or minus square root of b squared minus four a c, divided by two a."
+keys:["geometric progression","gp"],
+answer:"A geometric progression is a sequence in which each term is obtained by multiplying the previous term by a constant common ratio."
 },
 
 {
- keys:["trigonometry"],
- answer:"Trigonometry studies relationships between angles and sides of triangles. The basic ratios are sine, cosine and tangent."
+keys:["cpu"],
+answer:"CPU stands for Central Processing Unit. It executes instructions and performs calculations and logical operations."
 },
 
 {
- keys:["sine"],
- answer:"For a right triangle, sine of an angle equals opposite side divided by hypotenuse."
+keys:["ram"],
+answer:"RAM stands for Random Access Memory. It temporarily stores data and instructions that the computer is actively using."
 },
 
 {
- keys:["cosine"],
- answer:"For a right triangle, cosine of an angle equals adjacent side divided by hypotenuse."
+keys:["operating system"],
+answer:"An operating system manages computer hardware resources and provides services for applications. Examples include Windows, Android and Linux."
 },
 
 {
- keys:["tangent"],
- answer:"For a right triangle, tangent of an angle equals opposite side divided by adjacent side."
+keys:["html"],
+answer:"HTML stands for HyperText Markup Language. It provides the structure of webpages."
 },
 
 {
- keys:["pythagoras","pythagorean theorem"],
- answer:"Pythagorean theorem states that in a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides."
+keys:["css"],
+answer:"CSS stands for Cascading Style Sheets. It controls the appearance and layout of webpages."
 },
 
 {
- keys:["derivative"],
- answer:"A derivative represents the instantaneous rate of change of a function. Geometrically, it represents the slope of the tangent to a curve."
+keys:["javascript"],
+answer:"JavaScript is a programming language commonly used to make webpages interactive and dynamic."
 },
 
 {
- keys:["integration"],
- answer:"Integration is the process of finding an antiderivative. Definite integration can also represent accumulated quantity or signed area under a curve."
+keys:["solar system"],
+answer:"The Solar System consists of the Sun and objects gravitationally bound to it, including eight planets, moons, asteroids and comets."
 },
 
 {
- keys:["arithmetic progression","ap"],
- answer:"An arithmetic progression is a sequence in which consecutive terms differ by a constant common difference."
+keys:["black hole"],
+answer:"A black hole is a region of spacetime where gravity is so strong that beyond its event horizon even light cannot escape."
 },
 
 {
- keys:["geometric progression","gp"],
- answer:"A geometric progression is a sequence in which each term is obtained by multiplying the previous term by a constant common ratio."
-},
-
-/* COMPUTER */
-
-{
- keys:["what is computer","computer"],
- answer:"A computer is an electronic device that accepts input, processes data according to instructions, stores information and produces output."
+keys:["light year"],
+answer:"A light-year is a unit of distance equal to the distance light travels in vacuum in one year."
 },
 
 {
- keys:["cpu"],
- answer:"CPU stands for Central Processing Unit. It executes instructions and performs calculations and logical operations."
+keys:["photosynthesis"],
+answer:"Photosynthesis is the process by which green plants use light energy to convert carbon dioxide and water into glucose and oxygen."
 },
 
 {
- keys:["ram"],
- answer:"RAM stands for Random Access Memory. It temporarily stores data and instructions that the computer is actively using."
+keys:["dna"],
+answer:"DNA stands for deoxyribonucleic acid. It stores genetic information in living organisms."
 },
 
 {
- keys:["rom"],
- answer:"ROM stands for Read Only Memory. It stores information that is generally retained when power is removed."
+keys:["jee"],
+answer:"JEE stands for Joint Entrance Examination. JEE Main and JEE Advanced are major engineering entrance examinations in India."
 },
 
 {
- keys:["operating system"],
- answer:"An operating system is system software that manages hardware resources and provides services for applications. Examples include Windows, Android and Linux."
+keys:["how to study physics"],
+answer:"For Physics, understand the concept first, write the important formulas, solve basic examples, then practise mixed and JEE-level questions."
 },
 
 {
- keys:["internet"],
- answer:"The Internet is a global network of interconnected computer networks that communicate using standard protocols such as TCP and IP."
+keys:["how to study chemistry"],
+answer:"For Chemistry, Physical Chemistry needs numerical practice, Organic Chemistry needs reaction and mechanism understanding, and Inorganic Chemistry needs concepts plus repeated revision."
 },
 
 {
- keys:["html"],
- answer:"HTML stands for HyperText Markup Language. It provides the structure of webpages."
-},
-
-{
- keys:["css"],
- answer:"CSS stands for Cascading Style Sheets. It controls the appearance and layout of webpages."
-},
-
-{
- keys:["javascript"],
- answer:"JavaScript is a programming language commonly used to make webpages interactive and dynamic."
-},
-
-/* SPACE */
-
-{
- keys:["solar system"],
- answer:"The Solar System consists of the Sun and the objects gravitationally bound to it, including eight planets, dwarf planets, moons, asteroids and comets."
-},
-
-{
- keys:["sun"],
- answer:"The Sun is a star at the centre of our Solar System. It is primarily composed of hydrogen and helium and produces energy through nuclear fusion."
-},
-
-{
- keys:["earth"],
- answer:"Earth is the third planet from the Sun and is the only planet currently known to support life."
-},
-
-{
- keys:["moon"],
- answer:"The Moon is Earth's natural satellite. Its phases are caused by the changing geometry of the Sun, Earth and Moon."
-},
-
-{
- keys:["black hole"],
- answer:"A black hole is a region of spacetime where gravity is so strong that, beyond its event horizon, even light cannot escape."
-},
-
-{
- keys:["light year"],
- answer:"A light-year is a unit of distance equal to the distance light travels in vacuum in one year."
-},
-
-/* GENERAL SCIENCE */
-
-{
- keys:["photosynthesis"],
- answer:"Photosynthesis is the process by which green plants use light energy to convert carbon dioxide and water into glucose and oxygen."
-},
-
-{
- keys:["respiration"],
- answer:"Cellular respiration is the process by which cells release usable energy from food molecules."
-},
-
-{
- keys:["dna"],
- answer:"DNA stands for deoxyribonucleic acid. It stores genetic information in living organisms."
-},
-
-{
- keys:["atom"],
- answer:"An atom is the basic unit of an element. It contains a nucleus of protons and neutrons surrounded by electrons."
-},
-
-/* JEE */
-
-{
- keys:["jee"],
- answer:"JEE stands for Joint Entrance Examination. JEE Main and JEE Advanced are major entrance examinations for engineering education in India."
-},
-
-{
- keys:["jee preparation"],
- answer:"For JEE preparation, focus on concepts first, then solved examples, then progressively harder questions, regular revision and mock-test analysis."
-},
-
-{
- keys:["how to study physics"],
- answer:"For Physics, understand the concept, write the key formulas, solve basic examples, then move to mixed and JEE-level questions. Analyse every mistake instead of only checking the answer."
-},
-
-{
- keys:["how to study chemistry"],
- answer:"For Chemistry, keep Physical, Organic and Inorganic strategies separate. Physical needs numerical practice, Organic needs reaction and mechanism understanding, and Inorganic needs concepts plus repeated revision."
-},
-
-{
- keys:["how to study maths"],
- answer:"For Maths, learn the concept and standard methods, solve examples yourself, then practise mixed problems. Keep an error log for questions you could not solve."
+keys:["how to study maths"],
+answer:"For Maths, understand the method, solve examples yourself, then practise mixed problems and maintain an error log."
 }
 
 ];
 
 
-/* =========================
-   QUESTION ANSWER ENGINE
-========================= */
-
-function cleanText(text){
-
-  return text
-    .toLowerCase()
-    .replace(/[?!.,]/g," ")
-    .replace(/\s+/g," ")
-    .trim();
-
-}
+/* =====================================
+   ANSWER ENGINE
+===================================== */
 
 function findAnswer(question){
 
-  const q = cleanText(question);
+  const q = clean(question);
 
-  /* greetings */
+  /* TIME */
+
+  if(
+    q.includes("what time") ||
+    q.includes("current time") ||
+    q.includes("time kya") ||
+    q.includes("kitne baje") ||
+    q === "time" ||
+    q.includes("tell me the time")
+  ){
+    return getTimeAnswer();
+  }
+
+
+  /* GREETINGS */
 
   if(
     q.includes("hello") ||
@@ -564,10 +604,11 @@ function findAnswer(question){
     q.includes("hey jarvis") ||
     q.includes("namaste")
   ){
-    return "Hello sir. Main JARVIS hoon. Main aapki kya madad kar sakta hoon?";
+    return "Hello sir. Main aapki kya madad kar sakta hoon?";
   }
 
-  /* identity */
+
+  /* IDENTITY */
 
   if(
     q.includes("who are you") ||
@@ -577,33 +618,34 @@ function findAnswer(question){
     return "I am JARVIS, your personal AI assistant.";
   }
 
-  /* thanks */
+
+  /* THANKS */
 
   if(
     q.includes("thank you") ||
     q.includes("thanks") ||
+    q.includes("thank u") ||
     q.includes("dhanyavad")
   ){
     return "You're welcome sir.";
   }
 
-  /* knowledge search */
 
-  for(const item of knowledge){
+  /* EMOTIONAL */
 
-    for(const key of item.keys){
+  const emotional = emotionalAnswer(q);
 
-      if(q.includes(cleanText(key))){
-        return item.answer;
-      }
-
-    }
-
+  if(emotional){
+    return emotional;
   }
 
-  /* common general questions */
 
-  if(q.includes("capital of india") || q.includes("india ki capital")){
+  /* GENERAL FACTS */
+
+  if(
+    q.includes("capital of india") ||
+    q.includes("india ki capital")
+  ){
     return "The capital of India is New Delhi.";
   }
 
@@ -615,15 +657,14 @@ function findAnswer(question){
     return "Mercury is the smallest planet in our Solar System.";
   }
 
-  if(q.includes("fastest animal")){
-    return "The peregrine falcon is generally considered the fastest animal during its diving flight.";
-  }
-
   if(q.includes("largest ocean")){
     return "The Pacific Ocean is the largest ocean on Earth.";
   }
 
-  if(q.includes("chemical formula of water") || q.includes("formula of water")){
+  if(
+    q.includes("formula of water") ||
+    q.includes("chemical formula of water")
+  ){
     return "The chemical formula of water is H2O.";
   }
 
@@ -635,22 +676,32 @@ function findAnswer(question){
     return "Pi is approximately 3.14159.";
   }
 
-  if(q.includes("gravity on earth")){
-    return "The acceleration due to gravity near Earth's surface is approximately 9.8 metres per second squared.";
+
+  /* KNOWLEDGE */
+
+  for(const item of knowledge){
+
+    for(const key of item.keys){
+
+      if(q.includes(clean(key))){
+        return item.answer;
+      }
+
+    }
+
   }
 
-  /* fallback */
 
-  return "Sorry sir, mujhe is question ka exact answer meri current knowledge mein nahi mila. Aap question ko thoda different words mein pooch sakte hain.";
+  /* FALLBACK */
+
+  return "Sorry sir, mujhe iska exact answer abhi nahi pata. Aap question ko thoda different words mein pooch sakte hain.";
 
 }
 
 
-/* =========================
-   VOICE RECOGNITION
-========================= */
-
-let recognition = null;
+/* =====================================
+   SPEECH RECOGNITION
+===================================== */
 
 const SpeechRecognition =
   window.SpeechRecognition ||
@@ -664,86 +715,149 @@ if(SpeechRecognition){
   recognition.continuous = false;
   recognition.interimResults = false;
 
+
   recognition.onstart = function(){
 
     statusBox.classList.add("listening");
-    statusBox.innerText = "Listening...";
+
+    statusBox.innerText =
+      "Listening...\nBoliye sir.";
+
   };
+
 
   recognition.onresult = function(event){
 
     const question =
       event.results[0][0].transcript;
 
-    const answer = findAnswer(question);
+    const answer =
+      findAnswer(question);
 
     statusBox.innerText =
       "You: " + question +
       "\n\nJARVIS: " + answer;
 
-    speak(answer);
+    speak(answer,true);
+
   };
 
-  recognition.onerror = function(){
+
+  recognition.onerror = function(event){
 
     statusBox.classList.remove("listening");
 
-    statusBox.innerText =
-      "Voice command could not be heard. Please try again.";
+    /*
+      If microphone permission/problem occurs,
+      retry automatically.
+    */
+
+    waitAndListen();
+
   };
+
 
   recognition.onend = function(){
 
     statusBox.classList.remove("listening");
+
+    /*
+      Recognition naturally stops after one sentence.
+      So we start it again.
+    */
+
+    if(!isSpeaking && shouldListen){
+
+      waitAndListen();
+
+    }
+
   };
+
+}else{
+
+  statusBox.innerText =
+    "Sir, this browser does not support voice recognition.";
 
 }
 
 
-/* =========================
+/* =====================================
+   RESTART LISTENING
+===================================== */
+
+function waitAndListen(){
+
+  clearTimeout(restartTimer);
+
+  restartTimer = setTimeout(function(){
+
+    if(
+      recognition &&
+      !isSpeaking &&
+      shouldListen
+    ){
+
+      try{
+        recognition.start();
+      }catch(e){
+
+        /*
+          Browser may say recognition is already running.
+          Try again shortly.
+        */
+
+        setTimeout(function(){
+
+          try{
+            recognition.start();
+          }catch(e2){}
+
+        },1000);
+
+      }
+
+    }
+
+  },1000);
+
+}
+
+
+/* =====================================
    START JARVIS
-========================= */
+===================================== */
 
 function startJarvis(){
 
   const greeting =
     "Hello sir. Main aapki kya madad kar sakta hoon?";
 
-  statusBox.innerText = greeting;
+  statusBox.innerText =
+    "JARVIS:\n" + greeting;
 
-  /* speak after a small delay */
+  /*
+    First greeting.
+    After speaking, conversation mode starts.
+  */
+
   setTimeout(function(){
 
-    speak(greeting);
+    speak(greeting,true);
 
-    /*
-      Start listening after greeting.
-      Some mobile browsers may block microphone
-      until the user gives permission.
-    */
-
-    setTimeout(function(){
-
-      if(recognition){
-
-        try{
-          recognition.start();
-        }catch(e){}
-
-      }
-
-    },2500);
-
-  },700);
+  },800);
 
 }
 
 
-/* =========================
-   START
-========================= */
+/* =====================================
+   PAGE LOAD
+===================================== */
 
-window.addEventListener("load", startJarvis);
+window.addEventListener(
+  "load",
+  startJarvis
+);
 
 </script>
 
