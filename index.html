@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>J.A.R.V.I.S. V5</title>
+<title>JARVIS</title>
 
 <style>
 *{box-sizing:border-box}
@@ -30,34 +30,31 @@ body:before{
 
 .header{
   text-align:center;
-  padding:18px 10px 5px;
+  padding:22px 10px 5px;
 }
 
 .title{
-  font-size:28px;
-  letter-spacing:7px;
+  font-size:30px;
+  letter-spacing:8px;
   font-weight:bold;
-  text-shadow:0 0 12px #00cfff;
-}
-
-.status{
-  font-size:11px;
-  letter-spacing:3px;
-  color:#54dfff;
-  margin-top:5px;
+  text-shadow:
+    0 0 8px #00cfff,
+    0 0 20px #0088aa;
 }
 
 .core{
   width:145px;
   height:145px;
-  margin:25px auto 20px;
+  margin:28px auto 25px;
   border:2px solid #00d9ff;
   border-radius:50%;
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 0 15px #00cfff, inset 0 0 20px #006d8c;
-  position:relative;
+  box-shadow:
+    0 0 12px #00cfff,
+    inset 0 0 22px #006d8c;
 }
 
 .core:before,
@@ -68,20 +65,32 @@ body:before{
   border-radius:50%;
 }
 
-.core:before{width:105px;height:105px}
-.core:after{width:55px;height:55px}
+.core:before{
+  width:105px;
+  height:105px;
+}
 
-.coreText{
+.core:after{
+  width:55px;
+  height:55px;
+}
+
+.coreDot{
+  width:18px;
+  height:18px;
+  background:#8ff4ff;
+  border-radius:50%;
+  box-shadow:
+    0 0 10px #00eaff,
+    0 0 25px #00cfff;
   z-index:2;
-  font-size:13px;
-  letter-spacing:3px;
 }
 
 .panel{
   width:min(900px,94%);
   margin:auto;
   border:1px solid #075c78;
-  background:rgba(2,14,23,.88);
+  background:rgba(2,14,23,.9);
   padding:15px;
   box-shadow:0 0 12px rgba(0,200,255,.12);
 }
@@ -110,23 +119,13 @@ button:hover{
 
 .output{
   margin-top:14px;
-  min-height:80px;
+  min-height:85px;
   border:1px solid #075c78;
   padding:12px;
   color:#baf3ff;
   font-size:14px;
   line-height:1.5;
   white-space:pre-wrap;
-}
-
-input,select{
-  width:100%;
-  background:#020b12;
-  color:#a9efff;
-  border:1px solid #087a9d;
-  padding:11px;
-  margin-bottom:8px;
-  outline:none;
 }
 
 .section{
@@ -136,6 +135,16 @@ input,select{
 
 .section.active{
   display:block;
+}
+
+input{
+  width:100%;
+  background:#020b12;
+  color:#a9efff;
+  border:1px solid #087a9d;
+  padding:11px;
+  margin-bottom:8px;
+  outline:none;
 }
 
 .small{
@@ -164,178 +173,128 @@ input,select{
 <body>
 
 <div class="header">
-  <div class="title">J.A.R.V.I.S.</div>
-  <div class="status">V5 // FAST KNOWLEDGE SYSTEM // ONLINE</div>
+  <div class="title">JARVIS</div>
 </div>
 
 <div class="core">
-  <div class="coreText">ONLINE</div>
+  <div class="coreDot"></div>
 </div>
 
 <div class="panel">
 
 <div class="grid">
+
 <button onclick="testVoice()">🔊 TEST VOICE</button>
+
 <button onclick="showTime()">🕐 TIME</button>
+
 <button onclick="studyMode()">📚 STUDY MODE</button>
+
 <button onclick="startVoice()">🎙️ VOICE COMMAND</button>
+
 <button onclick="toggleCalc()">🧮 CALCULATOR</button>
-<button onclick="toggleKnowledge()">🧠 KNOWLEDGE</button>
+
 </div>
 
 <div id="output" class="output">
-JARVIS V5 online.
+JARVIS online.
 Awaiting command...
 </div>
 
+
 <!-- CALCULATOR -->
+
 <div id="calc" class="section">
 
-<input id="calcInput" placeholder="Example: 25+5*2">
+<input
+id="calcInput"
+placeholder="Example: 25+5*2">
 
 <div class="grid">
+
 <button onclick="calculate()">CALCULATE</button>
+
 <button onclick="addCalc('Math.PI')">π</button>
+
 <button onclick="addCalc('Math.sqrt(')">√</button>
+
 <button onclick="addCalc('**')">xʸ</button>
+
 <button onclick="addCalc('%')">%</button>
+
 <button onclick="clearCalc()">CLEAR</button>
+
 </div>
 
 <div class="small">History</div>
+
 <div id="history" class="history"></div>
 
 </div>
 
-<!-- KNOWLEDGE -->
-<div id="knowledge" class="section">
-
-<input id="question"
-placeholder="Ask JARVIS: Newton's second law, atom, velocity...">
-
-<button onclick="askKnowledge()">ASK JARVIS 🧠</button>
-
-<div class="small">
-Fast local knowledge base — no internet required.
 </div>
 
-</div>
-
-</div>
 
 <div class="footer">
-J.A.R.V.I.S. V5 // FAST MODE
+JARVIS // SYSTEM READY
 </div>
+
 
 <script>
 
 /* =========================
-   CORE OUTPUT
+   JARVIS RESPONSE
 ========================= */
 
-const output=document.getElementById("output");
-
 function reply(text,speak=true){
+
+  const output=document.getElementById("output");
+
   output.textContent=text;
 
   if(speak && "speechSynthesis" in window){
+
     speechSynthesis.cancel();
 
     const msg=new SpeechSynthesisUtterance(text);
-    msg.rate=1.12;
-    msg.pitch=.95;
+
+    /* Better JARVIS-like voice */
+
+    msg.rate=0.94;
+    msg.pitch=0.72;
     msg.volume=1;
+
+    const voices=speechSynthesis.getVoices();
+
+    const jarvisVoice=voices.find(v =>
+      /Microsoft David|
+       Microsoft Mark|
+       Google UK English Male|
+       Daniel/i.test(v.name)
+    );
+
+    if(jarvisVoice){
+      msg.voice=jarvisVoice;
+    }
 
     speechSynthesis.speak(msg);
   }
 }
 
+
 /* =========================
-   VOICE
+   TEST VOICE
 ========================= */
 
 function testVoice(){
-  reply("Hello. JARVIS V5 is online.",true);
+
+  reply(
+    "Hello. I am Jarvis. How may I assist you?",
+    true
+  );
+
 }
 
-function startVoice(){
-
-  const SpeechRecognition=
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if(!SpeechRecognition){
-    reply("Voice recognition is not supported in this browser.",false);
-    return;
-  }
-
-  const recognition=new SpeechRecognition();
-
-  recognition.lang="en-IN";
-  recognition.continuous=false;
-  recognition.interimResults=false;
-
-  reply("Listening...",false);
-
-  recognition.start();
-
-  recognition.onresult=function(event){
-
-    const command=
-      event.results[0][0].transcript
-      .toLowerCase()
-      .trim();
-
-    handleCommand(command);
-  };
-
-  recognition.onerror=function(){
-    reply("Voice command failed. Please try again.",false);
-  };
-}
-
-/* =========================
-   COMMAND SYSTEM
-========================= */
-
-function handleCommand(command){
-
-  if(command.includes("hello") ||
-     command.includes("hi jarvis")){
-
-    reply("Hello. How can I assist you?");
-    return;
-  }
-
-  if(command.includes("time")){
-
-    showTime();
-    return;
-  }
-
-  if(command.includes("study")){
-
-    studyMode();
-    return;
-  }
-
-  if(command.includes("calculator") ||
-     command.includes("calculate")){
-
-    toggleCalc();
-    reply("Calculator ready.",false);
-    return;
-  }
-
-  if(command.includes("knowledge")){
-
-    toggleKnowledge();
-    reply("Knowledge system ready.",false);
-    return;
-  }
-
-  askKnowledge(command);
-}
 
 /* =========================
    TIME
@@ -354,8 +313,13 @@ function showTime(){
     }
   );
 
-  reply("Current time is "+time,false);
+  reply(
+    "The current time is "+time,
+    false
+  );
+
 }
+
 
 /* =========================
    STUDY MODE
@@ -366,18 +330,142 @@ function studyMode(){
   reply(
 `STUDY MODE ACTIVATED
 
-Focus: JEE / Class 11 PCM
+Focus:
+JEE / Class 11 PCM
 
 Recommended:
-• Concept revision
-• Formula revision
-• 10–20 questions
-• Error analysis
-• Short breaks
+• Revise concepts
+• Revise formulas
+• Solve questions
+• Analyse mistakes
+• Take short breaks
 
-Stay consistent.`
+Stay consistent.`,
+  true
   );
+
 }
+
+
+/* =========================
+   VOICE COMMAND
+========================= */
+
+function startVoice(){
+
+  const SpeechRecognition=
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+
+    reply(
+      "Voice recognition is not supported in this browser.",
+      false
+    );
+
+    return;
+  }
+
+  const recognition=new SpeechRecognition();
+
+  recognition.lang="en-IN";
+  recognition.continuous=false;
+  recognition.interimResults=false;
+
+  reply("Listening...",false);
+
+  recognition.start();
+
+  recognition.onresult=function(event){
+
+    const command=
+      event.results[0][0]
+      .transcript
+      .toLowerCase()
+      .trim();
+
+    handleCommand(command);
+
+  };
+
+  recognition.onerror=function(){
+
+    reply(
+      "I could not hear you. Please try again.",
+      false
+    );
+
+  };
+
+}
+
+
+/* =========================
+   COMMAND HANDLER
+========================= */
+
+function handleCommand(command){
+
+  if(
+    command.includes("hello") ||
+    command.includes("hi jarvis") ||
+    command.includes("hey jarvis")
+  ){
+
+    reply(
+      "Hello. How may I assist you?",
+      true
+    );
+
+    return;
+  }
+
+
+  if(command.includes("time")){
+
+    showTime();
+
+    return;
+  }
+
+
+  if(
+    command.includes("study mode") ||
+    command.includes("study")
+  ){
+
+    studyMode();
+
+    return;
+  }
+
+
+  if(
+    command.includes("calculator") ||
+    command.includes("calculate")
+  ){
+
+    toggleCalc();
+
+    reply(
+      "Calculator is ready.",
+      true
+    );
+
+    return;
+  }
+
+
+  /*
+    Knowledge answers are triggered
+    directly through Voice Command.
+  */
+
+  askKnowledge(command);
+
+}
+
 
 /* =========================
    CALCULATOR
@@ -388,90 +476,145 @@ function toggleCalc(){
   document
     .getElementById("calc")
     .classList.toggle("active");
+
 }
+
 
 function addCalc(value){
 
-  document.getElementById("calcInput").value+=value;
+  document
+    .getElementById("calcInput")
+    .value+=value;
+
 }
+
 
 function clearCalc(){
 
-  document.getElementById("calcInput").value="";
+  document
+    .getElementById("calcInput")
+    .value="";
+
 }
+
 
 function calculate(){
 
   const input=
-    document.getElementById("calcInput")
+    document
+    .getElementById("calcInput")
     .value
     .trim();
 
   if(!input){
-    reply("Enter a calculation first.",false);
+
+    reply(
+      "Please enter a calculation first.",
+      false
+    );
+
     return;
   }
 
-  /*
-   Only allow calculator characters.
-   */
-  if(!/^[0-9+\-*/().%\s^π√a-zA-Z]+$/.test(input)){
-    reply("Invalid calculator input.",false);
+
+  if(
+    !/^[0-9+\-*/().%\s^π√a-zA-Z]+$/.test(input)
+  ){
+
+    reply(
+      "Invalid calculator input.",
+      false
+    );
+
     return;
   }
+
 
   try{
 
     let exp=input
+
       .replace(/π/g,"Math.PI")
+
       .replace(/√/g,"Math.sqrt")
+
       .replace(/\^/g,"**");
 
-    /*
-      Only permit known Math functions.
-    */
+
     exp=exp.replace(
       /\b(sin|cos|tan|log|ln)\b/g,
       function(fn){
 
         const map={
+
           sin:"Math.sin",
+
           cos:"Math.cos",
+
           tan:"Math.tan",
+
           log:"Math.log10",
+
           ln:"Math.log"
+
         };
 
         return map[fn];
+
       }
     );
 
-    /*
-      Reject unexpected letters.
-    */
-    if(/[a-zA-Z]/.test(
-      exp.replace(/Math\.(PI|sqrt|sin|cos|tan|log10|log)/g,"")
-    )){
+
+    if(
+      /[a-zA-Z]/.test(
+        exp.replace(
+          /Math\.(PI|sqrt|sin|cos|tan|log10|log)/g,
+          ""
+        )
+      )
+    ){
+
       throw new Error();
+
     }
 
-    const result=Function(
-      '"use strict";return ('+exp+')'
-    )();
+
+    const result=
+      Function(
+        '"use strict";return ('+
+        exp+
+        ')'
+      )();
+
 
     if(!Number.isFinite(result)){
+
       throw new Error();
+
     }
 
-    reply("Result: "+result,false);
 
-    addHistory(input+" = "+result);
+    reply(
+      "Result: "+result,
+      false
+    );
+
+    addHistory(
+      input+" = "+result
+    );
+
 
   }catch{
 
-    reply("I couldn't calculate that.",false);
+    reply(
+      "I could not calculate that.",
+      false
+    );
+
   }
+
 }
+
 
 function addHistory(text){
 
@@ -484,13 +627,17 @@ function addHistory(text){
   item.textContent=text;
 
   history.prepend(item);
+
 }
+
 
 /* =========================
    KNOWLEDGE BRAIN
+   VOICE COMMAND ONLY
 ========================= */
 
 const knowledge={
+
 
 "newton second law":
 `Newton's Second Law:
@@ -503,24 +650,26 @@ F = net force
 m = mass
 a = acceleration`,
 
+
 "newton first law":
 `Newton's First Law:
 
 An object remains at rest or moves with constant velocity unless acted upon by a net external force.`,
 
+
 "newton third law":
 `Newton's Third Law:
 
-For every action force, there is an equal and opposite reaction force.
+For every action force, there is an equal and opposite reaction force.`,
 
-F(A on B) = -F(B on A)`,
 
 "velocity":
 `Velocity is the rate of change of displacement.
 
 v = Δx / Δt
 
-It is a vector quantity, so it has magnitude and direction.`,
+Velocity is a vector quantity.`,
+
 
 "speed":
 `Speed is the rate at which distance is covered.
@@ -529,12 +678,14 @@ Speed = distance / time
 
 Speed is a scalar quantity.`,
 
+
 "acceleration":
 `Acceleration is the rate of change of velocity.
 
 a = Δv / Δt
 
 SI unit: m/s²`,
+
 
 "momentum":
 `Linear momentum:
@@ -545,12 +696,14 @@ p = momentum
 m = mass
 v = velocity`,
 
+
 "kinetic energy":
 `Kinetic Energy:
 
 KE = ½mv²
 
 It depends on mass and the square of velocity.`,
+
 
 "potential energy":
 `Gravitational Potential Energy:
@@ -561,6 +714,7 @@ m = mass
 g = acceleration due to gravity
 h = height`,
 
+
 "ohm":
 `Ohm's Law:
 
@@ -569,6 +723,7 @@ V = IR
 V = voltage
 I = current
 R = resistance`,
+
 
 "photoelectric":
 `Photoelectric effect:
@@ -579,12 +734,12 @@ Einstein's equation:
 
 Kmax = hν − φ`,
 
+
 "de broglie":
 `de Broglie wavelength:
 
-λ = h/p
+λ = h/p`,
 
-For a particle of momentum p.`,
 
 "bohr":
 `Bohr's model:
@@ -595,12 +750,14 @@ For hydrogen-like species:
 
 Eₙ = −13.6 Z²/n² eV`,
 
+
 "atomic number":
-`Atomic number Z = number of protons.
+`Atomic number Z is the number of protons.
 
 For a neutral atom:
 
-number of electrons = number of protons = Z.`,
+Number of electrons = number of protons = Z.`,
+
 
 "mass number":
 `Mass number:
@@ -610,34 +767,36 @@ A = Z + N
 Z = protons
 N = neutrons`,
 
+
 "quadratic":
 `For ax² + bx + c = 0:
 
 x = (-b ± √(b²−4ac)) / 2a`,
+
 
 "trigonometry":
 `Basic identity:
 
 sin²θ + cos²θ = 1
 
-Also:
-
 tanθ = sinθ / cosθ`,
+
 
 "derivative":
 `Derivative measures instantaneous rate of change.
 
 For y=f(x):
 
-dy/dx = rate of change of y with respect to x.`,
+dy/dx represents the rate of change of y with respect to x.`,
+
 
 "jee":
-`JEE preparation basics:
+`JEE preparation:
 
 1. Build concepts.
 2. Solve class examples.
 3. Practice questions.
-4. Analyze mistakes.
+4. Analyse mistakes.
 5. Revise formulas.
 6. Take tests regularly.
 
@@ -645,92 +804,73 @@ Consistency matters more than one unusually long study session.`
 
 };
 
-function toggleKnowledge(){
 
-  document
-    .getElementById("knowledge")
-    .classList.toggle("active");
-}
-
-function askKnowledge(customQuestion=null){
-
-  const input=
-    customQuestion ||
-    document.getElementById("question").value
-    .toLowerCase()
-    .trim();
-
-  if(!input){
-
-    reply(
-      "Ask me something from my current knowledge base.",
-      false
-    );
-
-    return;
-  }
+function askKnowledge(question){
 
   let found=null;
 
   for(const key in knowledge){
 
-    if(input.includes(key)){
+    if(question.includes(key)){
+
       found=knowledge[key];
+
       break;
+
     }
+
   }
+
 
   if(found){
 
-    reply(found,true);
+    reply(
+      found,
+      true
+    );
 
   }else{
 
     reply(
-`I don't have that topic in my local knowledge base yet.
+`I don't have that topic in my current knowledge base.
 
-Try:
-• Newton second law
-• Velocity
-• Momentum
-• Photoelectric effect
-• Bohr model
-• JEE
-• Trigonometry`,
-      false
+Try asking about:
+Newton's laws,
+velocity,
+acceleration,
+momentum,
+kinetic energy,
+Bohr model,
+photoelectric effect,
+trigonometry,
+derivatives,
+or JEE.`,
+      true
     );
+
   }
+
 }
+
 
 /* =========================
    ENTER KEY
 ========================= */
 
 document
-  .getElementById("question")
-  .addEventListener(
-    "keydown",
-    function(e){
+.getElementById("calcInput")
+.addEventListener(
+  "keydown",
+  function(e){
 
-      if(e.key==="Enter"){
-        askKnowledge();
-      }
+    if(e.key==="Enter"){
 
-    }
-  );
-
-document
-  .getElementById("calcInput")
-  .addEventListener(
-    "keydown",
-    function(e){
-
-      if(e.key==="Enter"){
-        calculate();
-      }
+      calculate();
 
     }
-  );
+
+  }
+);
 
 </script>
 
