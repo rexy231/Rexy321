@@ -1,389 +1,662 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS V3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS V4</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #050b14;
-      color: #00eaff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+body{
+margin:0;
+min-height:100vh;
+background:#050b14;
+color:#00eaff;
+font-family:Arial,sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+}
 
-    .jarvis {
-      width: 92%;
-      max-width: 600px;
-      text-align: center;
-      border: 1px solid #00eaff;
-      border-radius: 25px;
-      padding: 30px 20px;
-      box-shadow: 0 0 30px #006dff;
-    }
+.jarvis{
+width:94%;
+max-width:650px;
+text-align:center;
+border:1px solid #00eaff;
+border-radius:25px;
+padding:25px 18px;
+box-shadow:0 0 30px #006dff;
+}
 
-    .core {
-      width: 130px;
-      height: 130px;
-      margin: 20px auto;
-      border: 5px solid #00eaff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      box-shadow: 0 0 35px #00eaff;
-    }
+.core{
+width:130px;
+height:130px;
+margin:18px auto;
+border:5px solid #00eaff;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+box-shadow:0 0 35px #00eaff;
+}
 
-    h1 {
-      letter-spacing: 8px;
-      margin-bottom: 5px;
-    }
+h1{
+letter-spacing:8px;
+margin-bottom:5px;
+}
 
-    #status {
-      color: #8ff6ff;
-      margin-bottom: 25px;
-    }
+#status{
+color:#8ff6ff;
+margin-bottom:20px;
+}
 
-    button {
-      background: transparent;
-      color: #00eaff;
-      border: 1px solid #00eaff;
-      border-radius: 12px;
-      padding: 13px 18px;
-      margin: 7px;
-      font-size: 15px;
-    }
+button{
+background:transparent;
+color:#00eaff;
+border:1px solid #00eaff;
+border-radius:12px;
+padding:12px 15px;
+margin:5px;
+font-size:14px;
+}
 
-    button:active {
-      background: #00eaff;
-      color: #001018;
-    }
+button:active{
+background:#00eaff;
+color:#001018;
+}
 
-    #output {
-      margin-top: 25px;
-      min-height: 60px;
-      border: 1px solid #174b63;
-      border-radius: 12px;
-      padding: 15px;
-      color: white;
-    }
-  </style>
+#output{
+margin-top:20px;
+min-height:55px;
+border:1px solid #174b63;
+border-radius:12px;
+padding:15px;
+color:white;
+}
+
+#calculator{
+display:none;
+margin-top:20px;
+padding:15px;
+border:1px solid #174b63;
+border-radius:15px;
+}
+
+#display{
+width:100%;
+padding:15px;
+font-size:22px;
+background:#02070d;
+color:#00eaff;
+border:1px solid #00eaff;
+border-radius:10px;
+text-align:right;
+margin-bottom:10px;
+}
+
+.calc-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:7px;
+}
+
+.calc-grid button{
+margin:0;
+padding:14px 5px;
+font-size:15px;
+}
+
+.history{
+margin-top:15px;
+text-align:left;
+color:white;
+max-height:130px;
+overflow:auto;
+font-size:13px;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="jarvis">
+<div class="jarvis">
 
-    <h1>J.A.R.V.I.S</h1>
+<h1>J.A.R.V.I.S</h1>
 
-    <div id="status">SYSTEM ONLINE</div>
+<div id="status">SYSTEM ONLINE</div>
 
-    <div class="core">J</div>
+<div class="core">J</div>
 
-    <!-- V2 FEATURES -->
+<button onclick="speak('Hello. I am JARVIS.')">
+🔊 TEST VOICE
+</button>
 
-    <button onclick="speak('Hello. I am JARVIS.')">
-      🔊 TEST VOICE
-    </button>
+<button onclick="tellTime()">
+🕐 TIME
+</button>
 
-    <button onclick="tellTime()">
-      🕐 TIME
-    </button>
+<button onclick="studyMode()">
+📚 STUDY MODE
+</button>
 
-    <button onclick="studyMode()">
-      📚 STUDY MODE
-    </button>
+<button onclick="startListening()">
+🎙️ VOICE COMMAND
+</button>
 
-    <button onclick="startListening()">
-      🎙️ VOICE COMMAND
-    </button>
+<button onclick="toggleCalculator()">
+🧮 CALCULATOR
+</button>
 
-    <!-- V3 NEW FEATURE -->
+<div id="output">
+Awaiting command...
+</div>
 
-    <button onclick="calculator()">
-      🧮 CALCULATOR
-    </button>
 
-    <div id="output">
-      Awaiting command...
-    </div>
+<!-- ADVANCED CALCULATOR -->
 
-  </div>
+<div id="calculator">
 
+<input id="display" readonly>
 
-  <script>
+<div class="calc-grid">
 
-    // =========================
-    // JARVIS VOICE
-    // =========================
+<button onclick="clearCalc()">AC</button>
+<button onclick="backspace()">⌫</button>
+<button onclick="add('%')">%</button>
+<button onclick="add('/')">÷</button>
 
-    function speak(text) {
+<button onclick="add('7')">7</button>
+<button onclick="add('8')">8</button>
+<button onclick="add('9')">9</button>
+<button onclick="add('*')">×</button>
 
-      document.getElementById("output").innerText = text;
+<button onclick="add('4')">4</button>
+<button onclick="add('5')">5</button>
+<button onclick="add('6')">6</button>
+<button onclick="add('-')">−</button>
 
-      speechSynthesis.cancel();
+<button onclick="add('1')">1</button>
+<button onclick="add('2')">2</button>
+<button onclick="add('3')">3</button>
+<button onclick="add('+')">+</button>
 
-      const voice = new SpeechSynthesisUtterance(text);
+<button onclick="add('0')">0</button>
+<button onclick="add('.')">.</button>
+<button onclick="add('(')">(</button>
+<button onclick="add(')')">)</button>
 
-      voice.rate = 0.95;
-      voice.pitch = 0.8;
-      voice.volume = 1;
+<button onclick="square()">x²</button>
+<button onclick="power()">xʸ</button>
+<button onclick="sqrtCalc()">√</button>
+<button onclick="calculate()">=</button>
 
-      speechSynthesis.speak(voice);
-    }
+<button onclick="sinCalc()">sin</button>
+<button onclick="cosCalc()">cos</button>
+<button onclick="tanCalc()">tan</button>
+<button onclick="reciprocal()">1/x</button>
 
+<button onclick="logCalc()">log</button>
+<button onclick="lnCalc()">ln</button>
+<button onclick="add('Math.PI')">π</button>
+<button onclick="add('Math.E')">e</button>
 
-    // =========================
-    // TIME
-    // =========================
+</div>
 
-    function tellTime() {
+<div class="history">
+<b>History</b>
+<div id="history"></div>
+</div>
 
-      const time = new Date().toLocaleTimeString();
+</div>
 
-      speak("The current time is " + time);
-    }
+</div>
 
 
-    // =========================
-    // STUDY MODE
-    // =========================
+<script>
 
-    function studyMode() {
+/* =========================
+   VOICE
+========================= */
 
-      speak("Study mode activated. Let's begin.");
-    }
+function speak(text){
 
+document.getElementById("output").innerText=text;
 
-    // =========================
-    // CALCULATOR — V3
-    // =========================
+speechSynthesis.cancel();
 
-    function calculator() {
+const voice=new SpeechSynthesisUtterance(text);
 
-      const expression = prompt(
-        "Enter calculation, for example: 25+5*2"
-      );
+voice.rate=.95;
+voice.pitch=.8;
 
-      if (expression === null) {
-        return;
-      }
+speechSynthesis.speak(voice);
+}
 
-      // Allow only numbers and basic operators
-      if (!/^[0-9+\-*/().%\s]+$/.test(expression)) {
 
-        speak(
-          "Sorry. I can only calculate numbers and basic operators."
-        );
+/* =========================
+   TIME
+========================= */
 
-        return;
-      }
+function tellTime(){
 
-      try {
+const time=new Date().toLocaleTimeString();
 
-        const result = Function(
-          '"use strict"; return (' + expression + ')'
-        )();
+speak("The current time is "+time);
+}
 
-        if (!Number.isFinite(result)) {
 
-          speak("That calculation is not valid.");
+/* =========================
+   STUDY MODE
+========================= */
 
-          return;
-        }
+function studyMode(){
 
-        speak("The answer is " + result);
+speak("Study mode activated. Let's begin.");
+}
 
-      } catch (error) {
 
-        speak("Sorry. I could not calculate that.");
-      }
-    }
+/* =========================
+   CALCULATOR
+========================= */
 
+const display=document.getElementById("display");
 
-    // =========================
-    // VOICE RECOGNITION
-    // =========================
+function add(value){
 
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
+display.value+=value;
+}
 
-    let recognition;
 
+function clearCalc(){
 
-    if (SpeechRecognition) {
+display.value="";
+}
 
-      recognition = new SpeechRecognition();
 
-      recognition.lang = "en-IN";
+function backspace(){
 
-      recognition.continuous = false;
+display.value=display.value.slice(0,-1);
+}
 
-      recognition.interimResults = false;
 
+function safeExpression(expression){
 
-      recognition.onstart = function() {
+return /^[0-9+\-*/().%\sA-Za-z]+$/.test(expression);
+}
 
-        document.getElementById("status").innerText =
-          "LISTENING... 🎙️";
 
-        document.getElementById("output").innerText =
-          "Listening...";
-      };
+function calculate(){
 
+const expression=display.value;
 
-      recognition.onresult = function(event) {
+if(!expression) return;
 
-        const command =
-          event.results[0][0].transcript.toLowerCase();
+if(!safeExpression(expression)){
 
-        document.getElementById("output").innerText =
-          "You: " + command;
+speak("Invalid calculation.");
+return;
+}
 
-        processCommand(command);
-      };
+try{
 
+const result=Function(
+'"use strict"; return ('+expression+')'
+)();
 
-      recognition.onerror = function() {
+if(!Number.isFinite(result)){
 
-        document.getElementById("status").innerText =
-          "SYSTEM ONLINE";
+speak("Invalid result.");
+return;
+}
 
-        speak("Sorry, I couldn't understand that.");
-      };
+display.value=result;
 
+addHistory(expression+" = "+result);
 
-      recognition.onend = function() {
+speak("The answer is "+result);
 
-        document.getElementById("status").innerText =
-          "SYSTEM ONLINE";
-      };
+}catch{
 
-    }
+speak("I could not calculate that.");
+}
 
+}
 
-    // =========================
-    // START LISTENING
-    // =========================
 
-    function startListening() {
+function square(){
 
-      if (!recognition) {
+if(!display.value) return;
 
-        speak(
-          "Voice recognition is not supported in this browser."
-        );
+try{
 
-        return;
-      }
+const x=Number(display.value);
 
-      recognition.start();
-    }
+const result=x*x;
 
+display.value=result;
 
-    // =========================
-    // VOICE COMMAND SYSTEM
-    // =========================
+addHistory(x+"² = "+result);
 
-    function processCommand(command) {
+}catch{
 
+speak("Invalid number.");
+}
 
-      // HELLO
+}
 
-      if (
-        command.includes("hello") ||
-        command.includes("hi jarvis") ||
-        command.includes("hey jarvis")
-      ) {
 
-        speak("Hello. How can I help you?");
+function power(){
 
-        return;
-      }
+const x=prompt("Enter base:");
 
+if(x===null)return;
 
-      // TIME
+const y=prompt("Enter power:");
 
-      if (
-        command.includes("time") ||
-        command.includes("what time")
-      ) {
+if(y===null)return;
 
-        tellTime();
+const result=Math.pow(Number(x),Number(y));
 
-        return;
-      }
+display.value=result;
 
+addHistory(x+"^"+y+" = "+result);
 
-      // STUDY MODE
+speak("The answer is "+result);
+}
 
-      if (
-        command.includes("study mode") ||
-        command.includes("start studying") ||
-        command.includes("activate study")
-      ) {
 
-        studyMode();
+function sqrtCalc(){
 
-        return;
-      }
+const x=Number(display.value);
 
+if(x<0){
 
-      // CALCULATOR
+speak("Square root of a negative number is not supported.");
 
-      if (
-        command.includes("calculate") ||
-        command.includes("calculator")
-      ) {
+return;
+}
 
-        speak("Please enter the calculation.");
+const result=Math.sqrt(x);
 
-        setTimeout(function() {
+display.value=result;
 
-          calculator();
+addHistory("√"+x+" = "+result);
 
-        }, 500);
+speak("The answer is "+result);
+}
 
-        return;
-      }
 
+function sinCalc(){
 
-      // STOP
+const x=Number(display.value);
 
-      if (
-        command.includes("stop") ||
-        command.includes("cancel")
-      ) {
+const result=Math.sin(x*Math.PI/180);
 
-        speechSynthesis.cancel();
+display.value=result;
 
-        document.getElementById("output").innerText =
-          "Command cancelled.";
+addHistory("sin("+x+"°) = "+result);
+}
 
-        return;
-      }
 
+function cosCalc(){
 
-      // UNKNOWN COMMAND
+const x=Number(display.value);
 
-      speak(
-        "I heard " +
-        command +
-        ". But I don't know that command yet."
-      );
-    }
+const result=Math.cos(x*Math.PI/180);
 
-  </script>
+display.value=result;
+
+addHistory("cos("+x+"°) = "+result);
+}
+
+
+function tanCalc(){
+
+const x=Number(display.value);
+
+const result=Math.tan(x*Math.PI/180);
+
+display.value=result;
+
+addHistory("tan("+x+"°) = "+result);
+}
+
+
+function logCalc(){
+
+const x=Number(display.value);
+
+if(x<=0){
+
+speak("Log requires a positive number.");
+
+return;
+}
+
+const result=Math.log10(x);
+
+display.value=result;
+
+addHistory("log("+x+") = "+result);
+}
+
+
+function lnCalc(){
+
+const x=Number(display.value);
+
+if(x<=0){
+
+speak("Natural log requires a positive number.");
+
+return;
+}
+
+const result=Math.log(x);
+
+display.value=result;
+
+addHistory("ln("+x+") = "+result);
+}
+
+
+function reciprocal(){
+
+const x=Number(display.value);
+
+if(x===0){
+
+speak("Division by zero is not allowed.");
+
+return;
+}
+
+const result=1/x;
+
+display.value=result;
+
+addHistory("1/"+x+" = "+result);
+}
+
+
+function addHistory(text){
+
+const history=document.getElementById("history");
+
+const item=document.createElement("div");
+
+item.innerText=text;
+
+history.prepend(item);
+}
+
+
+function toggleCalculator(){
+
+const calculator=document.getElementById("calculator");
+
+if(calculator.style.display==="block"){
+
+calculator.style.display="none";
+
+}else{
+
+calculator.style.display="block";
+
+}
+
+}
+
+
+/* =========================
+   VOICE RECOGNITION
+========================= */
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+let recognition;
+
+if(SpeechRecognition){
+
+recognition=new SpeechRecognition();
+
+recognition.lang="en-IN";
+
+recognition.continuous=false;
+
+recognition.interimResults=false;
+
+
+recognition.onstart=function(){
+
+document.getElementById("status").innerText=
+"LISTENING... 🎙️";
+
+};
+
+
+recognition.onresult=function(event){
+
+const command=
+event.results[0][0].transcript.toLowerCase();
+
+document.getElementById("output").innerText=
+"You: "+command;
+
+processCommand(command);
+};
+
+
+recognition.onerror=function(){
+
+document.getElementById("status").innerText=
+"SYSTEM ONLINE";
+
+speak("Sorry, I couldn't understand that.");
+};
+
+
+recognition.onend=function(){
+
+document.getElementById("status").innerText=
+"SYSTEM ONLINE";
+};
+
+}
+
+
+function startListening(){
+
+if(!recognition){
+
+speak("Voice recognition is not supported.");
+
+return;
+}
+
+recognition.start();
+}
+
+
+/* =========================
+   COMMAND SYSTEM
+========================= */
+
+function processCommand(command){
+
+if(
+command.includes("hello")||
+command.includes("hi jarvis")||
+command.includes("hey jarvis")
+){
+
+speak("Hello. How can I help you?");
+
+return;
+}
+
+
+if(
+command.includes("time")||
+command.includes("what time")
+){
+
+tellTime();
+
+return;
+}
+
+
+if(
+command.includes("study mode")||
+command.includes("start studying")||
+command.includes("activate study")
+){
+
+studyMode();
+
+return;
+}
+
+
+if(
+command.includes("calculator")||
+command.includes("calculate")
+){
+
+toggleCalculator();
+
+speak("Calculator activated.");
+
+return;
+}
+
+
+if(
+command.includes("stop")||
+command.includes("cancel")
+){
+
+speechSynthesis.cancel();
+
+document.getElementById("output").innerText=
+"Command cancelled.";
+
+return;
+}
+
+
+speak(
+"I heard "+command+
+". But I don't know that command yet."
+);
+
+}
+
+</script>
 
 </body>
 </html>
