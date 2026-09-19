@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS</title>
+  <title>JARVIS V3</title>
 
   <style>
     * {
@@ -58,7 +58,7 @@
       color: #00eaff;
       border: 1px solid #00eaff;
       border-radius: 12px;
-      padding: 13px 22px;
+      padding: 13px 18px;
       margin: 7px;
       font-size: 15px;
     }
@@ -84,9 +84,12 @@
   <div class="jarvis">
 
     <h1>J.A.R.V.I.S</h1>
+
     <div id="status">SYSTEM ONLINE</div>
 
     <div class="core">J</div>
+
+    <!-- V2 FEATURES -->
 
     <button onclick="speak('Hello. I am JARVIS.')">
       🔊 TEST VOICE
@@ -100,31 +103,286 @@
       📚 STUDY MODE
     </button>
 
+    <button onclick="startListening()">
+      🎙️ VOICE COMMAND
+    </button>
+
+    <!-- V3 NEW FEATURE -->
+
+    <button onclick="calculator()">
+      🧮 CALCULATOR
+    </button>
+
     <div id="output">
       Awaiting command...
     </div>
 
   </div>
 
+
   <script>
+
+    // =========================
+    // JARVIS VOICE
+    // =========================
+
     function speak(text) {
+
       document.getElementById("output").innerText = text;
 
+      speechSynthesis.cancel();
+
       const voice = new SpeechSynthesisUtterance(text);
+
       voice.rate = 0.95;
       voice.pitch = 0.8;
+      voice.volume = 1;
 
       speechSynthesis.speak(voice);
     }
 
+
+    // =========================
+    // TIME
+    // =========================
+
     function tellTime() {
+
       const time = new Date().toLocaleTimeString();
+
       speak("The current time is " + time);
     }
 
+
+    // =========================
+    // STUDY MODE
+    // =========================
+
     function studyMode() {
+
       speak("Study mode activated. Let's begin.");
     }
+
+
+    // =========================
+    // CALCULATOR — V3
+    // =========================
+
+    function calculator() {
+
+      const expression = prompt(
+        "Enter calculation, for example: 25+5*2"
+      );
+
+      if (expression === null) {
+        return;
+      }
+
+      // Allow only numbers and basic operators
+      if (!/^[0-9+\-*/().%\s]+$/.test(expression)) {
+
+        speak(
+          "Sorry. I can only calculate numbers and basic operators."
+        );
+
+        return;
+      }
+
+      try {
+
+        const result = Function(
+          '"use strict"; return (' + expression + ')'
+        )();
+
+        if (!Number.isFinite(result)) {
+
+          speak("That calculation is not valid.");
+
+          return;
+        }
+
+        speak("The answer is " + result);
+
+      } catch (error) {
+
+        speak("Sorry. I could not calculate that.");
+      }
+    }
+
+
+    // =========================
+    // VOICE RECOGNITION
+    // =========================
+
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    let recognition;
+
+
+    if (SpeechRecognition) {
+
+      recognition = new SpeechRecognition();
+
+      recognition.lang = "en-IN";
+
+      recognition.continuous = false;
+
+      recognition.interimResults = false;
+
+
+      recognition.onstart = function() {
+
+        document.getElementById("status").innerText =
+          "LISTENING... 🎙️";
+
+        document.getElementById("output").innerText =
+          "Listening...";
+      };
+
+
+      recognition.onresult = function(event) {
+
+        const command =
+          event.results[0][0].transcript.toLowerCase();
+
+        document.getElementById("output").innerText =
+          "You: " + command;
+
+        processCommand(command);
+      };
+
+
+      recognition.onerror = function() {
+
+        document.getElementById("status").innerText =
+          "SYSTEM ONLINE";
+
+        speak("Sorry, I couldn't understand that.");
+      };
+
+
+      recognition.onend = function() {
+
+        document.getElementById("status").innerText =
+          "SYSTEM ONLINE";
+      };
+
+    }
+
+
+    // =========================
+    // START LISTENING
+    // =========================
+
+    function startListening() {
+
+      if (!recognition) {
+
+        speak(
+          "Voice recognition is not supported in this browser."
+        );
+
+        return;
+      }
+
+      recognition.start();
+    }
+
+
+    // =========================
+    // VOICE COMMAND SYSTEM
+    // =========================
+
+    function processCommand(command) {
+
+
+      // HELLO
+
+      if (
+        command.includes("hello") ||
+        command.includes("hi jarvis") ||
+        command.includes("hey jarvis")
+      ) {
+
+        speak("Hello. How can I help you?");
+
+        return;
+      }
+
+
+      // TIME
+
+      if (
+        command.includes("time") ||
+        command.includes("what time")
+      ) {
+
+        tellTime();
+
+        return;
+      }
+
+
+      // STUDY MODE
+
+      if (
+        command.includes("study mode") ||
+        command.includes("start studying") ||
+        command.includes("activate study")
+      ) {
+
+        studyMode();
+
+        return;
+      }
+
+
+      // CALCULATOR
+
+      if (
+        command.includes("calculate") ||
+        command.includes("calculator")
+      ) {
+
+        speak("Please enter the calculation.");
+
+        setTimeout(function() {
+
+          calculator();
+
+        }, 500);
+
+        return;
+      }
+
+
+      // STOP
+
+      if (
+        command.includes("stop") ||
+        command.includes("cancel")
+      ) {
+
+        speechSynthesis.cancel();
+
+        document.getElementById("output").innerText =
+          "Command cancelled.";
+
+        return;
+      }
+
+
+      // UNKNOWN COMMAND
+
+      speak(
+        "I heard " +
+        command +
+        ". But I don't know that command yet."
+      );
+    }
+
   </script>
 
 </body>
