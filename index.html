@@ -8,120 +8,129 @@
 <style>
 *{
   box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif;
 }
 
 body{
+  margin:0;
   min-height:100vh;
-  background:#02070b;
+  background:#02070d;
   color:#00eaff;
+  font-family:Arial, sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
-  text-align:center;
+  overflow:hidden;
 }
 
 .container{
-  width:90%;
-  max-width:600px;
+  width:100%;
+  max-width:700px;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:25px;
 }
 
 h1{
-  font-size:42px;
-  letter-spacing:8px;
-  margin-bottom:35px;
-  text-shadow:0 0 20px #00eaff;
+  font-size:48px;
+  letter-spacing:12px;
+  margin:0 0 45px;
+  text-shadow:
+    0 0 10px #00eaff,
+    0 0 25px #00eaff,
+    0 0 50px #007bff;
 }
 
 .core{
-  width:180px;
-  height:180px;
-  margin:0 auto 35px;
+  width:190px;
+  height:190px;
   border-radius:50%;
   border:3px solid #00eaff;
   box-shadow:
-    0 0 20px #00eaff,
-    inset 0 0 25px #00eaff;
+    0 0 15px #00eaff,
+    0 0 40px #00eaff,
+    inset 0 0 30px #006eff;
   display:flex;
   justify-content:center;
   align-items:center;
+  animation:pulse 2s infinite;
+  position:relative;
+}
+
+.core::before{
+  content:"";
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:2px solid #00eaff;
+  box-shadow:0 0 25px #00eaff;
 }
 
 .core::after{
   content:"";
-  width:35px;
-  height:35px;
-  background:#00eaff;
+  position:absolute;
+  width:18px;
+  height:18px;
   border-radius:50%;
-  box-shadow:0 0 30px #00eaff;
+  background:#ffffff;
+  box-shadow:
+    0 0 10px #00eaff,
+    0 0 25px #00eaff;
 }
 
-button{
-  width:90%;
-  max-width:350px;
-  margin:8px;
-  padding:14px;
-  border:1px solid #00eaff;
-  border-radius:10px;
-  background:#03131a;
-  color:#00eaff;
-  font-size:16px;
-  cursor:pointer;
-  box-shadow:0 0 10px #003d4a;
-}
-
-button:hover{
-  background:#07303a;
-  box-shadow:0 0 20px #00eaff;
-}
-
-#output{
-  margin-top:25px;
-  min-height:30px;
-  color:#fff;
-}
-
-#calculator{
-  display:none;
-  margin:25px auto;
-  padding:15px;
-  border:1px solid #00eaff;
-  border-radius:12px;
-  max-width:350px;
-}
-
-#display{
+.status{
+  margin-top:45px;
   width:100%;
-  padding:12px;
-  background:#000;
-  color:#00eaff;
-  border:1px solid #00eaff;
-  border-radius:8px;
-  font-size:20px;
-  margin-bottom:10px;
+  max-width:600px;
+  min-height:80px;
+  padding:18px;
+  border:1px solid rgba(0,234,255,.35);
+  border-radius:14px;
+  background:rgba(0,30,45,.35);
+  box-shadow:0 0 20px rgba(0,234,255,.12);
+  text-align:center;
+  font-size:17px;
+  line-height:1.5;
 }
 
-.calcbtn{
-  width:60px;
-  margin:3px;
-  padding:12px 5px;
+.listening{
+  color:#ffffff;
+  text-shadow:0 0 10px #00eaff;
 }
 
-.history{
-  margin-top:15px;
-  text-align:left;
-  max-height:120px;
-  overflow:auto;
-  color:#aaa;
-  font-size:13px;
+@keyframes pulse{
+  0%,100%{
+    transform:scale(1);
+    box-shadow:
+      0 0 15px #00eaff,
+      0 0 40px #00eaff,
+      inset 0 0 30px #006eff;
+  }
+  50%{
+    transform:scale(1.05);
+    box-shadow:
+      0 0 25px #00eaff,
+      0 0 70px #007bff,
+      inset 0 0 45px #006eff;
+  }
 }
 
-footer{
-  margin-top:25px;
-  color:#47747c;
-  font-size:12px;
+@media(max-width:500px){
+  h1{
+    font-size:38px;
+    letter-spacing:8px;
+  }
+
+  .core{
+    width:160px;
+    height:160px;
+  }
+
+  .status{
+    font-size:15px;
+  }
 }
 </style>
 </head>
@@ -130,41 +139,613 @@ footer{
 
 <div class="container">
 
-<h1>JARVIS</h1>
+  <h1>JARVIS</h1>
 
-<div class="core"></div>
+  <div class="core"></div>
 
-<button onclick="testVoice()">🔊 TEST VOICE</button>
+  <div id="status" class="status">
+    Initializing...
+  </div>
 
-<button onclick="showTime()">🕐 TIME</button>
-
-<button onclick="studyMode()">📚 STUDY MODE</button>
-
-<button onclick="startVoice()">🎙️ VOICE COMMAND</button>
-
-<button onclick="toggleCalculator()">🧮 CALCULATOR</button>
-
-<div id="calculator">
-
-<input id="display" type="text" placeholder="Enter calculation">
-
-<div>
-<button class="calcbtn" onclick="add('7')">7</button>
-<button class="calcbtn" onclick="add('8')">8</button>
-<button class="calcbtn" onclick="add('9')">9</button>
-<button class="calcbtn" onclick="add('/')">÷</button>
 </div>
 
-<div>
-<button class="calcbtn" onclick="add('4')">4</button>
-<button class="calcbtn" onclick="add('5')">5</button>
-<button class="calcbtn" onclick="add('6')">6</button>
-<button class="calcbtn" onclick="add('*')">×</button>
-</div>
+<script>
 
-div>
-<button class="calcbtn" onclick="add('1')">1</button>
-<button class="calcbtn" onclick="add('2')">2</button>
-<button class="calcbtn" onclick="add('3')">3</button>
-<button class="calcbtn" onclick="add('-')">−</button
-<button class="calcbtn" onclick="add('-')">−</button>
+/* =========================
+   JARVIS VOICE
+========================= */
+
+const statusBox = document.getElementById("status");
+
+let voices = [];
+
+function loadVoices(){
+  voices = speechSynthesis.getVoices();
+}
+
+loadVoices();
+
+if("speechSynthesis" in window){
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text){
+
+  if(!("speechSynthesis" in window)){
+    statusBox.innerText = text;
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const msg = new SpeechSynthesisUtterance(text);
+
+  msg.lang = "en-IN";
+  msg.rate = 0.92;
+  msg.pitch = 0.75;
+  msg.volume = 1;
+
+  const preferred =
+    voices.find(v => /Google UK English Male/i.test(v.name)) ||
+    voices.find(v => /Microsoft David/i.test(v.name)) ||
+    voices.find(v => /Microsoft Mark/i.test(v.name)) ||
+    voices.find(v => /Daniel/i.test(v.name)) ||
+    voices.find(v => /English/i.test(v.name));
+
+  if(preferred){
+    msg.voice = preferred;
+  }
+
+  speechSynthesis.speak(msg);
+}
+
+
+/* =========================
+   KNOWLEDGE DATABASE
+========================= */
+
+const knowledge = [
+
+/* PHYSICS */
+
+{
+ keys:["newton first law","first law of newton","न्यूटन का पहला नियम"],
+ answer:"Newton's first law says that an object remains at rest or moves with uniform velocity unless an external unbalanced force acts on it. It is also called the law of inertia."
+},
+
+{
+ keys:["newton second law","second law of newton","न्यूटन का दूसरा नियम"],
+ answer:"Newton's second law states that the net force on an object equals mass multiplied by acceleration. The formula is F equals m a."
+},
+
+{
+ keys:["newton third law","third law of newton","न्यूटन का तीसरा नियम"],
+ answer:"Newton's third law states that for every action, there is an equal and opposite reaction. The two forces act on different objects."
+},
+
+{
+ keys:["velocity"],
+ answer:"Velocity is the rate of change of displacement with time. It is a vector quantity and its SI unit is metre per second."
+},
+
+{
+ keys:["speed"],
+ answer:"Speed is the distance travelled per unit time. It is a scalar quantity and its SI unit is metre per second."
+},
+
+{
+ keys:["acceleration"],
+ answer:"Acceleration is the rate of change of velocity with time. Its SI unit is metre per second squared."
+},
+
+{
+ keys:["momentum"],
+ answer:"Linear momentum is the product of mass and velocity. Its formula is p equals m v, and its SI unit is kilogram metre per second."
+},
+
+{
+ keys:["kinetic energy"],
+ answer:"Kinetic energy is the energy possessed by an object because of its motion. Its formula is one half m v squared."
+},
+
+{
+ keys:["potential energy"],
+ answer:"Gravitational potential energy is the energy possessed because of height. Near Earth's surface its formula is m g h."
+},
+
+{
+ keys:["work done","work in physics"],
+ answer:"Mechanical work is done when a force causes displacement. For a constant force, work equals F d cos theta."
+},
+
+{
+ keys:["power in physics"],
+ answer:"Power is the rate at which work is done. Its SI unit is watt."
+},
+
+{
+ keys:["ohm law","ohm's law"],
+ answer:"Ohm's law states that at constant physical conditions, current is directly proportional to potential difference. The formula is V equals I R."
+},
+
+{
+ keys:["gravity"],
+ answer:"Gravity is the attractive force between masses. Near Earth's surface, objects experience acceleration due to gravity of approximately 9.8 metres per second squared."
+},
+
+{
+ keys:["centripetal force"],
+ answer:"Centripetal force is the inward net force required for circular motion. Its magnitude is m v squared divided by r."
+},
+
+/* CHEMISTRY */
+
+{
+ keys:["atomic number","atomic no"],
+ answer:"Atomic number is the number of protons present in the nucleus of an atom. It is represented by Z."
+},
+
+{
+ keys:["mass number"],
+ answer:"Mass number is the total number of protons and neutrons in the nucleus. A equals Z plus N."
+},
+
+{
+ keys:["proton"],
+ answer:"A proton has a positive elementary charge and is present in the atomic nucleus."
+},
+
+{
+ keys:["neutron"],
+ answer:"A neutron has no net electric charge and is present in the atomic nucleus."
+},
+
+{
+ keys:["electron"],
+ answer:"An electron has negative elementary charge and occupies regions around the nucleus called orbitals."
+},
+
+{
+ keys:["bohr model","bohr atomic model"],
+ answer:"Bohr's model proposed that electrons occupy specific allowed energy levels around the nucleus. Electrons can absorb or emit energy when moving between levels."
+},
+
+{
+ keys:["de broglie","de broglie wavelength"],
+ answer:"According to de Broglie's hypothesis, a moving particle has an associated wavelength. The relation is lambda equals h divided by momentum."
+},
+
+{
+ keys:["heisenberg uncertainty","uncertainty principle"],
+ answer:"Heisenberg's uncertainty principle states that position and momentum cannot both be known with unlimited precision at the same time."
+},
+
+{
+ keys:["photoelectric effect"],
+ answer:"The photoelectric effect is the emission of electrons from a metal surface when electromagnetic radiation of sufficiently high frequency falls on it."
+},
+
+{
+ keys:["photon"],
+ answer:"A photon is a quantum of electromagnetic radiation. Its energy is h nu, where h is Planck's constant and nu is frequency."
+},
+
+{
+ keys:["mole"],
+ answer:"One mole contains approximately 6.022 times 10 to the power 23 entities. This number is called Avogadro's constant."
+},
+
+{
+ keys:["molarity"],
+ answer:"Molarity is the number of moles of solute present per litre of solution."
+},
+
+{
+ keys:["isotope"],
+ answer:"Isotopes are atoms of the same element having the same atomic number but different mass numbers."
+},
+
+{
+ keys:["periodic table"],
+ answer:"The modern periodic table arranges elements according to increasing atomic number. Elements in the same group generally have similar valence-electron patterns."
+},
+
+/* MATHEMATICS */
+
+{
+ keys:["quadratic equation"],
+ answer:"A quadratic equation has the general form a x squared plus b x plus c equals zero, where a is not zero. Its roots can be found using the quadratic formula."
+},
+
+{
+ keys:["quadratic formula"],
+ answer:"The quadratic formula is x equals minus b plus or minus square root of b squared minus four a c, divided by two a."
+},
+
+{
+ keys:["trigonometry"],
+ answer:"Trigonometry studies relationships between angles and sides of triangles. The basic ratios are sine, cosine and tangent."
+},
+
+{
+ keys:["sine"],
+ answer:"For a right triangle, sine of an angle equals opposite side divided by hypotenuse."
+},
+
+{
+ keys:["cosine"],
+ answer:"For a right triangle, cosine of an angle equals adjacent side divided by hypotenuse."
+},
+
+{
+ keys:["tangent"],
+ answer:"For a right triangle, tangent of an angle equals opposite side divided by adjacent side."
+},
+
+{
+ keys:["pythagoras","pythagorean theorem"],
+ answer:"Pythagorean theorem states that in a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides."
+},
+
+{
+ keys:["derivative"],
+ answer:"A derivative represents the instantaneous rate of change of a function. Geometrically, it represents the slope of the tangent to a curve."
+},
+
+{
+ keys:["integration"],
+ answer:"Integration is the process of finding an antiderivative. Definite integration can also represent accumulated quantity or signed area under a curve."
+},
+
+{
+ keys:["arithmetic progression","ap"],
+ answer:"An arithmetic progression is a sequence in which consecutive terms differ by a constant common difference."
+},
+
+{
+ keys:["geometric progression","gp"],
+ answer:"A geometric progression is a sequence in which each term is obtained by multiplying the previous term by a constant common ratio."
+},
+
+/* COMPUTER */
+
+{
+ keys:["what is computer","computer"],
+ answer:"A computer is an electronic device that accepts input, processes data according to instructions, stores information and produces output."
+},
+
+{
+ keys:["cpu"],
+ answer:"CPU stands for Central Processing Unit. It executes instructions and performs calculations and logical operations."
+},
+
+{
+ keys:["ram"],
+ answer:"RAM stands for Random Access Memory. It temporarily stores data and instructions that the computer is actively using."
+},
+
+{
+ keys:["rom"],
+ answer:"ROM stands for Read Only Memory. It stores information that is generally retained when power is removed."
+},
+
+{
+ keys:["operating system"],
+ answer:"An operating system is system software that manages hardware resources and provides services for applications. Examples include Windows, Android and Linux."
+},
+
+{
+ keys:["internet"],
+ answer:"The Internet is a global network of interconnected computer networks that communicate using standard protocols such as TCP and IP."
+},
+
+{
+ keys:["html"],
+ answer:"HTML stands for HyperText Markup Language. It provides the structure of webpages."
+},
+
+{
+ keys:["css"],
+ answer:"CSS stands for Cascading Style Sheets. It controls the appearance and layout of webpages."
+},
+
+{
+ keys:["javascript"],
+ answer:"JavaScript is a programming language commonly used to make webpages interactive and dynamic."
+},
+
+/* SPACE */
+
+{
+ keys:["solar system"],
+ answer:"The Solar System consists of the Sun and the objects gravitationally bound to it, including eight planets, dwarf planets, moons, asteroids and comets."
+},
+
+{
+ keys:["sun"],
+ answer:"The Sun is a star at the centre of our Solar System. It is primarily composed of hydrogen and helium and produces energy through nuclear fusion."
+},
+
+{
+ keys:["earth"],
+ answer:"Earth is the third planet from the Sun and is the only planet currently known to support life."
+},
+
+{
+ keys:["moon"],
+ answer:"The Moon is Earth's natural satellite. Its phases are caused by the changing geometry of the Sun, Earth and Moon."
+},
+
+{
+ keys:["black hole"],
+ answer:"A black hole is a region of spacetime where gravity is so strong that, beyond its event horizon, even light cannot escape."
+},
+
+{
+ keys:["light year"],
+ answer:"A light-year is a unit of distance equal to the distance light travels in vacuum in one year."
+},
+
+/* GENERAL SCIENCE */
+
+{
+ keys:["photosynthesis"],
+ answer:"Photosynthesis is the process by which green plants use light energy to convert carbon dioxide and water into glucose and oxygen."
+},
+
+{
+ keys:["respiration"],
+ answer:"Cellular respiration is the process by which cells release usable energy from food molecules."
+},
+
+{
+ keys:["dna"],
+ answer:"DNA stands for deoxyribonucleic acid. It stores genetic information in living organisms."
+},
+
+{
+ keys:["atom"],
+ answer:"An atom is the basic unit of an element. It contains a nucleus of protons and neutrons surrounded by electrons."
+},
+
+/* JEE */
+
+{
+ keys:["jee"],
+ answer:"JEE stands for Joint Entrance Examination. JEE Main and JEE Advanced are major entrance examinations for engineering education in India."
+},
+
+{
+ keys:["jee preparation"],
+ answer:"For JEE preparation, focus on concepts first, then solved examples, then progressively harder questions, regular revision and mock-test analysis."
+},
+
+{
+ keys:["how to study physics"],
+ answer:"For Physics, understand the concept, write the key formulas, solve basic examples, then move to mixed and JEE-level questions. Analyse every mistake instead of only checking the answer."
+},
+
+{
+ keys:["how to study chemistry"],
+ answer:"For Chemistry, keep Physical, Organic and Inorganic strategies separate. Physical needs numerical practice, Organic needs reaction and mechanism understanding, and Inorganic needs concepts plus repeated revision."
+},
+
+{
+ keys:["how to study maths"],
+ answer:"For Maths, learn the concept and standard methods, solve examples yourself, then practise mixed problems. Keep an error log for questions you could not solve."
+}
+
+];
+
+
+/* =========================
+   QUESTION ANSWER ENGINE
+========================= */
+
+function cleanText(text){
+
+  return text
+    .toLowerCase()
+    .replace(/[?!.,]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+
+}
+
+function findAnswer(question){
+
+  const q = cleanText(question);
+
+  /* greetings */
+
+  if(
+    q.includes("hello") ||
+    q.includes("hi jarvis") ||
+    q.includes("hey jarvis") ||
+    q.includes("namaste")
+  ){
+    return "Hello sir. Main JARVIS hoon. Main aapki kya madad kar sakta hoon?";
+  }
+
+  /* identity */
+
+  if(
+    q.includes("who are you") ||
+    q.includes("tum kaun ho") ||
+    q.includes("aap kaun ho")
+  ){
+    return "I am JARVIS, your personal AI assistant.";
+  }
+
+  /* thanks */
+
+  if(
+    q.includes("thank you") ||
+    q.includes("thanks") ||
+    q.includes("dhanyavad")
+  ){
+    return "You're welcome sir.";
+  }
+
+  /* knowledge search */
+
+  for(const item of knowledge){
+
+    for(const key of item.keys){
+
+      if(q.includes(cleanText(key))){
+        return item.answer;
+      }
+
+    }
+
+  }
+
+  /* common general questions */
+
+  if(q.includes("capital of india") || q.includes("india ki capital")){
+    return "The capital of India is New Delhi.";
+  }
+
+  if(q.includes("largest planet")){
+    return "Jupiter is the largest planet in our Solar System.";
+  }
+
+  if(q.includes("smallest planet")){
+    return "Mercury is the smallest planet in our Solar System.";
+  }
+
+  if(q.includes("fastest animal")){
+    return "The peregrine falcon is generally considered the fastest animal during its diving flight.";
+  }
+
+  if(q.includes("largest ocean")){
+    return "The Pacific Ocean is the largest ocean on Earth.";
+  }
+
+  if(q.includes("chemical formula of water") || q.includes("formula of water")){
+    return "The chemical formula of water is H2O.";
+  }
+
+  if(q.includes("speed of light")){
+    return "The speed of light in vacuum is approximately 3 times 10 to the power 8 metres per second.";
+  }
+
+  if(q.includes("value of pi")){
+    return "Pi is approximately 3.14159.";
+  }
+
+  if(q.includes("gravity on earth")){
+    return "The acceleration due to gravity near Earth's surface is approximately 9.8 metres per second squared.";
+  }
+
+  /* fallback */
+
+  return "Sorry sir, mujhe is question ka exact answer meri current knowledge mein nahi mila. Aap question ko thoda different words mein pooch sakte hain.";
+
+}
+
+
+/* =========================
+   VOICE RECOGNITION
+========================= */
+
+let recognition = null;
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+  recognition = new SpeechRecognition();
+
+  recognition.lang = "en-IN";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = function(){
+
+    statusBox.classList.add("listening");
+    statusBox.innerText = "Listening...";
+  };
+
+  recognition.onresult = function(event){
+
+    const question =
+      event.results[0][0].transcript;
+
+    const answer = findAnswer(question);
+
+    statusBox.innerText =
+      "You: " + question +
+      "\n\nJARVIS: " + answer;
+
+    speak(answer);
+  };
+
+  recognition.onerror = function(){
+
+    statusBox.classList.remove("listening");
+
+    statusBox.innerText =
+      "Voice command could not be heard. Please try again.";
+  };
+
+  recognition.onend = function(){
+
+    statusBox.classList.remove("listening");
+  };
+
+}
+
+
+/* =========================
+   START JARVIS
+========================= */
+
+function startJarvis(){
+
+  const greeting =
+    "Hello sir. Main aapki kya madad kar sakta hoon?";
+
+  statusBox.innerText = greeting;
+
+  /* speak after a small delay */
+  setTimeout(function(){
+
+    speak(greeting);
+
+    /*
+      Start listening after greeting.
+      Some mobile browsers may block microphone
+      until the user gives permission.
+    */
+
+    setTimeout(function(){
+
+      if(recognition){
+
+        try{
+          recognition.start();
+        }catch(e){}
+
+      }
+
+    },2500);
+
+  },700);
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+window.addEventListener("load", startJarvis);
+
+</script>
+
+</body>
+</html>
