@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Thank You ❤️</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #2b1055, #12001f 55%, #050008);
+    color: white;
+    overflow: hidden;
+}
+
+.card {
+    width: 90%;
+    max-width: 400px;
+    padding: 30px 22px;
+    text-align: center;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 40px rgba(255,0,150,0.25);
+    animation: appear 1.2s ease;
+}
+
+h1 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #ff4ecd, #fff, #ff4ecd);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+.photo {
+    width: 190px;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.8);
+    box-shadow: 0 0 30px rgba(255,70,200,0.6);
+    margin-bottom: 22px;
+}
+
+.message {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #f4eaff;
+}
+
+.heart {
+    font-size: 35px;
+    margin-top: 15px;
+    animation: beat 1s infinite;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes shine {
+    0% { background-position: 0%; }
+    100% { background-position: 200%; }
+}
+
+@keyframes beat {
+    50% {
+        transform: scale(1.25);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>THANK YOU ❤️</h1>
+
+    <img src="your-photo.jpg" class="photo" alt="My Photo">
+
+    <p class="message">
+        Thank you so much for all your beautiful
+        birthday wishes and love. 🥹❤️
+        <br><br>
+        You made my day really special! ✨
+    </p>
+
+    <div class="heart">❤️</div>
+
+</div>
+
+</body>
+</html>
