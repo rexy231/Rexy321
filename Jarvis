@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS V8</title>
+<style>
+*{box-sizing:border-box}
+:root{--cyan:#65dfff;--glass:rgba(9,24,43,.48)}
+body{
+ margin:0;min-height:100vh;color:#fff;
+ font-family:Arial,Helvetica,sans-serif;
+ background:#09172b;
+ overflow-x:hidden
+}
+.scene{
+ min-height:100vh;position:relative;isolation:isolate;
+ background:linear-gradient(180deg,#152b51 0%,#d57c83 39%,#f7b58b 52%,#182c49 100%);
+ overflow:hidden
+}
+.sun{
+ position:absolute;z-index:-2;width:180px;height:180px;
+ border-radius:50%;background:#ffb887;filter:blur(2px);
+ left:50%;top:33%;transform:translateX(-50%);
+ box-shadow:0 0 100px 35px #ffad8b66
+}
+.sky-glow{
+ position:absolute;inset:0;z-index:-2;
+ background:linear-gradient(180deg,transparent 25%,#f8a88b55 48%,#061529 83%)
+}
+.mountain{
+ position:absolute;inset:0;z-index:-1;width:100%;height:100%;
+ pointer-events:none
+}
+header{
+ padding:23px 24px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px
+}
+.brand{font-size:22px;font-weight:700;letter-spacing:3px}
+.brand small{display:block;font-size:10px;font-weight:400;
+ letter-spacing:1px;margin-top:5px;color:#d6e6ff}
+.datetime{text-align:right;font-size:19px}
+.datetime small{display:block;font-size:11px;color:#d6e6ff;margin-top:5px}
+main{width:min(850px,100%);margin:auto;padding:20px 18px 35px}
+.intro{text-align:center;margin:15px 0 28px}
+h1{font-size:clamp(25px,5vw,38px);margin:0 0 10px;
+ text-shadow:0 2px 18px #0007}
+.intro p{font-size:14px;color:#e5edff}
+.command{
+ display:flex;align-items:center;gap:10px;
+ border:1px solid #7bdfff;border-radius:40px;
+ background:rgba(3,16,35,.62);padding:7px 10px 7px 20px;
+ box-shadow:0 0 25px #21cfff20;
+ max-width:530px;margin:25px auto 30px
+}
+.command input{
+ flex:1;min-width:0;background:transparent;border:0;outline:0;
+ color:white;font-size:15px;padding:10px 0
+}
+.command input::placeholder{color:#d5e3f5}
+button{font:inherit;cursor:pointer;color:white}
+.mic{
+ border:0;border-radius:50%;width:42px;height:42px;
+ background:#138bdb;font-size:20px;flex-shrink:0
+}
+.grid{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+ gap:12px
+}
+.card{
+ min-height:105px;border:1px solid #ffffff20;border-radius:16px;
+ background:var(--glass);backdrop-filter:blur(14px);
+ display:flex;flex-direction:column;align-items:center;
+ justify-content:center;gap:13px;transition:.2s;
+ box-shadow:0 8px 28px #0002
+}
+.card:hover,.card:focus-visible{
+ border-color:var(--cyan);background:#174b6a99;
+ transform:translateY(-3px)
+}
+.card .icon{font-size:27px;color:#c9edff}
+.card span:last-child{font-size:12px}
+.panel{
+ margin-top:22px;border:1px solid #ffffff25;border-radius:15px;
+ background:rgba(3,15,32,.58);padding:16px 18px;
+ backdrop-filter:blur(12px)
+}
+.panel-title{font-size:10px;letter-spacing:2px;color:#84dfff;margin-bottom:10px}
+#reply{font-size:14px;line-height:1.65;overflow-wrap:anywhere}
+#reply:before{content:"> ";color:var(--cyan)}
+footer{text-align:center;font-size:10px;letter-spacing:2px;
+ color:#c5d9eeaa;padding:25px 5px}
+@media(max-width:540px){
+ header{padding:18px 15px}
+ .brand{font-size:19px}
+ .datetime{font-size:16px}
+ main{padding:15px 13px 28px}
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+ .card{min-height:90px}
+ .card .icon{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="scene">
+ <div class="sun"></div><div class="sky-glow"></div>
+ <svg class="mountain" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+   <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1">
+    <stop stop-color="#435575"/><stop offset="1" stop-color="#101b31"/>
+   </linearGradient>
+   <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1">
+    <stop stop-color="#253a5a"/><stop offset="1" stop-color="#050d1a"/>
+   </linearGradient>
+  </defs>
+  <path fill="url(#m1)" d="M0 440L110 350 175 390 300 245 390 350 500 190 610 350 735 225 850 360 965 270 1080 360 1200 285V900H0Z"/>
+  <path fill="#e3c5c9" opacity=".65" d="M300 245L275 286 302 278 322 299 338 282 350 300 390 350 365 328 344 335 323 300Z"/>
+  <path fill="#d4dbea" opacity=".55" d="M500 190L465 248 495 232 510 250 527 224 550 272 610 350 580 319 558 323 535 275 517 285Z"/>
+  <path fill="#d7dce8" opacity=".5" d="M735 225L705 272 728 262 747 284 764 265 788 306 850 360 813 333 790 340 770 303 749 310Z"/>
+  <path fill="url(#m2)" d="M0 530L130 420 245 490 360 390 490 520 625 395 755 510 890 410 1020 505 1120 430 1200 480V900H0Z"/>
+  <path fill="#101c30" d="M0 610L150 500 260 570 410 460 560 600 720 485 860 585 1010 480 1200 590V900H0Z"/>
+  <path fill="#050b16" d="M0 690L180 570 340 680 520 565 700 690 900 575 1060 680 1200 610V900H0Z"/>
+  <path fill="#07101d" d="M0 770L220 660 430 745 620 650 800 765 1010 665 1200 755V900H0Z"/>
+  <path stroke="#ffbbbd" opacity=".17" stroke-width="2" fill="none" d="M0 520L130 420 245 490 360 390 490 520 625 395 755 510 890 410 1020 505 1120 430 1200 480"/>
+ </svg>
+
+ <header>
+  <div class="brand">JARVIS<small>Your personal AI assistant</small></div>
+  <div class="datetime"><span id="clock">--:--</span>
+   <small id="date">Loading date...</small></div>
+ </header>
+
+ <main>
+  <div class="intro">
+   <h1 id="greeting">Welcome back.</h1>
+   <p>What would you like to do today?</p>
+  </div>
+
+  <form class="command" id="form">
+   <input id="input" placeholder="Type or speak a command..." autocomplete="off">
+   <button class="mic" type="button" id="mic" aria-label="Voice input">🎙</button>
+   <button class="mic" type="submit" aria-label="Send command">➤</button>
+  </form>
+
+  <div class="grid">
+   <button class="card" data-cmd="help"><span class="icon">▤</span><span>Chat</span></button>
+   <button class="card" data-cmd="notes"><span class="icon">▧</span><span>Notes</span></button>
+   <button class="card" data-cmd="calculator"><span class="icon">▦</span><span>Calculator</span></button>
+   <button class="card" data-cmd="weather"><span class="icon">☁</span><span>Weather</span></button>
+   <button class="card" data-cmd="music"><span class="icon">♫</span><span>Music</span></button>
+  </div>
+
+  <section class="panel">
+   <div class="panel-title">JARVIS RESPONSE</div>
+   <div id="reply" aria-live="polite">JARVIS is ready. Type or speak a command.</div>
+  </section>
+
+  <footer>JARVIS V8 · DREAM · PLAN · ACHIEVE</footer>
+ </main>
+</div>
+
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const input=$("input"),reply=$("reply");
+ let lastReply="JARVIS is ready. Type or speak a command.";
+ let listening=null;
+
+ function updateTime(){
+  const now=new Date();
+  $("clock").textContent=now.toLocaleTimeString([],{
+   hour:"2-digit",minute:"2-digit"
+  });
+  $("date").textContent=now.toLocaleDateString([],{
+   weekday:"short",day:"numeric",month:"short",year:"numeric"
+  });
+  const h=now.getHours();
+  $("greeting").textContent=
+   (h<12?"Good Morning":h<17?"Good Afternoon":"Good Evening")+
+   ", Riyansh";
+ }
+ updateTime();setInterval(updateTime,1000);
+
+ function speak(text){
+  if(!("speechSynthesis" in window))return;
+  speechSynthesis.cancel();
+  const msg=new SpeechSynthesisUtterance(text);
+  msg.lang="en-IN";msg.pitch=.9;msg.rate=1;
+  speechSynthesis.speak(msg);
+ }
+
+ function answer(text,voice=true){
+  lastReply=text;reply.textContent=text;
+  if(voice)speak(text);
+ }
+
+ function run(raw){
+  const q=raw.trim().toLowerCase();
+  if(!q)return;
+  if(q==="hello"||q.includes("hello jarvis")){
+   answer("Hello Riyansh. I am online. How can I help you?");
+  }else if(q.includes("time")){
+   answer("The current time is "+new Date().toLocaleTimeString()+".");
+  }else if(q.includes("date")){
+   answer("Today is "+new Date().toLocaleDateString()+".");
+  }else if(q.includes("motivat")){
+   answer("Stay focused, Riyansh. Small consistent steps create big results.");
+  }else if(q.includes("joke")){
+   answer("Why did the computer go to the doctor? It had a virus!");
+  }else if(q.includes("notes")){
+   const note=prompt("Enter a note to save:");
+   if(note!==null){
+    try{
+     const old=JSON.parse(localStorage.getItem("jarvisNotes")||"[]");
+     old.push(note);localStorage.setItem("jarvisNotes",JSON.stringify(old));
+     answer("Your note has been saved on this device.");
+    }catch(e){answer("Notes could not be saved in this browser.");}
+   }
+  }else if(q.includes("calculator")){
+   const expr=prompt("Enter a calculation, for example 12*(4+2):");
+   if(expr!==null){
+    if(!/^[\d\s.+\-*/()%]+$/.test(expr)){
+     answer("Please use numbers and basic arithmetic operators only.");
+    }else{
+     try{
+      const tokens=expr.match(/\d+(?:\.\d+)?|[()+\-*/%]/g)||[];
+      if(tokens.join("")!==expr.replace(/\s/g,""))throw Error();
+      let i=0;
+      function f(){
+       let t=tokens[i++];
+       if(t==="+")return f();if(t==="-")return -f();
+       if(t==="("){let v=s();if(tokens[i++]!==")")throw Error();return v;}
+       if(t&&/^\d/.test(t))return +t;throw Error();
+      }
+      function p(){let v=f();while(["*","/","%"].includes(tokens[i])){
+       let o=tokens[i++],n=f();if((o==="/"||o==="%")&&n===0)throw Error();
+       v=o==="*"?v*n:o==="/"?v/n:v%n;
+      }return v;}
+      function s(){let v=p();while(tokens[i]==="+"||tokens[i]==="-"){
+       let o=tokens[i++],n=p();v=o==="+"?v+n:v-n;
+      }return v;}
+      let result=s();if(i!==tokens.length||!Number.isFinite(result))throw Error();
+      answer("The answer is "+result+".");
+     }catch(e){answer("I could not calculate that expression.");}
+    }
+   }
+  }else if(q.includes("weather")){
+   answer("Live weather needs a weather service connection. This version is running offline.");
+  }else if(q.includes("music")){
+   answer("Music controls are not connected yet.");
+  }else if(q==="help"||q.includes("commands")){
+   answer("Try hello, time, date, motivate me, tell me a joke, notes, or calculator.");
+  }else{
+   answer("I do not know that command yet. Type help to see available commands.");
+  }
+ }
+
+ $("form").addEventListener("submit",e=>{
+  e.preventDefault();run(input.value);input.value="";
+ });
+ document.querySelectorAll("[data-cmd]").forEach(btn=>{
+  btn.addEventListener("click",()=>run(btn.dataset.cmd));
+ });
+
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ $("mic").addEventListener("click",()=>{
+  if(!SR){answer("Voice input is not supported here. Please type your command.");return;}
+  if(listening){listening.stop();return;}
+  listening=new SR();listening.lang="en-IN";listening.interimResults=false;
+  listening.onstart=()=>{$("mic").textContent="⏹";};
+  listening.onresult=e=>{
+   input.value=e.results[0][0].transcript;
+   run(input.value);
+  };
+  listening.onerror=()=>answer("Microphone unavailable. Check browser permission.");
+  listening.onend=()=>{$("mic").textContent="🎙";listening=null;};
+  try{listening.start();}catch(e){listening=null;answer("Please try voice input again.");}
+ });
+})();
+</script>
+</body>
+</html>
