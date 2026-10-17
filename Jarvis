@@ -4,249 +4,381 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#07101d">
-<title>J.A.R.V.I.S. V9</title>
+<meta name="theme-color" content="#09172b">
+<title>JARVIS V9</title>
+
 <style>
-:root{--bg:#07101d;--panel:#0d1a2b;--line:#24415a;--cyan:#48e5ff;--text:#effaff;--muted:#9bb2c5;--green:#65f0b6;--amber:#ffd27a}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 50% 0,#163451,#081321 48%,#040912);color:var(--text);font:16px Arial,sans-serif}
-button,input,textarea{font:inherit}button{cursor:pointer}
-.shell{max-width:1000px;margin:auto;padding:14px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0 16px;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:12px}
-.mark{width:44px;height:44px;border:1px solid var(--cyan);border-radius:50%;display:grid;place-items:center;color:var(--cyan);font-weight:bold;font-size:1.3rem}
-h1{font-size:1rem;letter-spacing:.12em;margin:0}
-.sub,.muted{color:var(--muted);font-size:.84rem}.sub{margin-top:5px}
-.status{color:var(--green);border:1px solid #235b50;border-radius:99px;padding:7px 9px;font-size:.7rem;white-space:nowrap}
-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-top:16px}
-.panel{min-width:0;background:linear-gradient(155deg,#102238,#091421);border:1px solid var(--line);border-radius:17px;padding:16px}
-.hero{grid-column:1/-1;text-align:center}
-.eyebrow{color:var(--cyan);font-size:.72rem;letter-spacing:.15em}
-.reactor-wrap{height:160px;display:grid;place-items:center;position:relative}
-.reactor{width:125px;height:125px;border:2px solid #48e5ff99;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 25px #48e5ff25,inset 0 0 24px #48e5ff15;animation:pulse 3s infinite}
-.reactor:before,.reactor:after{content:"";position:absolute;border:1px solid #48e5ff77;border-radius:50%;inset:12px}
-.reactor:after{inset:25px;border-style:dashed;animation:spin 18s linear infinite}
-.core{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,#fff,#48e5ff 40%,#1767a8 70%,transparent 74%);box-shadow:0 0 28px var(--cyan)}
-.orbit{position:absolute;width:175px;height:65px;border:1px solid #5288ff88;border-radius:50%;transform:rotate(-30deg)}
-.orbit.two{transform:rotate(48deg);height:80px;border-color:#48e5ff66}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{50%{box-shadow:0 0 35px #48e5ff55,inset 0 0 28px #48e5ff22}}
-h2{font-size:.92rem;margin:0 0 12px}
-.time{font-size:1.8rem;color:var(--cyan);margin:8px 0;font-variant-numeric:tabular-nums}
-.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
-.btn{border:1px solid #2a536d;background:#112a40;color:var(--text);border-radius:10px;padding:11px 13px;min-height:44px}
-.primary{background:linear-gradient(110deg,#126b86,#164a82)!important;border-color:var(--cyan)!important}
-.btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.quick .btn{text-align:left}
-.field{width:100%;background:#050d19;border:1px solid #2a465b;color:var(--text);border-radius:10px;padding:12px;margin:5px 0 10px}
-textarea.field{min-height:80px}
-.result{margin-top:10px;color:var(--green);overflow-wrap:anywhere}
-#heard,#response{padding:11px;margin-top:10px;border-radius:10px;line-height:1.5;text-align:left;overflow-wrap:anywhere}
-#heard{color:var(--amber);font-size:.82rem;min-height:20px}
-#response{background:#06101d;border:1px solid #19354a;min-height:62px;white-space:pre-wrap}
-.notes{display:grid;gap:8px;margin-top:12px}
-.note{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;overflow-wrap:anywhere}
-.note span{flex:1;white-space:pre-wrap}
-.delete{background:#291522;border:1px solid #784151;color:#ffd4dd;border-radius:8px;padding:7px}
-iframe{display:block;width:100%;height:352px;border:0;border-radius:12px;margin:12px 0}
-.weather{font-size:1.25rem;color:var(--cyan);margin:10px 0}
+:root{--cyan:#65dfff;--panel:rgba(5,20,39,.82)}
+body{margin:0;color:#fff;font-family:Arial,sans-serif;background:#09172b}
+.scene{min-height:100vh;position:relative;isolation:isolate;overflow:hidden;
+background:linear-gradient(#152b51 0%,#d57c83 38%,#f7b58b 52%,#09172b 82%)}
+.sun{position:absolute;z-index:-2;width:170px;height:170px;border-radius:50%;
+background:#ffbd92;left:50%;top:27%;transform:translateX(-50%);
+box-shadow:0 0 100px 35px #ffad8b55}
+.mountains{position:absolute;z-index:-1;top:0;left:0;width:100%;height:100%;pointer-events:none}
+header{padding:22px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:bold;letter-spacing:3px;font-size:22px}
+.brand small{display:block;font-size:10px;letter-spacing:1px;font-weight:normal;margin-top:5px}
+.datetime{text-align:right;font-size:20px}
+.datetime small{display:block;font-size:11px;margin-top:5px}
+main{max-width:850px;padding:20px 16px 35px;margin:auto}
+.intro{text-align:center;margin:15px 0 26px}
+h1{font-size:clamp(26px,5vw,38px);margin:0 0 10px}
+.intro p{font-size:14px}
+.command{max-width:540px;margin:25px auto 30px;display:flex;gap:8px;
+align-items:center;padding:7px 9px 7px 18px;border:1px solid var(--cyan);
+border-radius:40px;background:var(--panel)}
+.command input{flex:1;min-width:0;border:0;outline:0;background:transparent;
+color:white;font-size:16px;padding:10px 0}
+.command input::placeholder{color:#cbd9ed}
+button{font:inherit;color:white;cursor:pointer}
+.round{border:0;border-radius:50%;background:#138bdb;width:42px;height:42px;flex-shrink:0}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px}
+.card{min-height:100px;border:1px solid #ffffff30;border-radius:15px;
+background:var(--panel);display:flex;flex-direction:column;align-items:center;
+justify-content:center;gap:12px;transition:.2s}
+.card:hover{border-color:var(--cyan);background:#174b6a}
+.icon{font-size:27px;color:#c9edff}
+.card span:last-child{font-size:12px}
+.panel{margin-top:20px;border:1px solid #ffffff30;border-radius:15px;
+background:var(--panel);padding:16px}
+.panel-title{font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:10px}
+#reply{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+#reply:before{content:"> ";color:var(--cyan)}
+.hidden{display:none!important}
+.weather-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.stat{padding:13px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0b}
+.stat small{display:block;color:#d4e4f6;margin-bottom:8px}
+.stat strong{font-size:22px}
+.action{margin-top:12px;padding:10px 14px;border:1px solid var(--cyan);
+border-radius:10px;background:#0b3654}
+.spotify{display:block;width:100%;height:352px;border:0;border-radius:12px;margin-top:12px}
 a{color:var(--cyan)}
-footer{text-align:center;color:var(--muted);font-size:.72rem;padding:20px 8px}
-@media(max-width:650px){.shell{padding:11px}main{grid-template-columns:1fr}.hero{grid-column:auto}.panel{padding:14px}.status{font-size:.65rem}h1{font-size:.9rem}.sub{font-size:.67rem}}
+footer{text-align:center;padding:25px 5px;color:#d3e4f2;font-size:10px;letter-spacing:2px}
+@media(max-width:540px){
+ header{padding:17px 14px}.brand{font-size:18px}.datetime{font-size:16px}
+ main{padding:12px 12px 28px}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+ .card{min-height:88px}.icon{font-size:24px}
+}
 </style>
 </head>
+
 <body>
-<div class="shell">
+<div class="scene">
+<div class="sun"></div>
+
+<svg class="mountains" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<path fill="#425472" d="M0 440L110 350 175 390 300 245 390 350 500 190 610 350 735 225 850 360 965 270 1080 360 1200 285V900H0Z"/>
+<path fill="#263a59" d="M0 530L130 420 245 490 360 390 490 520 625 395 755 510 890 410 1020 505 1120 430 1200 480V900H0Z"/>
+<path fill="#101c30" d="M0 650L150 500 260 570 410 460 560 600 720 485 860 585 1010 480 1200 590V900H0Z"/>
+<path fill="#07101d" d="M0 770L220 660 430 745 620 650 800 765 1010 665 1200 755V900H0Z"/>
+</svg>
+
 <header>
-<div class="brand"><div class="mark">J</div><div><h1>J.A.R.V.I.S. <span style="color:var(--cyan)">V9</span></h1><div class="sub">PERSONAL ASSISTANT SYSTEM</div></div></div>
-<div id="status" class="status">● SYSTEM ONLINE</div>
+<div class="brand">JARVIS<small>YOUR PERSONAL ASSISTANT</small></div>
+<div class="datetime"><span id="clock">--:--</span><small id="date">Loading...</small></div>
 </header>
 
 <main>
-<section class="panel hero">
-<div class="eyebrow">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
-<div class="reactor-wrap"><div class="orbit"></div><div class="orbit two"></div><div class="reactor"><div class="core"></div></div></div>
-<div class="controls">
-<button id="listenBtn" class="btn primary">🎙️ TALK TO JARVIS</button>
-<button id="stopBtn" class="btn">■ STOP VOICE</button>
+<div class="intro">
+<h1 id="greeting">Welcome back.</h1>
+<p>Your assistant is ready. What would you like to do?</p>
 </div>
-<div id="heard" aria-live="polite">Try “What time is it?”, “Open music”, “Weather”, or “Help”.</div>
-<div id="response" aria-live="polite">Good day. JARVIS V9 is ready.</div>
-<p class="muted">Voice input depends on browser support and microphone permission. This personal project does not use a paid AI API.</p>
-</section>
 
-<section class="panel">
-<h2>⌚ SYSTEM STATUS</h2>
-<div id="clock" class="time">--:--:--</div>
-<div id="date" class="muted">Loading date…</div><br>
-<div class="quick">
-<button class="btn" data-command="time">🕒 Tell me the time</button>
-<button class="btn" data-command="date">📅 Tell me the date</button>
-<button class="btn" data-command="help">❔ Help</button>
-<button class="btn" data-command="joke">😄 Tell me a joke</button>
-<button class="btn" data-command="motivate">⚡ Motivate me</button>
-<button class="btn" data-command="hello">👋 Say hello</button>
+<form class="command" id="commandForm">
+<input id="commandInput" placeholder="Type or speak a command..." autocomplete="off">
+<button class="round" id="micButton" type="button" aria-label="Voice input">🎙</button>
+<button class="round" type="submit" aria-label="Send">➤</button>
+</form>
+
+<div class="grid">
+<button class="card" data-command="help"><span class="icon">▤</span><span>Commands</span></button>
+<button class="card" data-command="notes"><span class="icon">▧</span><span>Notes</span></button>
+<button class="card" data-command="calculator"><span class="icon">▦</span><span>Calculator</span></button>
+<button class="card" data-command="weather"><span class="icon">☁</span><span>Weather</span></button>
+<button class="card" data-command="music"><span class="icon">♫</span><span>Music</span></button>
 </div>
-</section>
 
 <section class="panel">
-<h2>🧮 QUICK CALCULATOR</h2>
-<label class="muted" for="calcInput">Example: 25 * 4 + 10</label>
-<input class="field" id="calcInput" inputmode="decimal" placeholder="25 * 4 + 10" maxlength="80">
-<button class="btn primary" id="calcBtn">Calculate</button>
-<div id="calcResult" class="result" aria-live="polite">Your result will appear here.</div>
+<div class="panel-title">JARVIS RESPONSE</div>
+<div id="reply" aria-live="polite">JARVIS is ready. Type or speak a command.</div>
 </section>
 
-<section class="panel">
-<h2>🌦️ DELHI WEATHER</h2>
-<p class="muted">Latest available conditions for Delhi, India.</p>
-<div id="weatherMain" class="weather">Loading weather…</div>
-<div id="weatherDetails" class="muted" aria-live="polite">Contacting weather service…</div><br>
-<button class="btn primary" id="weatherBtn">Refresh weather</button>
+<section class="panel hidden" id="weatherPanel">
+<h2>🌦️ Live Weather · Delhi</h2>
+<div id="weatherStatus" aria-live="polite">Weather not loaded yet.</div>
+<div class="weather-grid">
+<div class="stat"><small>Temperature</small><strong id="temperature">--</strong></div>
+<div class="stat"><small>Feels like</small><strong id="feelsLike">--</strong></div>
+<div class="stat"><small>Humidity</small><strong id="humidity">--</strong></div>
+<div class="stat"><small>Wind speed</small><strong id="windSpeed">--</strong></div>
+</div>
+<button class="action" type="button" id="refreshWeather">↻ Refresh weather</button>
 </section>
 
-<section class="panel">
-<h2>🎵 SPOTIFY MUSIC</h2>
-<p class="muted">Your playlist is embedded below. Tap Play; Spotify may ask you to sign in.</p>
-<iframe src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator" title="Your Spotify playlist" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<a href="https://open.spotify.com/playlist/1Zxvk6LxitGP1gUmeu40KK" target="_blank" rel="noopener noreferrer">Open playlist in Spotify ↗</a>
+<section class="panel hidden" id="musicPanel">
+<h2>🎵 Your Spotify Playlist</h2>
+<p>Choose a track in the player below. Playback may require Spotify sign-in.</p>
+<iframe class="spotify" id="spotifyPlayer"
+title="Spotify playlist player"
+src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator"
+allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+loading="lazy"></iframe>
+<p>If the player does not load, <a href="https://open.spotify.com/playlist/1Zxvk6LxitGP1gUmeu40KK" target="_blank" rel="noopener noreferrer">open your playlist in Spotify ↗</a>.</p>
 </section>
 
-<section class="panel" style="grid-column:1/-1">
-<h2>📝 MEMORY NOTES</h2>
-<label class="muted" for="noteInput">Save a reminder or thought on this device</label>
-<textarea class="field" id="noteInput" placeholder="Example: Revise motion in a straight line"></textarea>
-<button class="btn primary" id="saveNote">Save note</button>
-<div id="notes" class="notes"></div>
-<p class="muted">Notes are saved in this browser on this device. Clearing browser data may erase them.</p>
-</section>
+<footer>JARVIS V9 · DREAM · PLAN · ACHIEVE</footer>
 </main>
-<footer>J.A.R.V.I.S. V9 • Personal project • Some features need internet/browser support</footer>
 </div>
 
 <script>
-(function(){
-const $=id=>document.getElementById(id);
-const response=$('response'),status=$('status'),heard=$('heard');
-let recognition=null;
+"use strict";
 
-function updateClock(){
- const n=new Date();
- $('clock').textContent=n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
- $('date').textContent=n.toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-}
-updateClock();setInterval(updateClock,1000);
+const $ = id => document.getElementById(id);
+const input = $("commandInput");
+const reply = $("reply");
+let recognition = null;
+let weatherLoading = false;
 
-function say(t){
- response.textContent=t;
- if('speechSynthesis'in window){
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(t);
-  u.lang='en-IN';u.rate=.94;u.pitch=.82;speechSynthesis.speak(u);
- }
+function speak(message) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const speech = new SpeechSynthesisUtterance(message);
+  speech.lang = "en-IN";
+  speech.rate = 1;
+  window.speechSynthesis.speak(speech);
 }
 
-function calculate(){
- const e=$('calcInput').value.trim();
- if(!e){$('calcResult').textContent='Enter a calculation first.';return;}
- if(!/^[\d\s.+\-*/()%]+$/.test(e)){
-  $('calcResult').textContent='Use numbers and arithmetic symbols only.';return;
- }
- try{
-  const n=Function('"use strict";return ('+e+')')();
-  if(typeof n!=='number'||!Number.isFinite(n))throw Error();
-  $('calcResult').textContent='Result: '+n;
- }catch{$('calcResult').textContent='Could not calculate that. Check the expression.';}
+function respond(message, speakMessage = true) {
+  reply.textContent = message;
+  if (speakMessage) speak(message);
 }
-$('calcBtn').addEventListener('click',calculate);
-$('calcInput').addEventListener('keydown',e=>{if(e.key==='Enter')calculate();});
 
-function getNotes(){try{return JSON.parse(localStorage.getItem('jarvis_v9_notes')||'[]')}catch{return []}}
-function renderNotes(){
- const root=$('notes');root.replaceChildren();
- getNotes().forEach(n=>{
-  const row=document.createElement('div');row.className='note';
-  const span=document.createElement('span');span.textContent=n.text;
-  const del=document.createElement('button');del.className='delete';del.textContent='Delete';
-  del.addEventListener('click',()=>{
-   try{localStorage.setItem('jarvis_v9_notes',JSON.stringify(getNotes().filter(x=>x.id!==n.id)));renderNotes();}
-   catch{say('Storage is unavailable.');}
+function updateClock() {
+  const now = new Date();
+  $("clock").textContent = now.toLocaleTimeString([], {
+    hour: "2-digit", minute: "2-digit"
   });
-  row.append(span,del);root.append(row);
- });
- if(!root.children.length){const p=document.createElement('p');p.className='muted';p.textContent='No saved notes yet.';root.append(p);}
-}
-function saveNote(t){
- try{
-  const a=getNotes();a.unshift({id:Date.now(),text:t});
-  localStorage.setItem('jarvis_v9_notes',JSON.stringify(a.slice(0,100)));renderNotes();return true;
- }catch{say('Storage is unavailable. Your note could not be saved.');return false;}
-}
-$('saveNote').addEventListener('click',()=>{
- const t=$('noteInput').value.trim();
- if(!t){$('noteInput').focus();return;}
- if(saveNote(t)){$('noteInput').value='';say('Note saved on this device.');}
-});
-renderNotes();
+  $("date").textContent = now.toLocaleDateString([], {
+    weekday: "short", day: "numeric", month: "short", year: "numeric"
+  });
 
-const codes={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
-async function loadWeather(){
- $('weatherMain').textContent='Loading weather…';
- $('weatherDetails').textContent='Contacting weather service…';
- $('weatherBtn').disabled=true;
- try{
-  const url='https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Asia%2FKolkata';
-  const r=await fetch(url);if(!r.ok)throw Error();
-  const c=(await r.json()).current;
-  $('weatherMain').textContent=(codes[c.weather_code]||'Current conditions')+' · '+Math.round(c.temperature_2m)+'°C';
-  $('weatherDetails').textContent='Feels like '+Math.round(c.apparent_temperature)+'°C · Humidity '+c.relative_humidity_2m+'% · Wind '+Math.round(c.wind_speed_10m)+' km/h · Updated '+c.time.replace('T',' ');
- }catch{
-  $('weatherMain').textContent='Weather unavailable';
-  $('weatherDetails').textContent='Check your internet connection and tap Refresh weather again.';
- }finally{$('weatherBtn').disabled=false;}
+  const hour = now.getHours();
+  $("greeting").textContent =
+    (hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening") +
+    ", Riyansh";
 }
-$('weatherBtn').addEventListener('click',loadWeather);loadWeather();
+updateClock();
+setInterval(updateClock, 1000);
 
-function runCommand(raw){
- const t=String(raw||'').trim().toLowerCase();
- heard.textContent=t?'You said: '+raw:'';
- if(!t){say('I did not hear a command. Try again.');return;}
- if(/\b(time|clock)\b/.test(t)){say('The time is '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));return;}
- if(/\b(date|day|today)\b/.test(t)){say('Today is '+new Date().toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'}));return;}
- if(/\b(hello|hi|hey|jarvis)\b/.test(t)){say('Hello. JARVIS V9 is online and ready.');return;}
- if(/\b(help|commands|what can you do)\b/.test(t)){say('I can tell time and date, calculate, save notes, open Spotify music, show Delhi weather, tell jokes and motivate you.');return;}
- if(/\b(joke|funny)\b/.test(t)){say('Why did the computer go to the doctor? It had a virus.');return;}
- if(/\b(motivate|motivation|inspire)\b/.test(t)){say('Progress is built one focused step at a time. Start with the next useful task.');return;}
- if(/\b(music|spotify|playlist|song|songs)\b/.test(t)){document.querySelector('iframe').scrollIntoView({behavior:'smooth',block:'center'});say('Your Spotify playlist is ready below. Press Play in the player.');return;}
- if(/\b(weather|temperature)\b/.test(t)){$('weatherMain').scrollIntoView({behavior:'smooth',block:'center'});loadWeather();say('Refreshing Delhi weather.');return;}
- if(t.startsWith('calculate ')){$('calcInput').value=raw.trim().slice(10);calculate();return;}
- if(t.startsWith('remember ')){const note=raw.trim().slice(9).trim();if(note&&saveNote(note)){say('I saved that note on this device.');return;}}
- say('I did not recognise that command. Say Help to hear my commands.');
+function weatherDescription(code) {
+  if (code === 0) return "Clear sky";
+  if ([1, 2].includes(code)) return "Mostly clear / partly cloudy";
+  if (code === 3) return "Overcast";
+  if ([45, 48].includes(code)) return "Foggy";
+  if ([51, 53, 55, 56, 57].includes(code)) return "Drizzle";
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Rain";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Snow";
+  if ([95, 96, 99].includes(code)) return "Thunderstorm";
+  return "Current conditions";
 }
-function startListening(){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SR){status.textContent='● VOICE NOT SUPPORTED';say('Voice recognition is not available in this browser. Try Chrome and allow microphone access.');return;}
- try{
-  recognition=new SR();recognition.lang='en-IN';recognition.interimResults=false;recognition.maxAlternatives=1;
-  recognition.onstart=()=>{status.textContent='● LISTENING';heard.textContent='Listening…';};
-  recognition.onresult=e=>runCommand(e.results[0][0].transcript);
-  recognition.onerror=e=>{status.textContent='● VOICE ISSUE';heard.textContent='Voice error: '+e.error;say('Check microphone permission and try again.');};
-  recognition.onend=()=>status.textContent='● SYSTEM ONLINE';
-  recognition.start();
- }catch{status.textContent='● SYSTEM ONLINE';say('Please try the microphone button again.');}
+
+async function loadWeather() {
+  if (weatherLoading) return;
+  weatherLoading = true;
+  $("weatherPanel").classList.remove("hidden");
+  $("weatherStatus").textContent = "Fetching live weather...";
+  $("refreshWeather").disabled = true;
+
+  try {
+    // Delhi coordinates. No GPS permission is needed.
+    const url = "https://api.open-meteo.com/v1/forecast" +
+      "?latitude=28.6139&longitude=77.2090" +
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m" +
+      "&timezone=Asia%2FKolkata";
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Weather service unavailable");
+
+    const data = await response.json();
+    const current = data.current;
+    if (!current) throw new Error("No current weather data");
+
+    $("temperature").textContent = Math.round(current.temperature_2m) + "°C";
+    $("feelsLike").textContent = Math.round(current.apparent_temperature) + "°C";
+    $("humidity").textContent = Math.round(current.relative_humidity_2m) + "%";
+    $("windSpeed").textContent = Math.round(current.wind_speed_10m) + " km/h";
+
+    const updated = new Date(current.time).toLocaleTimeString([], {
+      hour: "2-digit", minute: "2-digit"
+    });
+    $("weatherStatus").textContent =
+      weatherDescription(current.weather_code) + " · Updated " + updated;
+    respond("Here is the latest weather for Delhi.", false);
+  } catch (error) {
+    $("weatherStatus").textContent =
+      "Weather could not load. Check your internet and tap Refresh weather.";
+    respond("I could not load the weather. Please check your internet connection.", false);
+  } finally {
+    weatherLoading = false;
+    $("refreshWeather").disabled = false;
+  }
 }
-$('listenBtn').addEventListener('click',startListening);
-$('stopBtn').addEventListener('click',()=>{
- if(recognition){try{recognition.stop()}catch{}}
- if('speechSynthesis'in window)speechSynthesis.cancel();
- status.textContent='● SYSTEM ONLINE';
+
+function showMusic() {
+  $("musicPanel").classList.remove("hidden");
+  $("musicPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+  respond("Your Spotify playlist is ready below. Choose a track to play.", false);
+}
+
+function showNotes() {
+  let notes = [];
+  try {
+    notes = JSON.parse(localStorage.getItem("jarvisNotes") || "[]");
+    if (!Array.isArray(notes)) notes = [];
+  } catch (error) {
+    notes = [];
+  }
+
+  const choice = prompt(
+    "Notes:\n" + (notes.length ? notes.map((n, i) => (i + 1) + ". " + n).join("\n") : "No saved notes.") +
+    "\n\nType a new note to save, or type DELETE to clear all notes."
+  );
+  if (choice === null || !choice.trim()) return;
+
+  if (choice.trim().toUpperCase() === "DELETE") {
+    localStorage.removeItem("jarvisNotes");
+    respond("All saved notes have been deleted.");
+    return;
+  }
+
+  notes.push(choice.trim());
+  try {
+    localStorage.setItem("jarvisNotes", JSON.stringify(notes));
+    respond("Your note has been saved on this device.");
+  } catch (error) {
+    respond("I could not save the note in this browser.");
+  }
+}
+
+// Safe basic calculator: only arithmetic characters are accepted.
+function calculate() {
+  const expression = prompt("Enter a calculation, e.g. 12*(4+2)");
+  if (expression === null) return;
+
+  const value = expression.replace(/\s/g, "");
+  if (!value || !/^[0-9.+\-*/()%]+$/.test(value)) {
+    respond("Use numbers and basic arithmetic operators only.");
+    return;
+  }
+
+  try {
+    // Validate tokens before evaluation.
+    const tokens = value.match(/\d*\.?\d+|[()+\-*/%]/g) || [];
+    if (tokens.join("") !== value) throw new Error("Invalid expression");
+    const result = Function('"use strict"; return (' + value + ')')();
+    if (typeof result !== "number" || !Number.isFinite(result)) {
+      throw new Error("Invalid result");
+    }
+    respond("The answer is " + result + ".");
+  } catch (error) {
+    respond("Invalid calculation. Please check the expression.");
+  }
+}
+
+function runCommand(raw) {
+  const command = raw.trim().toLowerCase();
+  if (!command) return;
+
+  if (command === "help" || command.includes("commands")) {
+    respond("Try: weather, music, time, date, notes, calculator, joke, or motivate me.");
+  } else if (command.includes("weather") || command.includes("temperature") ||
+             command.includes("rain")) {
+    loadWeather();
+  } else if (command.includes("music") || command.includes("spotify") ||
+             command.includes("play song") || command.includes("playlist")) {
+    showMusic();
+  } else if (command.includes("time")) {
+    respond("The current time is " + new Date().toLocaleTimeString() + ".");
+  } else if (command.includes("date")) {
+    respond("Today is " + new Date().toLocaleDateString() + ".");
+  } else if (command.includes("note")) {
+    showNotes();
+  } else if (command.includes("calculator") || command === "calculate") {
+    calculate();
+  } else if (command.includes("joke")) {
+    respond("Why did the computer go to the doctor? It had a virus!");
+  } else if (command.includes("motivat")) {
+    respond("Stay focused, Riyansh. Small consistent steps create big results.");
+  } else if (command === "hello" || command.includes("hello jarvis") ||
+             command === "hi" || command.includes("hi jarvis")) {
+    respond("Hello Riyansh. JARVIS is online. How can I help?");
+  } else {
+    respond("I do not know that command yet. Type help to see available commands.");
+  }
+}
+
+$("commandForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const command = input.value;
+  input.value = "";
+  runCommand(command);
 });
-document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>runCommand(b.dataset.command)));
-})();
+
+document.querySelectorAll("[data-command]").forEach(button => {
+  button.addEventListener("click", () => runCommand(button.dataset.command));
+});
+
+$("refreshWeather").addEventListener("click", loadWeather);
+
+const SpeechRecognitionAPI =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+$("micButton").addEventListener("click", () => {
+  if (!SpeechRecognitionAPI) {
+    respond("Voice input is not supported here. Please type your command.");
+    return;
+  }
+
+  if (recognition) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognitionAPI();
+  recognition.lang = "en-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    $("micButton").textContent = "⏹";
+    respond("Listening. Please speak now.", false);
+  };
+
+  recognition.onresult = event => {
+    const spokenCommand = event.results[0][0].transcript;
+    input.value = spokenCommand;
+    runCommand(spokenCommand);
+  };
+
+  recognition.onerror = () => {
+    respond("Microphone unavailable. Check browser permission and try again.", false);
+  };
+
+  recognition.onend = () => {
+    $("micButton").textContent = "🎙";
+    recognition = null;
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    recognition = null;
+    $("micButton").textContent = "🎙";
+    respond("Please try voice input again.", false);
+  }
+});
 </script>
 </body>
 </html>
-```
-
-
-
