@@ -3,269 +3,250 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050b18">
-<title>JARVIS V8 — Personal Assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07101d">
+<title>J.A.R.V.I.S. V9</title>
 <style>
-:root{--bg:#050b18;--panel:#0b1528;--line:#18334b;--cyan:#35e6ff;--blue:#4e83ff;--text:#e8f8ff;--muted:#8aa9bb;--green:#55f2b0;--amber:#ffc66d}
+:root{--bg:#07101d;--panel:#0d1a2b;--line:#24415a;--cyan:#48e5ff;--text:#effaff;--muted:#9bb2c5;--green:#65f0b6;--amber:#ffd27a}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 5%,#102c48 0,#071324 42%,#030711 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.shell{width:min(100%,980px);margin:auto;padding:18px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:8px 0 16px}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-mark{width:44px;height:44px;border:1px solid var(--cyan);border-radius:50%;display:grid;place-items:center;color:var(--cyan);font-weight:800;box-shadow:0 0 20px #35e6ff22}
-h1{font-size:1.05rem;letter-spacing:.16em;margin:0}
-.subtitle{font-size:.75rem;color:var(--muted);margin-top:5px}
-.status{font-size:.75rem;color:var(--green);border:1px solid #235b50;border-radius:99px;padding:7px 10px;white-space:nowrap}
-main{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-top:18px}
-.panel{background:linear-gradient(160deg,#0c1b2d,#081120);border:1px solid var(--line);border-radius:18px;padding:16px;min-width:0}
-.hero{grid-column:1/-1;text-align:center;overflow:hidden}
-.eyebrow{color:var(--cyan);letter-spacing:.18em;font-size:.72rem}
-.reactor-wrap{height:210px;display:grid;place-items:center;position:relative}
-.reactor{width:154px;height:154px;border:2px solid #35e6ff88;border-radius:50%;display:grid;place-items:center;position:relative;box-shadow:0 0 20px #35e6ff22,inset 0 0 22px #35e6ff18;animation:pulse 3s ease-in-out infinite}
-.reactor:before,.reactor:after{content:"";position:absolute;border:1px solid #35e6ff66;border-radius:50%}
-.reactor:before{inset:14px}
-.reactor:after{inset:29px;border-style:dashed;animation:spin 18s linear infinite}
-.core{width:42px;height:42px;background:radial-gradient(circle,#eaffff,#35e6ff 36%,#1670b9 70%,transparent 72%);border-radius:50%;box-shadow:0 0 26px var(--cyan)}
-.orbit{position:absolute;width:190px;height:76px;border:1px solid #4e83ff88;border-radius:50%;transform:rotate(-30deg)}
-.orbit.two{transform:rotate(48deg);width:190px;height:88px;border-color:#35e6ff66}
+body{margin:0;background:radial-gradient(ellipse at 50% 0,#163451,#081321 48%,#040912);color:var(--text);font:16px Arial,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.shell{max-width:1000px;margin:auto;padding:14px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0 16px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:44px;height:44px;border:1px solid var(--cyan);border-radius:50%;display:grid;place-items:center;color:var(--cyan);font-weight:bold;font-size:1.3rem}
+h1{font-size:1rem;letter-spacing:.12em;margin:0}
+.sub,.muted{color:var(--muted);font-size:.84rem}.sub{margin-top:5px}
+.status{color:var(--green);border:1px solid #235b50;border-radius:99px;padding:7px 9px;font-size:.7rem;white-space:nowrap}
+main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-top:16px}
+.panel{min-width:0;background:linear-gradient(155deg,#102238,#091421);border:1px solid var(--line);border-radius:17px;padding:16px}
+.hero{grid-column:1/-1;text-align:center}
+.eyebrow{color:var(--cyan);font-size:.72rem;letter-spacing:.15em}
+.reactor-wrap{height:160px;display:grid;place-items:center;position:relative}
+.reactor{width:125px;height:125px;border:2px solid #48e5ff99;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 25px #48e5ff25,inset 0 0 24px #48e5ff15;animation:pulse 3s infinite}
+.reactor:before,.reactor:after{content:"";position:absolute;border:1px solid #48e5ff77;border-radius:50%;inset:12px}
+.reactor:after{inset:25px;border-style:dashed;animation:spin 18s linear infinite}
+.core{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,#fff,#48e5ff 40%,#1767a8 70%,transparent 74%);box-shadow:0 0 28px var(--cyan)}
+.orbit{position:absolute;width:175px;height:65px;border:1px solid #5288ff88;border-radius:50%;transform:rotate(-30deg)}
+.orbit.two{transform:rotate(48deg);height:80px;border-color:#48e5ff66}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{50%{box-shadow:0 0 32px #35e6ff55,inset 0 0 28px #35e6ff22}}
-h2{font-size:.95rem;margin:0 0 12px;letter-spacing:.06em}
-p{line-height:1.5}
-.muted{color:var(--muted);font-size:.86rem}
-.big-time{font-size:1.75rem;font-variant-numeric:tabular-nums;color:var(--cyan);margin:8px 0}
-.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
-.btn{border:1px solid #24516a;background:#10283d;color:var(--text);border-radius:11px;padding:11px 14px;min-height:44px}
-.btn.primary{background:linear-gradient(110deg,#126b86,#164a82);border-color:var(--cyan);color:white}
-.btn:hover{filter:brightness(1.15)}
+@keyframes pulse{50%{box-shadow:0 0 35px #48e5ff55,inset 0 0 28px #48e5ff22}}
+h2{font-size:.92rem;margin:0 0 12px}
+.time{font-size:1.8rem;color:var(--cyan);margin:8px 0;font-variant-numeric:tabular-nums}
+.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
+.btn{border:1px solid #2a536d;background:#112a40;color:var(--text);border-radius:10px;padding:11px 13px;min-height:44px}
+.primary{background:linear-gradient(110deg,#126b86,#164a82)!important;border-color:var(--cyan)!important}
 .btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-#response{min-height:92px;white-space:pre-wrap;color:#d9f7ff;background:#06101d;border:1px solid #142c40;border-radius:12px;padding:12px;margin-top:12px;line-height:1.5}
-#heard{color:var(--amber);font-size:.84rem;min-height:20px;margin-top:8px}
-.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.quick .btn{text-align:left}
-.field{width:100%;background:#050d19;border:1px solid #234158;color:var(--text);border-radius:10px;padding:11px;margin:4px 0 10px}
-textarea.field{min-height:90px;resize:vertical}
-.note-list{display:grid;gap:8px;margin-top:10px}
-.note{padding:10px;border:1px solid var(--line);border-radius:10px;display:flex;justify-content:space-between;gap:8px;align-items:start;overflow-wrap:anywhere}
+.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.quick .btn{text-align:left}
+.field{width:100%;background:#050d19;border:1px solid #2a465b;color:var(--text);border-radius:10px;padding:12px;margin:5px 0 10px}
+textarea.field{min-height:80px}
+.result{margin-top:10px;color:var(--green);overflow-wrap:anywhere}
+#heard,#response{padding:11px;margin-top:10px;border-radius:10px;line-height:1.5;text-align:left;overflow-wrap:anywhere}
+#heard{color:var(--amber);font-size:.82rem;min-height:20px}
+#response{background:#06101d;border:1px solid #19354a;min-height:62px;white-space:pre-wrap}
+.notes{display:grid;gap:8px;margin-top:12px}
+.note{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;overflow-wrap:anywhere}
 .note span{flex:1;white-space:pre-wrap}
-.delete{border:1px solid #653c4a;color:#ffb8c5;background:#28121c;border-radius:8px;padding:5px 8px}
-.spotify-frame{display:block;width:100%;height:352px;border:0;border-radius:12px}
+.delete{background:#291522;border:1px solid #784151;color:#ffd4dd;border-radius:8px;padding:7px}
+iframe{display:block;width:100%;height:352px;border:0;border-radius:12px;margin:12px 0}
+.weather{font-size:1.25rem;color:var(--cyan);margin:10px 0}
+a{color:var(--cyan)}
 footer{text-align:center;color:var(--muted);font-size:.72rem;padding:20px 8px}
-@media(max-width:650px){.shell{padding:12px}main{grid-template-columns:1fr}.hero{grid-column:auto}.reactor-wrap{height:190px}.panel{padding:14px}.status{font-size:.68rem}}
+@media(max-width:650px){.shell{padding:11px}main{grid-template-columns:1fr}.hero{grid-column:auto}.panel{padding:14px}.status{font-size:.65rem}h1{font-size:.9rem}.sub{font-size:.67rem}}
 </style>
 </head>
 <body>
 <div class="shell">
 <header>
-  <div class="brand">
-    <div class="brand-mark">J</div>
-    <div><h1>J.A.R.V.I.S. <span style="color:var(--cyan)">V8</span></h1><div class="subtitle">PERSONAL ASSISTANT SYSTEM</div></div>
-  </div>
-  <div class="status" id="status" role="status">● SYSTEM ONLINE</div>
+<div class="brand"><div class="mark">J</div><div><h1>J.A.R.V.I.S. <span style="color:var(--cyan)">V9</span></h1><div class="sub">PERSONAL ASSISTANT SYSTEM</div></div></div>
+<div id="status" class="status">● SYSTEM ONLINE</div>
 </header>
 
 <main>
 <section class="panel hero">
-  <div class="eyebrow">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
-  <div class="reactor-wrap" aria-label="Animated blue futuristic reactor">
-    <div class="orbit"></div><div class="orbit two"></div>
-    <div class="reactor"><div class="core"></div></div>
-  </div>
-  <div class="controls">
-    <button class="btn primary" id="listenBtn">🎙️ TALK TO JARVIS</button>
-    <button class="btn" id="stopBtn">■ STOP VOICE</button>
-  </div>
-  <div id="heard" aria-live="polite">Say “Hello Jarvis” or try “What time is it?”</div>
-  <div id="response" aria-live="polite">Good day. JARVIS V8 is ready. Choose a command or use the microphone.</div>
-  <p class="muted">Voice recognition depends on browser support and microphone permission.</p>
+<div class="eyebrow">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+<div class="reactor-wrap"><div class="orbit"></div><div class="orbit two"></div><div class="reactor"><div class="core"></div></div></div>
+<div class="controls">
+<button id="listenBtn" class="btn primary">🎙️ TALK TO JARVIS</button>
+<button id="stopBtn" class="btn">■ STOP VOICE</button>
+</div>
+<div id="heard" aria-live="polite">Try “What time is it?”, “Open music”, “Weather”, or “Help”.</div>
+<div id="response" aria-live="polite">Good day. JARVIS V9 is ready.</div>
+<p class="muted">Voice input depends on browser support and microphone permission. This personal project does not use a paid AI API.</p>
 </section>
 
 <section class="panel">
-  <h2>⌚ SYSTEM STATUS</h2>
-  <div class="big-time" id="clock">--:--:--</div>
-  <div id="date" class="muted">Loading date…</div>
-  <div style="height:12px"></div>
-  <div class="quick">
-    <button class="btn" data-command="time">🕒 Tell me the time</button>
-    <button class="btn" data-command="date">📅 Tell me the date</button>
-    <button class="btn" data-command="help">❔ Help</button>
-    <button class="btn" data-command="joke">😄 Tell me a joke</button>
-    <button class="btn" data-command="motivate">⚡ Motivate me</button>
-    <button class="btn" data-command="hello">👋 Say hello</button>
-    <button class="btn primary" data-command="music">🎵 Open Spotify</button>
-  </div>
+<h2>⌚ SYSTEM STATUS</h2>
+<div id="clock" class="time">--:--:--</div>
+<div id="date" class="muted">Loading date…</div><br>
+<div class="quick">
+<button class="btn" data-command="time">🕒 Tell me the time</button>
+<button class="btn" data-command="date">📅 Tell me the date</button>
+<button class="btn" data-command="help">❔ Help</button>
+<button class="btn" data-command="joke">😄 Tell me a joke</button>
+<button class="btn" data-command="motivate">⚡ Motivate me</button>
+<button class="btn" data-command="hello">👋 Say hello</button>
+</div>
 </section>
 
 <section class="panel">
-  <h2>🧮 QUICK CALCULATOR</h2>
-  <label class="muted" for="calcInput">Example: 25 * 4 + 10</label>
-  <input class="field" id="calcInput" inputmode="decimal" placeholder="25 * 4 + 10" maxlength="80">
-  <button class="btn primary" id="calcBtn">Calculate</button>
-  <div id="calcResult" class="muted" style="margin-top:10px" aria-live="polite">Your result will appear here.</div>
+<h2>🧮 QUICK CALCULATOR</h2>
+<label class="muted" for="calcInput">Example: 25 * 4 + 10</label>
+<input class="field" id="calcInput" inputmode="decimal" placeholder="25 * 4 + 10" maxlength="80">
+<button class="btn primary" id="calcBtn">Calculate</button>
+<div id="calcResult" class="result" aria-live="polite">Your result will appear here.</div>
+</section>
+
+<section class="panel">
+<h2>🌦️ DELHI WEATHER</h2>
+<p class="muted">Latest available conditions for Delhi, India.</p>
+<div id="weatherMain" class="weather">Loading weather…</div>
+<div id="weatherDetails" class="muted" aria-live="polite">Contacting weather service…</div><br>
+<button class="btn primary" id="weatherBtn">Refresh weather</button>
+</section>
+
+<section class="panel">
+<h2>🎵 SPOTIFY MUSIC</h2>
+<p class="muted">Your playlist is embedded below. Tap Play; Spotify may ask you to sign in.</p>
+<iframe src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator" title="Your Spotify playlist" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<a href="https://open.spotify.com/playlist/1Zxvk6LxitGP1gUmeu40KK" target="_blank" rel="noopener noreferrer">Open playlist in Spotify ↗</a>
 </section>
 
 <section class="panel" style="grid-column:1/-1">
-  <h2>🎵 JARVIS MUSIC PLAYER — SPOTIFY</h2>
-  <p class="muted">Your playlist, directly inside JARVIS. Tap Play in the Spotify player below.</p>
-  <iframe
-    class="spotify-frame"
-    src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator"
-    title="Your Spotify playlist"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy">
-  </iframe>
-  <p class="muted">Spotify playback and available tracks depend on your account, region, and Spotify's playback rules.</p>
-</section>
-
-<section class="panel" style="grid-column:1/-1">
-  <h2>📝 MEMORY NOTES</h2>
-  <label class="muted" for="noteInput">Save a reminder or thought on this device</label>
-  <textarea class="field" id="noteInput" placeholder="Example: Revise motion in a straight line"></textarea>
-  <button class="btn primary" id="saveNote">Save note</button>
-  <div id="notes" class="note-list"></div>
-  <p class="muted">Notes are stored in this browser on this device. Clearing browser data may erase them.</p>
+<h2>📝 MEMORY NOTES</h2>
+<label class="muted" for="noteInput">Save a reminder or thought on this device</label>
+<textarea class="field" id="noteInput" placeholder="Example: Revise motion in a straight line"></textarea>
+<button class="btn primary" id="saveNote">Save note</button>
+<div id="notes" class="notes"></div>
+<p class="muted">Notes are saved in this browser on this device. Clearing browser data may erase them.</p>
 </section>
 </main>
-
-<footer>JARVIS V8 • Personal project • Spotify embed and browser features</footer>
+<footer>J.A.R.V.I.S. V9 • Personal project • Some features need internet/browser support</footer>
 </div>
 
 <script>
 (function(){
-  const $=id=>document.getElementById(id);
-  const response=$('response'), status=$('status'), heard=$('heard');
-  let recognition=null;
+const $=id=>document.getElementById(id);
+const response=$('response'),status=$('status'),heard=$('heard');
+let recognition=null;
 
-  function updateClock(){
-    const now=new Date();
-    $('clock').textContent=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    $('date').textContent=now.toLocaleDateString([], {weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  }
-  updateClock();
-  setInterval(updateClock,1000);
+function updateClock(){
+ const n=new Date();
+ $('clock').textContent=n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+ $('date').textContent=n.toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+updateClock();setInterval(updateClock,1000);
 
-  function say(text){
-    response.textContent=text;
-    if('speechSynthesis' in window){
-      window.speechSynthesis.cancel();
-      const utterance=new SpeechSynthesisUtterance(text);
-      utterance.lang='en-IN';
-      utterance.rate=0.94;
-      utterance.pitch=0.82;
-      window.speechSynthesis.speak(utterance);
-    }
-  }
+function say(t){
+ response.textContent=t;
+ if('speechSynthesis'in window){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang='en-IN';u.rate=.94;u.pitch=.82;speechSynthesis.speak(u);
+ }
+}
 
-  function runCommand(raw){
-    const text=String(raw||'').trim().toLowerCase();
-    heard.textContent=text ? 'You said: '+raw : '';
-    if(!text){say('I did not hear a command. Please try again.');return;}
+function calculate(){
+ const e=$('calcInput').value.trim();
+ if(!e){$('calcResult').textContent='Enter a calculation first.';return;}
+ if(!/^[\d\s.+\-*/()%]+$/.test(e)){
+  $('calcResult').textContent='Use numbers and arithmetic symbols only.';return;
+ }
+ try{
+  const n=Function('"use strict";return ('+e+')')();
+  if(typeof n!=='number'||!Number.isFinite(n))throw Error();
+  $('calcResult').textContent='Result: '+n;
+ }catch{$('calcResult').textContent='Could not calculate that. Check the expression.';}
+}
+$('calcBtn').addEventListener('click',calculate);
+$('calcInput').addEventListener('keydown',e=>{if(e.key==='Enter')calculate();});
 
-    if(/\b(music|spotify|playlist|play songs)\b/.test(text)){
-      document.querySelector('.spotify-frame').scrollIntoView({behavior:'smooth',block:'center'});
-      say('Opening your Spotify playlist. Tap the play button in the Spotify player.');
-      return;
-    }
-    if(/\b(time|clock)\b/.test(text)){say('The time is '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));return;}
-    if(/\b(date|day|today)\b/.test(text)){say('Today is '+new Date().toLocaleDateString([], {weekday:'long',year:'numeric',month:'long',day:'numeric'}));return;}
-    if(/\b(hello|hi|hey|jarvis)\b/.test(text)){say('Hello. JARVIS V8 is online and ready to assist you.');return;}
-    if(/\b(help|commands|what can you do)\b/.test(text)){say('I can tell the time and date, open your Spotify playlist, tell a joke, give motivation, calculate basic sums, and save notes.');return;}
-    if(/\b(joke|funny)\b/.test(text)){say('Why did the computer go to the doctor? It had a virus.');return;}
-    if(/\b(motivate|motivation|inspire)\b/.test(text)){say('Progress is built one focused step at a time. Start with the next useful task.');return;}
-    if(text.startsWith('calculate ')){const expr=raw.trim().slice(10);$('calcInput').value=expr;calculate();return;}
-    if(text.startsWith('remember ')){const note=raw.trim().slice(9).trim();if(note){saveNote(note);say('I saved that note on this device.');return;}}
-    say('I can help with time, date, Spotify, calculations, notes, jokes, and motivation. Say help to hear the command list.');
-  }
-
-  function startListening(){
-    const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SpeechRecognition){status.textContent='● VOICE NOT SUPPORTED';say('Voice recognition is not available in this browser. Try Chrome or use the buttons.');return;}
-    try{
-      recognition=new SpeechRecognition();
-      recognition.lang='en-IN';
-      recognition.interimResults=false;
-      recognition.maxAlternatives=1;
-      recognition.onstart=()=>{status.textContent='● LISTENING';heard.textContent='Listening…';};
-      recognition.onresult=e=>runCommand(e.results[0][0].transcript);
-      recognition.onerror=e=>{status.textContent='● VOICE ISSUE';heard.textContent='Voice error: '+e.error;say('I could not access voice input. Check microphone permission and try again.');};
-      recognition.onend=()=>{status.textContent='● SYSTEM ONLINE';};
-      recognition.start();
-    }catch(e){status.textContent='● SYSTEM ONLINE';say('Please try the microphone button again.');}
-  }
-
-  $('listenBtn').addEventListener('click',startListening);
-  $('stopBtn').addEventListener('click',()=>{
-    if(recognition){try{recognition.stop();}catch(e){}}
-    if('speechSynthesis' in window)window.speechSynthesis.cancel();
-    status.textContent='● SYSTEM ONLINE';
+function getNotes(){try{return JSON.parse(localStorage.getItem('jarvis_v9_notes')||'[]')}catch{return []}}
+function renderNotes(){
+ const root=$('notes');root.replaceChildren();
+ getNotes().forEach(n=>{
+  const row=document.createElement('div');row.className='note';
+  const span=document.createElement('span');span.textContent=n.text;
+  const del=document.createElement('button');del.className='delete';del.textContent='Delete';
+  del.addEventListener('click',()=>{
+   try{localStorage.setItem('jarvis_v9_notes',JSON.stringify(getNotes().filter(x=>x.id!==n.id)));renderNotes();}
+   catch{say('Storage is unavailable.');}
   });
-  document.querySelectorAll('[data-command]').forEach(btn=>btn.addEventListener('click',()=>runCommand(btn.dataset.command)));
+  row.append(span,del);root.append(row);
+ });
+ if(!root.children.length){const p=document.createElement('p');p.className='muted';p.textContent='No saved notes yet.';root.append(p);}
+}
+function saveNote(t){
+ try{
+  const a=getNotes();a.unshift({id:Date.now(),text:t});
+  localStorage.setItem('jarvis_v9_notes',JSON.stringify(a.slice(0,100)));renderNotes();return true;
+ }catch{say('Storage is unavailable. Your note could not be saved.');return false;}
+}
+$('saveNote').addEventListener('click',()=>{
+ const t=$('noteInput').value.trim();
+ if(!t){$('noteInput').focus();return;}
+ if(saveNote(t)){$('noteInput').value='';say('Note saved on this device.');}
+});
+renderNotes();
 
-  function calculate(){
-    const expr=$('calcInput').value.trim();
-    if(!expr){$('calcResult').textContent='Enter a calculation first.';return;}
-    if(!/^[\d\s.+\-*/()%]+$/.test(expr)){
-      $('calcResult').textContent='Use only numbers, operators, parentheses and %.';
-      return;
-    }
-    try{
-      const result=Function('"use strict"; return ('+expr+')')();
-      if(typeof result!=='number'||!Number.isFinite(result))throw new Error('invalid');
-      $('calcResult').textContent='Result: '+result;
-    }catch(e){$('calcResult').textContent='That calculation could not be evaluated. Check the expression.';}
-  }
-  $('calcBtn').addEventListener('click',calculate);
-  $('calcInput').addEventListener('keydown',e=>{if(e.key==='Enter')calculate();});
+const codes={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
+async function loadWeather(){
+ $('weatherMain').textContent='Loading weather…';
+ $('weatherDetails').textContent='Contacting weather service…';
+ $('weatherBtn').disabled=true;
+ try{
+  const url='https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Asia%2FKolkata';
+  const r=await fetch(url);if(!r.ok)throw Error();
+  const c=(await r.json()).current;
+  $('weatherMain').textContent=(codes[c.weather_code]||'Current conditions')+' · '+Math.round(c.temperature_2m)+'°C';
+  $('weatherDetails').textContent='Feels like '+Math.round(c.apparent_temperature)+'°C · Humidity '+c.relative_humidity_2m+'% · Wind '+Math.round(c.wind_speed_10m)+' km/h · Updated '+c.time.replace('T',' ');
+ }catch{
+  $('weatherMain').textContent='Weather unavailable';
+  $('weatherDetails').textContent='Check your internet connection and tap Refresh weather again.';
+ }finally{$('weatherBtn').disabled=false;}
+}
+$('weatherBtn').addEventListener('click',loadWeather);loadWeather();
 
-  function getNotes(){try{return JSON.parse(localStorage.getItem('jarvis_v8_notes')||'[]');}catch(e){return [];}}
-  function saveNote(text){
-    const notes=getNotes();
-    notes.unshift({id:Date.now(),text:text});
-    try{
-      localStorage.setItem('jarvis_v8_notes',JSON.stringify(notes.slice(0,100)));
-      renderNotes();
-    }catch(e){say('Storage is unavailable. Your note could not be saved.');}
-  }
-  $('saveNote').addEventListener('click',()=>{
-    const text=$('noteInput').value.trim();
-    if(!text){$('noteInput').focus();return;}
-    saveNote(text);
-    $('noteInput').value='';
-  });
-  function renderNotes(){
-    const root=$('notes');
-    root.replaceChildren();
-    getNotes().forEach(note=>{
-      const row=document.createElement('div');
-      row.className='note';
-      const span=document.createElement('span');
-      span.textContent=note.text;
-      const del=document.createElement('button');
-      del.className='delete';
-      del.type='button';
-      del.textContent='Delete';
-      del.setAttribute('aria-label','Delete note');
-      del.addEventListener('click',()=>{
-        try{
-          localStorage.setItem('jarvis_v8_notes',JSON.stringify(getNotes().filter(n=>n.id!==note.id)));
-          renderNotes();
-        }catch(e){}
-      });
-      row.append(span,del);
-      root.append(row);
-    });
-    if(!root.children.length){
-      const p=document.createElement('p');
-      p.className='muted';
-      p.textContent='No saved notes yet.';
-      root.append(p);
-    }
-  }
-  renderNotes();
+function runCommand(raw){
+ const t=String(raw||'').trim().toLowerCase();
+ heard.textContent=t?'You said: '+raw:'';
+ if(!t){say('I did not hear a command. Try again.');return;}
+ if(/\b(time|clock)\b/.test(t)){say('The time is '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));return;}
+ if(/\b(date|day|today)\b/.test(t)){say('Today is '+new Date().toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'}));return;}
+ if(/\b(hello|hi|hey|jarvis)\b/.test(t)){say('Hello. JARVIS V9 is online and ready.');return;}
+ if(/\b(help|commands|what can you do)\b/.test(t)){say('I can tell time and date, calculate, save notes, open Spotify music, show Delhi weather, tell jokes and motivate you.');return;}
+ if(/\b(joke|funny)\b/.test(t)){say('Why did the computer go to the doctor? It had a virus.');return;}
+ if(/\b(motivate|motivation|inspire)\b/.test(t)){say('Progress is built one focused step at a time. Start with the next useful task.');return;}
+ if(/\b(music|spotify|playlist|song|songs)\b/.test(t)){document.querySelector('iframe').scrollIntoView({behavior:'smooth',block:'center'});say('Your Spotify playlist is ready below. Press Play in the player.');return;}
+ if(/\b(weather|temperature)\b/.test(t)){$('weatherMain').scrollIntoView({behavior:'smooth',block:'center'});loadWeather();say('Refreshing Delhi weather.');return;}
+ if(t.startsWith('calculate ')){$('calcInput').value=raw.trim().slice(10);calculate();return;}
+ if(t.startsWith('remember ')){const note=raw.trim().slice(9).trim();if(note&&saveNote(note)){say('I saved that note on this device.');return;}}
+ say('I did not recognise that command. Say Help to hear my commands.');
+}
+function startListening(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){status.textContent='● VOICE NOT SUPPORTED';say('Voice recognition is not available in this browser. Try Chrome and allow microphone access.');return;}
+ try{
+  recognition=new SR();recognition.lang='en-IN';recognition.interimResults=false;recognition.maxAlternatives=1;
+  recognition.onstart=()=>{status.textContent='● LISTENING';heard.textContent='Listening…';};
+  recognition.onresult=e=>runCommand(e.results[0][0].transcript);
+  recognition.onerror=e=>{status.textContent='● VOICE ISSUE';heard.textContent='Voice error: '+e.error;say('Check microphone permission and try again.');};
+  recognition.onend=()=>status.textContent='● SYSTEM ONLINE';
+  recognition.start();
+ }catch{status.textContent='● SYSTEM ONLINE';say('Please try the microphone button again.');}
+}
+$('listenBtn').addEventListener('click',startListening);
+$('stopBtn').addEventListener('click',()=>{
+ if(recognition){try{recognition.stop()}catch{}}
+ if('speechSynthesis'in window)speechSynthesis.cancel();
+ status.textContent='● SYSTEM ONLINE';
+});
+document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>runCommand(b.dataset.command)));
 })();
 </script>
 </body>
 </html>
+```
+
+
+
