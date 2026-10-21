@@ -1,391 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS V9.1</title>
-<style>
-*{box-sizing:border-box}
-:root{--cyan:#65dfff;--glass:rgba(9,24,43,.58)}
-body{margin:0;min-height:100vh;color:#fff;font-family:Arial,Helvetica,sans-serif;background:#09172b}
-.scene{min-height:100vh;position:relative;isolation:isolate;background:linear-gradient(180deg,#152b51 0%,#d57c83 39%,#f7b58b 52%,#182c49 100%);overflow:hidden}
-.sun{position:absolute;z-index:-2;width:180px;height:180px;border-radius:50%;background:#ffb887;filter:blur(2px);left:50%;top:33%;transform:translateX(-50%);box-shadow:0 0 100px 35px #ffad8b66}
-.sky-glow{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,transparent 25%,#f8a88b55 48%,#061529 83%)}
-.mountain{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none}
-header{padding:23px 24px;display:flex;justify-content:space-between;align-items:center;gap:15px}
-.brand{font-size:22px;font-weight:700;letter-spacing:3px}
-.brand small{display:block;font-size:10px;font-weight:400;letter-spacing:1px;margin-top:5px;color:#d6e6ff}
-.datetime{text-align:right;font-size:19px}
-.datetime small{display:block;font-size:11px;color:#d6e6ff;margin-top:5px}
-main{width:min(850px,100%);margin:auto;padding:20px 18px 35px}
-.intro{text-align:center;margin:15px 0 28px}
-h1{font-size:clamp(25px,5vw,38px);margin:0 0 10px;text-shadow:0 2px 18px #0007}
-.intro p{font-size:14px;color:#e5edff}
-.command{display:flex;align-items:center;gap:10px;border:1px solid #7bdfff;border-radius:40px;background:rgba(3,16,35,.62);padding:7px 10px 7px 20px;box-shadow:0 0 25px #21cfff20;max-width:530px;margin:25px auto 30px}
-.command input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:white;font-size:15px;padding:10px 0}
-.command input::placeholder{color:#d5e3f5}
-button{font:inherit;cursor:pointer;color:white}
-.mic{border:0;border-radius:50%;width:42px;height:42px;background:#138bdb;font-size:20px;flex-shrink:0}
-.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.card{min-height:105px;border:1px solid #ffffff20;border-radius:16px;background:var(--glass);backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;transition:.2s;box-shadow:0 8px 28px #0002}
-.card:hover,.card:focus-visible{border-color:var(--cyan);background:#174b6a99;transform:translateY(-3px)}
-.card .icon{font-size:27px;color:#c9edff}
-.card span:last-child{font-size:12px}
-.panel{margin-top:22px;border:1px solid #ffffff25;border-radius:15px;background:rgba(3,15,32,.65);padding:16px 18px;backdrop-filter:blur(12px)}
-.panel-title{font-size:10px;letter-spacing:2px;color:#84dfff;margin-bottom:10px}
-#reply{font-size:14px;line-height:1.65;overflow-wrap:anywhere}
-#reply:before{content:"> ";color:var(--cyan)}
-.widget{margin-top:14px;padding:14px;border:1px solid #ffffff25;border-radius:14px;background:rgba(3,15,32,.68)}
-.widget h2{font-size:15px;margin:0 0 10px;color:#a6eaff}
-.muted{font-size:12px;color:#d6e6ff}
-.weather-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
-.weather-cell{background:#ffffff10;border-radius:10px;padding:10px}
-.weather-cell b{display:block;font-size:19px;margin-top:5px}
-.action{background:#138bdb;border:0;border-radius:9px;padding:10px 13px;margin-top:10px}
-.spotify-frame{width:100%;height:352px;border:0;border-radius:12px}
-.hidden{display:none!important}
-.widget a{color:#a6eaff}
-footer{text-align:center;font-size:10px;letter-spacing:2px;color:#c5d9eeaa;padding:25px 5px}
-@media(max-width:540px){
- header{padding:18px 15px}
- .brand{font-size:19px}
- .datetime{font-size:16px}
- main{padding:15px 13px 28px}
- .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
- .card{min-height:90px}
- .card .icon{font-size:24px}
- .weather-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-</style>
-</head>
-<body>
-<div class="scene">
-<div class="sun"></div>
-<div class="sky-glow"></div>
-
-<svg class="mountain" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-<defs>
-<linearGradient id="m1" x1="0" y1="0" x2="0" y2="1">
-<stop stop-color="#435575"/>
-<stop offset="1" stop-color="#101b31"/>
-</linearGradient>
-<linearGradient id="m2" x1="0" y1="0" x2="0" y2="1">
-<stop stop-color="#253a5a"/>
-<stop offset="1" stop-color="#050d1a"/>
-</linearGradient>
-</defs>
-<path fill="url(#m1)" d="M0 440L110 350 175 390 300 245 390 350 500 190 610 350 735 225 850 360 965 270 1080 360 1200 285V900H0Z"/>
-<path fill="#e3c5c9" opacity=".65" d="M300 245L275 286 302 278 322 299 338 282 350 300 390 350 365 328 344 335 323 300Z"/>
-<path fill="url(#m2)" d="M0 530L130 420 245 490 360 390 490 520 625 395 755 510 890 410 1020 505 1120 430 1200 480V900H0Z"/>
-<path fill="#050b16" d="M0 690L180 570 340 680 520 565 700 690 900 575 1060 680 1200 610V900H0Z"/>
-</svg>
-
-<header>
-<div class="brand">JARVIS<small>Your personal assistant</small></div>
-<div class="datetime">
-<span id="clock">--:--</span>
-<small id="date">Loading date...</small>
-</div>
-</header>
-
-<main>
-<div class="intro">
-<h1 id="greeting">Welcome back.</h1>
-<p>What would you like to do today?</p>
-</div>
-
-<form class="command" id="form">
-<input id="input" placeholder="Type a command..." autocomplete="off" aria-label="Command">
-<button class="mic" type="button" id="mic" aria-label="Voice input">🎙</button>
-<button class="mic" type="submit" aria-label="Send command">➤</button>
-</form>
-
-<div class="grid">
-<button class="card" data-cmd="help"><span class="icon">▤</span><span>Chat</span></button>
-<button class="card" data-cmd="notes"><span class="icon">▧</span><span>Notes</span></button>
-<button class="card" data-cmd="calculator"><span class="icon">▦</span><span>Calculator</span></button>
-<button class="card" data-cmd="weather"><span class="icon">☁</span><span>Weather</span></button>
-<button class="card" data-cmd="music"><span class="icon">♫</span><span>Music</span></button>
-</div>
-
-<section class="panel">
-<div class="panel-title">JARVIS RESPONSE</div>
-<div id="reply" aria-live="polite">JARVIS is ready. Try Weather or Music.</div>
-</section>
-
-<section class="widget hidden" id="weatherBox">
-<h2>🌦️ Delhi Weather</h2>
-<div id="weatherStatus" class="muted">Loading current weather…</div>
-<div id="weatherData" class="weather-grid hidden">
-<div class="weather-cell"><span class="muted">Temperature</span><b id="temp">—</b></div>
-<div class="weather-cell"><span class="muted">Feels like</span><b id="feels">—</b></div>
-<div class="weather-cell"><span class="muted">Humidity</span><b id="humidity">—</b></div>
-<div class="weather-cell"><span class="muted">Wind</span><b id="wind">—</b></div>
-<div class="weather-cell"><span class="muted">Condition</span><b id="condition">—</b></div>
-<div class="weather-cell"><span class="muted">Updated</span><b id="updated">—</b></div>
-</div>
-<button type="button" class="action" id="refreshWeather">Refresh weather</button>
-<p class="muted">Weather data: Open-Meteo. Internet connection required.</p>
-</section>
-
-<section class="widget hidden" id="musicBox">
-<h2>🎵 Your Spotify Playlist</h2>
-<p class="muted">Tap play inside the player. Spotify may ask you to sign in.</p>
-<iframe class="spotify-frame" title="Spotify playlist player"
-src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator"
-loading="lazy"
-allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-allowfullscreen></iframe>
-<p><a href="https://open.spotify.com/playlist/1Zxvk6LxitGP1gUmeu40KK" target="_blank" rel="noopener noreferrer">Open playlist in Spotify ↗</a></p>
-</section>
-
-<footer>JARVIS V9.1 · DREAM · PLAN · ACHIEVE</footer>
-</main>
-</div>
-<script>
-(function(){
-'use strict';
-
-const $ = id => document.getElementById(id);
-const input = $('input');
-const reply = $('reply');
-let listening = null;
-
-function updateTime(){
- const n = new Date();
- $('clock').textContent = n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
- $('date').textContent = n.toLocaleDateString([],{weekday:'short',day:'numeric',month:'short',year:'numeric'});
- const h = n.getHours();
- $('greeting').textContent = (h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening') + ', Riyansh';
-}
-updateTime();
-setInterval(updateTime,1000);
-
-function speak(text){
- if(!('speechSynthesis' in window)) return;
- window.speechSynthesis.cancel();
- const u = new SpeechSynthesisUtterance(text);
- u.lang = 'en-IN';
- u.rate = 1;
- window.speechSynthesis.speak(u);
-}
-
-function answer(text,voice=true){
- reply.textContent = text;
- if(voice) speak(text);
-}
-
-function hideWidgets(){
- $('weatherBox').classList.add('hidden');
- $('musicBox').classList.add('hidden');
-}
-
-function weatherDescription(code){
- const m = {
- 0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',
- 45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',
- 55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',
- 71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',
- 81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',
- 96:'Thunderstorm with hail',99:'Thunderstorm with hail'
- };
- return m[code] || 'Conditions unavailable';
-}
-
-async function loadWeather(){
- const status = $('weatherStatus');
- const data = $('weatherData');
- status.textContent = 'Loading current weather…';
- data.classList.add('hidden');
- $('weatherBox').classList.remove('hidden');
- $('musicBox').classList.add('hidden');
-
- try{
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Asia%2FKolkata';
-  const r = await fetch(url);
-  if(!r.ok) throw new Error('Weather service returned ' + r.status);
-
-  const j = await r.json();
-  const c = j.current;
-  if(!c) throw new Error('No current weather data');
-
-  $('temp').textContent = Math.round(c.temperature_2m) + '°C';
-  $('feels').textContent = Math.round(c.apparent_temperature) + '°C';
-  $('humidity').textContent = c.relative_humidity_2m + '%';
-  $('wind').textContent = c.wind_speed_10m + ' km/h';
-  $('condition').textContent = weatherDescription(c.weather_code);
-  $('updated').textContent = new Date(c.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-
-  status.textContent = 'Current conditions for Delhi';
-  data.classList.remove('hidden');
-  answer('Weather loaded successfully for Delhi.',false);
- }catch(e){
-  status.textContent = 'Could not load weather. Check internet and tap Refresh.';
-  answer('Weather could not load. Check your internet connection.',false);
- }
-}
-
-function showMusic(){
- hideWidgets();
- $('musicBox').classList.remove('hidden');
- answer('Your Spotify playlist is ready below. Press play in the player.',false);
- $('musicBox').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function showNotes(){
- const note = prompt('Enter a note to save:');
- if(note === null) return;
- try{
-  const list = JSON.parse(localStorage.getItem('jarvisNotes') || '[]');
-  list.push({text:note,created:new Date().toLocaleString()});
-  localStorage.setItem('jarvisNotes',JSON.stringify(list));
-  answer('Note saved on this device.');
- }catch(e){
-  answer('Notes could not be saved in this browser.');
- }
-}
-
-function calculate(expr){
- const tokens = expr.match(/\d+(?:\.\d+)?|[()+\-*/%]/g) || [];
- if(tokens.join('') !== expr.replace(/\s/g,'')) throw Error('Invalid characters');
-
- let i = 0;
- function factor(){
-  const t = tokens[i++];
-  if(t === '+') return factor();
-  if(t === '-') return -factor();
-  if(t === '('){
-   const v = sum();
-   if(tokens[i++] !== ')') throw Error('Missing )');
-   return v;
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    answer("Voice is not supported in this browser.", false);
+    return;
   }
-  if(t !== undefined && /^\d/.test(t)) return Number(t);
-  throw Error('Expected number');
- }
- function term(){
-  let v = factor();
-  while(['*','/','%'].includes(tokens[i])){
-   const op = tokens[i++];
-   const n = factor();
-   if((op === '/' || op === '%') && n === 0) throw Error('Divide by zero');
-   v = op === '*' ? v*n : op === '/' ? v/n : v%n;
-  }
-  return v;
- }
- function sum(){
-  let v = term();
-  while(tokens[i] === '+' || tokens[i] === '-'){
-   const op = tokens[i++];
-   const n = term();
-   v = op === '+' ? v+n : v-n;
-  }
-  return v;
- }
- if(!tokens.length) throw Error('Empty');
- const result = sum();
- if(i !== tokens.length || !Number.isFinite(result)) throw Error('Invalid expression');
- return result;
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voices = window.speechSynthesis.getVoices();
+
+  const preferredVoice =
+    voices.find(v => v.name.toLowerCase().includes("natural") &&
+                     v.lang.startsWith("en")) ||
+    voices.find(v => v.lang === "en-IN") ||
+    voices.find(v => v.lang.startsWith("en"));
+
+  if (preferredVoice) utterance.voice = preferredVoice;
+
+  utterance.lang = preferredVoice?.lang || "en-IN";
+  utterance.rate = 0.92;
+  utterance.pitch = 0.85;
+  utterance.volume = 1;
+
+  window.speechSynthesis.speak(utterance);
 }
+async function loadWeather() {
+  const status = $("weatherStatus");
+  const data = $("weatherData");
 
-function run(raw){
- const q = raw.trim().toLowerCase();
- if(!q) return;
+  status.textContent = "Loading full weather report...";
+  data.classList.add("hidden");
+  $("weatherBox").classList.remove("hidden");
+  $("musicBox").classList.add("hidden");
 
- // Music commands: "play song", "play music", "Spotify", etc.
- if(
-  q.includes('play song') ||
-  q.includes('play music') ||
-  q.includes('spotify') ||
-  q.includes('playlist') ||
-  q === 'play' ||
-  q.startsWith('play ') ||
-  q.includes('music')
- ){
-  showMusic();
-  return;
- }
+  try {
+    const url =
+      "https://api.open-meteo.com/v1/forecast" +
+      "?latitude=28.6139&longitude=77.2090" +
+      "&current=temperature_2m,relative_humidity_2m," +
+      "apparent_temperature,weather_code,wind_speed_10m" +
+      "&hourly=precipitation_probability" +
+      "&daily=temperature_2m_max,temperature_2m_min," +
+      "precipitation_probability_max,sunrise,sunset" +
+      "&timezone=Asia%2FKolkata&forecast_days=2";
 
- if(q.includes('weather')){
-  loadWeather();
-  return;
- }
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Weather request failed");
 
- hideWidgets();
+    const j = await response.json();
+    if (!j.current || !j.daily || !j.hourly) {
+      throw new Error("Incomplete weather data");
+    }
 
- if(q === 'hello' || q.includes('hello jarvis')){
-  answer('Hello Riyansh. I am online. How can I help you?');
- }else if(q.includes('time')){
-  answer('The current time is ' + new Date().toLocaleTimeString() + '.');
- }else if(q.includes('date')){
-  answer('Today is ' + new Date().toLocaleDateString() + '.');
- }else if(q.includes('motivat')){
-  answer('Stay focused, Riyansh. Small consistent steps create big results.');
- }else if(q.includes('joke')){
-  answer('Why did the computer go to the doctor? It had a virus!');
- }else if(q.includes('notes')){
-  showNotes();
- }else if(q.includes('calculator')){
-  const expr = prompt('Enter a calculation, for example 12*(4+2):');
-  if(expr !== null){
-   try{
-    answer('The answer is ' + calculate(expr) + '.');
-   }catch(e){
-    answer('Invalid calculation. Use numbers and + - * / % parentheses.');
-   }
+    const c = j.current;
+    const d = j.daily;
+    const h = j.hourly;
+    const condition = weatherDescription(c.weather_code);
+
+    $("temp").textContent = Math.round(c.temperature_2m) + "°C";
+    $("feels").textContent =
+      Math.round(c.apparent_temperature) + "°C";
+    $("humidity").textContent = c.relative_humidity_2m + "%";
+    $("wind").textContent = c.wind_speed_10m + " km/h";
+    $("condition").textContent = condition;
+    $("updated").textContent =
+      new Date(c.time).toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+    status.textContent = "Current weather and forecast for Delhi";
+    data.classList.remove("hidden");
+
+    const today = 0;
+    const tomorrow = 1;
+    const rainChance = d.precipitation_probability_max[today];
+    const tomorrowRain = d.precipitation_probability_max[tomorrow];
+
+    const report =
+      "Here is your complete Delhi weather report. " +
+      "Currently, it is " + condition + ", with a temperature of " +
+      Math.round(c.temperature_2m) + " degrees Celsius. " +
+      "It feels like " + Math.round(c.apparent_temperature) +
+      " degrees. Humidity is " + c.relative_humidity_2m +
+      " percent, and wind speed is " + c.wind_speed_10m +
+      " kilometres per hour. " +
+      "Today's expected maximum is " +
+      Math.round(d.temperature_2m_max[today]) +
+      " degrees, and minimum is " +
+      Math.round(d.temperature_2m_min[today]) + " degrees. " +
+      "Today's maximum precipitation probability is " +
+      (rainChance ?? "unavailable") + " percent. " +
+      "Tomorrow's forecast ranges from " +
+      Math.round(d.temperature_2m_min[tomorrow]) +
+      " to " + Math.round(d.temperature_2m_max[tomorrow]) +
+      " degrees Celsius, with a maximum precipitation probability of " +
+      (tomorrowRain ?? "unavailable") + " percent. " +
+      "Sunrise is " + d.sunrise[today].slice(11, 16) +
+      " and sunset is " + d.sunset[today].slice(11, 16) +
+      ". Forecast times are in Indian Standard Time.";
+
+    answer(report, true);
+  } catch (error) {
+    status.textContent =
+      "Weather unavailable. Check your internet and try again.";
+    answer("Sorry, I could not load the complete weather report.", true);
+    console.error("JARVIS weather error:", error);
   }
- }else if(q === 'help' || q.includes('commands')){
-  answer('Try: hello, time, date, motivate me, tell me a joke, notes, calculator, weather, or music.');
- }else{
-  answer('I do not know that command yet. Type help to see available commands.');
- }
 }
-
-$('form').addEventListener('submit',e=>{
- e.preventDefault();
- run(input.value);
- input.value = '';
-});
-
-document.querySelectorAll('[data-cmd]').forEach(b=>{
- b.addEventListener('click',()=>run(b.dataset.cmd));
-});
-
-$('refreshWeather').addEventListener('click',loadWeather);
-
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-$('mic').addEventListener('click',()=>{
- if(!SR){
-  answer('Voice input is not supported in this browser. Please type your command.',false);
-  return;
- }
- if(listening){
-  listening.stop();
-  return;
- }
- listening = new SR();
- listening.lang = 'en-IN';
- listening.interimResults = false;
- listening.onstart = () => {$('mic').textContent = '⏹';};
- listening.onresult = e=>{
-  input.value = e.results[0][0].transcript;
-  run(input.value);
- };
- listening.onerror = ()=>{
-  answer('Microphone unavailable. Check browser permission.',false);
- };
- listening.onend = ()=>{
-  $('mic').textContent = '🎙';
-  listening = null;
- };
- try{
-  listening.start();
- }catch(e){
-  listening = null;
-  answer('Please try voice input again.',false);
- }
-});
-})();
-</script>
-</body>
-</html>
