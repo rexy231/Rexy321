@@ -1,110 +1,103 @@
-function speak(text) {
-  if (!("speechSynthesis" in window)) {
-    answer("Voice is not supported in this browser.", false);
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  const voices = window.speechSynthesis.getVoices();
-
-  const preferredVoice =
-    voices.find(v => v.name.toLowerCase().includes("natural") &&
-                     v.lang.startsWith("en")) ||
-    voices.find(v => v.lang === "en-IN") ||
-    voices.find(v => v.lang.startsWith("en"));
-
-  if (preferredVoice) utterance.voice = preferredVoice;
-
-  utterance.lang = preferredVoice?.lang || "en-IN";
-  utterance.rate = 0.92;
-  utterance.pitch = 0.85;
-  utterance.volume = 1;
-
-  window.speechSynthesis.speak(utterance);
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f"><title>JARVIS — Personal Assistant</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#0e1c2d;--line:#20364c;--cyan:#56dcff;--text:#eaf6ff;--muted:#a4b9ca;--green:#7cf7c5}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#102b43 0,#07111f 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}header{padding:26px 16px 14px;text-align:center}header .orb{width:76px;height:76px;border:2px solid var(--cyan);border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;box-shadow:0 0 30px #56dcff55,inset 0 0 20px #56dcff22;font-size:27px;color:var(--cyan)}h1{letter-spacing:.22em;margin:0;font-size:clamp(25px,5vw,38px)}header p{color:var(--muted);margin:6px 0 0}.wrap{width:min(1000px,100% - 24px);margin:auto;padding-bottom:40px}.panel{background:#0e1c2deF;border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 10px 30px #0002}.topline{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.status{font-size:13px;color:var(--green)}.chat{min-height:95px;white-space:pre-wrap;color:var(--text);padding:12px;background:#071421;border:1px solid var(--line);border-radius:12px;margin:14px 0}.controls,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}button,input,textarea{font:inherit}button{border:1px solid #2e536d;background:#132a3e;color:var(--text);border-radius:11px;padding:11px 13px;cursor:pointer;transition:.15s}button:hover{border-color:var(--cyan);transform:translateY(-1px)}button.primary{background:#0d5871;border-color:#39c8ed}input,textarea{width:100%;border:1px solid var(--line);background:#071421;color:var(--text);border-radius:10px;padding:11px;outline:none}input:focus,textarea:focus{border-color:var(--cyan)}label{display:block;color:var(--muted);font-size:13px;margin:9px 0 5px}.metric{padding:12px;border:1px solid var(--line);border-radius:12px;background:#091725}.metric small{display:block;color:var(--muted)}.metric strong{font-size:23px}.hidden{display:none!important}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0 0 6px}.muted{color:var(--muted);font-size:13px}.music-frame{width:100%;height:352px;border:0;border-radius:12px}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}.notes-list{display:grid;gap:8px;margin-top:10px}.note{padding:10px;border:1px solid var(--line);border-radius:10px;display:flex;gap:10px;justify-content:space-between;align-items:start;white-space:pre-wrap;overflow-wrap:anywhere}.note button{padding:5px 9px}.pill{display:inline-block;padding:4px 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}@media(max-width:560px){.controls{grid-template-columns:1fr 1fr}.panel{padding:14px}.music-frame{height:300px}}
+</style></head>
+<body><header><div class="orb" aria-hidden="true">✦</div><h1>J.A.R.V.I.S.</h1><p>Personal assistant · voice · weather · music · notes</p></header>
+<main class="wrap">
+<section class="panel"><div class="topline"><h2>Assistant console</h2><span class="status" id="systemStatus">● SYSTEM READY</span></div><div class="chat" id="response" aria-live="polite">Hello! I'm JARVIS. You can type a command or use the microphone. Try “weather report”, “play music”, “what time is it”, or “I'm feeling sad”.</div><div class="row"><input id="commandInput" placeholder="Tell JARVIS what you need…" aria-label="Command"><button class="primary" id="sendBtn">Send</button></div><div class="controls" style="margin-top:10px"><button id="micBtn">🎙️ Start listening</button><button id="stopVoiceBtn">🔇 Stop speaking</button><button id="weatherBtn">🌦️ Full weather report</button><button id="musicBtn">🎵 Open Spotify</button><button id="clockBtn">🕒 Time & date</button><button id="helpBtn">❔ Help</button></div><p class="muted">Voice recognition depends on browser support and microphone permission. Voice options depend on voices installed on your device.</p></section>
+<section class="panel hidden" id="weatherBox"><div class="topline"><h2>Delhi weather</h2><span class="pill" id="weatherUpdated">Waiting for data</span></div><p class="muted" id="weatherStatus">Loading weather…</p><div class="grid hidden" id="weatherData"><div class="metric"><small>Current condition</small><strong id="condition">—</strong></div><div class="metric"><small>Temperature</small><strong id="temp">—</strong></div><div class="metric"><small>Feels like</small><strong id="feels">—</strong></div><div class="metric"><small>Humidity</small><strong id="humidity">—</strong></div><div class="metric"><small>Wind speed</small><strong id="wind">—</strong></div><div class="metric"><small>Today high / low</small><strong id="todayRange">—</strong></div><div class="metric"><small>Rain chance today</small><strong id="todayRain">—</strong></div><div class="metric"><small>Tomorrow high / low</small><strong id="tomorrowRange">—</strong></div><div class="metric"><small>Rain chance tomorrow</small><strong id="tomorrowRain">—</strong></div><div class="metric"><small>Sunrise / sunset</small><strong id="sunTimes">—</strong></div><div class="metric"><small>Next hours</small><strong id="hourlySummary">—</strong></div></div></section>
+<section class="panel hidden" id="musicBox"><div class="topline"><h2>Spotify music</h2><button id="hideMusicBtn">Hide player</button></div><p class="muted">Spotify player is embedded below. Playback and account restrictions are controlled by Spotify.</p><iframe class="music-frame" title="Spotify playlist" src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></section>
+<section class="panel"><h2>📝 Quick notes</h2><label for="noteInput">Write a note</label><textarea id="noteInput" rows="3" placeholder="Type a reminder or idea…"></textarea><div class="row" style="margin-top:8px"><button class="primary" id="saveNoteBtn">Save note</button><button id="clearNotesBtn">Clear all notes</button></div><div class="notes-list" id="notesList"></div><p class="muted">Notes are stored in this browser on this device using local storage.</p></section>
+<section class="panel"><h2>🧮 Calculator</h2><label for="calcInput">Basic arithmetic</label><div class="row"><input id="calcInput" placeholder="Example: (12 + 8) * 3" inputmode="decimal"><button class="primary" id="calcBtn">Calculate</button></div><div class="chat" id="calcResult">Your result will appear here.</div><p class="muted">Supports numbers, parentheses, + − × ÷, decimals and powers. Other expressions are rejected.</p></section>
+<footer>JARVIS web assistant · Weather by Open-Meteo · Keep this page open while using voice.</footer>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const state = { recognition: null, listening: false, voices: [], lastWeather: null };
+function setStatus(text){ $('systemStatus').textContent = '● ' + text; }
+function showBox(id){ $(id).classList.remove('hidden'); }
+function hideBox(id){ $(id).classList.add('hidden'); }
+function currentEmotion(text=''){
+ const t=text.toLowerCase();
+ if(/\b(sad|upset|cry|lonely|bad day|depressed|tired|exhausted|stress|stressed|anxious|worried|failed|failure|can't do|cannot do)\b/.test(t)) return 'caring';
+ if(/\b(thank|thanks|awesome|great|amazing|good job|happy|excited|won|success|congrat)\b/.test(t)) return 'happy';
+ if(/\b(joke|funny|make me laugh|bored)\b/.test(t)) return 'playful';
+ if(/\b(why|how|what|who|when|where|explain|curious)\b/.test(t)) return 'curious';
+ return 'confident';
 }
-async function loadWeather() {
-  const status = $("weatherStatus");
-  const data = $("weatherData");
-
-  status.textContent = "Loading full weather report...";
-  data.classList.add("hidden");
-  $("weatherBox").classList.remove("hidden");
-  $("musicBox").classList.add("hidden");
-
-  try {
-    const url =
-      "https://api.open-meteo.com/v1/forecast" +
-      "?latitude=28.6139&longitude=77.2090" +
-      "&current=temperature_2m,relative_humidity_2m," +
-      "apparent_temperature,weather_code,wind_speed_10m" +
-      "&hourly=precipitation_probability" +
-      "&daily=temperature_2m_max,temperature_2m_min," +
-      "precipitation_probability_max,sunrise,sunset" +
-      "&timezone=Asia%2FKolkata&forecast_days=2";
-
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Weather request failed");
-
-    const j = await response.json();
-    if (!j.current || !j.daily || !j.hourly) {
-      throw new Error("Incomplete weather data");
-    }
-
-    const c = j.current;
-    const d = j.daily;
-    const h = j.hourly;
-    const condition = weatherDescription(c.weather_code);
-
-    $("temp").textContent = Math.round(c.temperature_2m) + "°C";
-    $("feels").textContent =
-      Math.round(c.apparent_temperature) + "°C";
-    $("humidity").textContent = c.relative_humidity_2m + "%";
-    $("wind").textContent = c.wind_speed_10m + " km/h";
-    $("condition").textContent = condition;
-    $("updated").textContent =
-      new Date(c.time).toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-
-    status.textContent = "Current weather and forecast for Delhi";
-    data.classList.remove("hidden");
-
-    const today = 0;
-    const tomorrow = 1;
-    const rainChance = d.precipitation_probability_max[today];
-    const tomorrowRain = d.precipitation_probability_max[tomorrow];
-
-    const report =
-      "Here is your complete Delhi weather report. " +
-      "Currently, it is " + condition + ", with a temperature of " +
-      Math.round(c.temperature_2m) + " degrees Celsius. " +
-      "It feels like " + Math.round(c.apparent_temperature) +
-      " degrees. Humidity is " + c.relative_humidity_2m +
-      " percent, and wind speed is " + c.wind_speed_10m +
-      " kilometres per hour. " +
-      "Today's expected maximum is " +
-      Math.round(d.temperature_2m_max[today]) +
-      " degrees, and minimum is " +
-      Math.round(d.temperature_2m_min[today]) + " degrees. " +
-      "Today's maximum precipitation probability is " +
-      (rainChance ?? "unavailable") + " percent. " +
-      "Tomorrow's forecast ranges from " +
-      Math.round(d.temperature_2m_min[tomorrow]) +
-      " to " + Math.round(d.temperature_2m_max[tomorrow]) +
-      " degrees Celsius, with a maximum precipitation probability of " +
-      (tomorrowRain ?? "unavailable") + " percent. " +
-      "Sunrise is " + d.sunrise[today].slice(11, 16) +
-      " and sunset is " + d.sunset[today].slice(11, 16) +
-      ". Forecast times are in Indian Standard Time.";
-
-    answer(report, true);
-  } catch (error) {
-    status.textContent =
-      "Weather unavailable. Check your internet and try again.";
-    answer("Sorry, I could not load the complete weather report.", true);
-    console.error("JARVIS weather error:", error);
-  }
+function chooseVoice(){
+ state.voices = ('speechSynthesis' in window) ? speechSynthesis.getVoices() : [];
+ const preferred = state.voices.find(v => /natural|neural/i.test(v.name) && /^en(-|_)?(IN|GB|US)?/i.test(v.lang))
+  || state.voices.find(v => /^en-IN$/i.test(v.lang))
+  || state.voices.find(v => /^en-GB$/i.test(v.lang))
+  || state.voices.find(v => /^en/i.test(v.lang));
+ return preferred || null;
 }
+function speak(text, emotion='confident'){
+ if(!('speechSynthesis' in window)){ setStatus('VOICE NOT SUPPORTED'); return; }
+ speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(String(text));
+ const voice = chooseVoice(); if(voice) utterance.voice = voice;
+ utterance.lang = voice ? voice.lang : 'en-IN'; utterance.volume = 1;
+ const settings = {caring:{rate:.88,pitch:1.02},happy:{rate:1.04,pitch:1.12},playful:{rate:1.02,pitch:1.15},curious:{rate:.96,pitch:1.08},confident:{rate:.94,pitch:.96}};
+ const s=settings[emotion] || settings.confident; utterance.rate=s.rate; utterance.pitch=s.pitch;
+ utterance.onstart=()=>setStatus('SPEAKING · '+emotion.toUpperCase());
+ utterance.onend=()=>setStatus(state.listening?'LISTENING':'SYSTEM READY');
+ utterance.onerror=()=>setStatus('VOICE ERROR · TRY AGAIN');
+ speechSynthesis.speak(utterance);
+}
+function answer(text, shouldSpeak=true, emotion=null){ $('response').textContent=text; const mood=emotion || currentEmotion(text); if(shouldSpeak) speak(text,mood); else setStatus('SYSTEM READY'); }
+function weatherDescription(code){
+ const map={0:'clear sky',1:'mainly clear',2:'partly cloudy',3:'overcast',45:'foggy',48:'depositing rime fog',51:'light drizzle',53:'moderate drizzle',55:'dense drizzle',56:'light freezing drizzle',57:'dense freezing drizzle',61:'slight rain',63:'moderate rain',65:'heavy rain',66:'light freezing rain',67:'heavy freezing rain',71:'slight snow',73:'moderate snow',75:'heavy snow',77:'snow grains',80:'slight rain showers',81:'moderate rain showers',82:'violent rain showers',85:'slight snow showers',86:'heavy snow showers',95:'thunderstorm',96:'thunderstorm with slight hail',99:'thunderstorm with heavy hail'};
+ return map[code] || 'weather conditions unavailable';
+}
+function timeSpeak(iso){ if(!iso) return 'unavailable'; return new Date(iso).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'}); }
+async function loadWeather(){
+ showBox('weatherBox'); hideBox('musicBox'); $('weatherStatus').textContent='Fetching current conditions and forecast…'; $('weatherData').classList.add('hidden');
+ const url='https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Asia%2FKolkata&forecast_days=2';
+ try{
+  const res=await fetch(url); if(!res.ok) throw new Error('Weather service returned '+res.status);
+  const j=await res.json(); if(!j.current||!j.daily||!j.hourly) throw new Error('Incomplete weather data');
+  const c=j.current,d=j.daily,h=j.hourly; const now=new Date(c.time).getTime(); let nearest=0,delta=Infinity;
+  h.time.forEach((t,i)=>{const diff=Math.abs(new Date(t).getTime()-now);if(diff<delta){delta=diff;nearest=i;}});
+  const fmt=n=>Math.round(n)+' degrees Celsius';
+  $('condition').textContent=weatherDescription(c.weather_code); $('temp').textContent=Math.round(c.temperature_2m)+'°C'; $('feels').textContent=Math.round(c.apparent_temperature)+'°C'; $('humidity').textContent=c.relative_humidity_2m+'%'; $('wind').textContent=c.wind_speed_10m+' km/h';
+  $('todayRange').textContent=Math.round(d.temperature_2m_max[0])+'° / '+Math.round(d.temperature_2m_min[0])+'°'; $('todayRain').textContent=(d.precipitation_probability_max[0] ?? 'N/A')+'%'; $('tomorrowRange').textContent=Math.round(d.temperature_2m_max[1])+'° / '+Math.round(d.temperature_2m_min[1])+'°'; $('tomorrowRain').textContent=(d.precipitation_probability_max[1] ?? 'N/A')+'%'; $('sunTimes').textContent=timeSpeak(d.sunrise[0])+' / '+timeSpeak(d.sunset[0]);
+  const nextTemps=[]; for(let i=nearest;i<Math.min(nearest+4,h.time.length);i++){nextTemps.push(timeSpeak(h.time[i])+': '+Math.round(h.temperature_2m[i])+'°');}
+  $('hourlySummary').textContent=nextTemps.slice(0,2).join(' · '); $('weatherUpdated').textContent='Updated '+timeSpeak(c.time); $('weatherStatus').textContent='Live conditions and 2-day forecast for Delhi, India.'; $('weatherData').classList.remove('hidden'); state.lastWeather=j;
+  const report='Here is your full Delhi weather report. Right now, the sky is '+weatherDescription(c.weather_code)+', and the temperature is '+fmt(c.temperature_2m)+'. It feels like '+fmt(c.apparent_temperature)+'. Humidity is '+c.relative_humidity_2m+' percent, and wind speed is '+c.wind_speed_10m+' kilometres per hour. Today, the expected high is '+fmt(d.temperature_2m_max[0])+' and the low is '+fmt(d.temperature_2m_min[0])+'. The maximum chance of precipitation today is '+(d.precipitation_probability_max[0] ?? 'not available')+' percent. Sunrise is at '+timeSpeak(d.sunrise[0])+', and sunset is at '+timeSpeak(d.sunset[0])+'. Tomorrow, the expected high is '+fmt(d.temperature_2m_max[1])+' and the low is '+fmt(d.temperature_2m_min[1])+'. The maximum chance of precipitation tomorrow is '+(d.precipitation_probability_max[1] ?? 'not available')+' percent. Over the next few hours, '+nextTemps.join('; ')+'. These forecast times are in Indian Standard Time. Stay comfortable, and take an umbrella if the rain forecast suggests you may need one.';
+  answer(report,true,'confident');
+ }catch(err){ console.error('JARVIS weather:',err); $('weatherStatus').textContent='Could not load weather. Check your internet and retry.'; answer('Sorry, I could not fetch the weather right now. Please check your internet connection and try again.',true,'caring'); }
+}
+function showMusic(){ showBox('musicBox'); hideBox('weatherBox'); $('musicBox').scrollIntoView({behavior:'smooth',block:'start'}); answer('Spotify is ready. Your playlist is available in the player below. Enjoy your music.',true,'happy'); }
+function clockReport(){const now=new Date();const t=now.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'});const d=now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:'Asia/Kolkata'});answer('The time in India is '+t+'. Today is '+d+'.',true,'confident');}
+function help(){answer('You can ask me for a full weather report, time and date, Spotify music, or help with notes and calculations. You can also tell me how you feel, for example: I am tired, I feel sad, or I am excited. I will respond in a more caring, happy, playful, curious, or confident style. I am a web assistant, so my emotional responses are simulated through language and voice settings.',true,'curious');}
+function handleCommand(raw){const text=raw.trim();if(!text)return;const t=text.toLowerCase();
+ if(/weather|forecast|temperature|rain chance|sunrise|sunset/.test(t)){loadWeather();return;}
+ if(/spotify|play music|music|playlist/.test(t)){showMusic();return;}
+ if(/time|date|day is it/.test(t)){clockReport();return;}
+ if(/help|what can you do|commands/.test(t)){help();return;}
+ if(/stop speaking|be quiet|stop voice|silence/.test(t)){if('speechSynthesis' in window)speechSynthesis.cancel();answer('Okay, I have stopped speaking.',false);return;}
+ if(/(i am|i'm|i feel|feeling|i have been).*(sad|upset|lonely|tired|exhausted|stressed|worried|anxious|bad|happy|excited|great|angry|bored)/.test(t)||/\b(sad|upset|lonely|tired|exhausted|stressed|worried|anxious|happy|excited|angry|bored)\b/.test(t)){
+  if(/sad|upset|lonely|stressed|worried|anxious|bad|exhausted|tired/.test(t)) answer('I hear you. It sounds like things might feel heavy right now. You do not have to solve everything at once. Take a small pause, breathe, and choose just one manageable next step. I am here to help you think it through.',true,'caring');
+  else if(/happy|excited|great/.test(t)) answer('That is wonderful to hear! Keep that positive energy going. Want to tell me what made your day better?',true,'happy');
+  else if(/angry/.test(t)) answer('I get that you are frustrated. Let us slow things down for a moment, then we can work out what to do next.',true,'caring');
+  else answer('Boredom happens. Want a quick challenge, a joke, some music, or something interesting to learn?',true,'playful');return;
+ }
+ if(/joke|make me laugh/.test(t)){answer('Why did the computer go to the doctor? Because it had a virus. I will try to keep my jokes better than my bugs!',true,'playful');return;}
+ if(/who are you|your name/.test(t)){answer('I am JARVIS, your browser-based personal assistant. I can help with weather, time, music, notes, calculations, and conversation.',true,'confident');return;}
+ answer('I am listening. I do not have a built-in answer for that command yet, but you can ask me for weather, time, Spotify, notes, calculations, or tell me how you are feeling.',true,'curious');
+}
+$('sendBtn').addEventListener('click',()=>{const v=$('commandInput').value; $('commandInput').value='';handleCommand(v);});
+$('commandInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('sendBtn').click();});
+$('weatherBtn').addEventListener('click',loadWeather);$('musicBtn').addEventListener('click',showMusic);$('hideMusicBtn').addEventListener('click',()=>hideBox('musicBox'));$('clockBtn').addEventListener('click',clockReport);$('helpBtn').addEventListener('click',help);$('stopVoiceBtn').addEventListener('click',()=>{if('speechSynthesis'in window)speechSynthesis.cancel();setStatus('SYSTEM READY');});
+function setupRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('micBtn').disabled=true;$('micBtn').textContent='🎙️ Voice input unsupported';return;}const rec=new SR();rec.lang='en-IN';rec.continuous=false;rec.interimResults=false;rec.onstart=()=>{state.listening=true;$('micBtn').textContent='🎙️ Listening…';setStatus('LISTENING');};rec.onresult=e=>{const said=e.results[0][0].transcript;$('commandInput').value=said;handleCommand(said);};rec.onerror=e=>{answer('I could not hear that clearly. Check microphone permission and try again.',false);setStatus('MICROPHONE ISSUE');console.warn('Speech recognition:',e.error);};rec.onend=()=>{state.listening=false;$('micBtn').textContent='🎙️ Start listening';if(!speechSynthesis.speaking)setStatus('SYSTEM READY');};state.recognition=rec;}
+$('micBtn').addEventListener('click',()=>{if(!state.recognition)setupRecognition();if(!state.recognition)return;try{if(state.listening)state.recognition.stop();else state.recognition.start();}catch(e){console.warn(e);}});
+function getNotes(){try{return JSON.parse(localStorage.getItem('jarvisNotes')||'[]');}catch{return[];}}
+function renderNotes(){const list=$('notesList');list.replaceChildren();const notes=getNotes();if(!notes.length){const p=document.createElement('p');p.className='muted';p.textContent='No saved notes yet.';list.appendChild(p);return;}notes.forEach((note,index)=>{const item=document.createElement('div');item.className='note';const content=document.createElement('div');content.textContent=note.text;const stamp=document.createElement('small');stamp.className='muted';stamp.textContent='\n'+note.date;content.appendChild(stamp);const del=document.createElement('button');del.textContent='Delete';del.setAttribute('aria-label','Delete note');del.addEventListener('click',()=>{const updated=getNotes();updated.splice(index,1);localStorage.setItem('jarvisNotes',JSON.stringify(updated));renderNotes();});item.append(content,del);list.appendChild(item);});}
+$('saveNoteBtn').addEventListener('click',()=>{const text=$('noteInput').value.trim();if(!text){answer('Please write a note before saving.',false);return;}const notes=getNotes();notes.unshift({text,date:new Date().toLocaleString('en-IN')});localStorage.setItem('jarvisNotes',JSON.stringify(notes));$('
