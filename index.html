@@ -1,428 +1,238 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#06152d">
-<title>JARVIS V8 — AI Assistant</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070b16">
+<title>JARVIS — Personal AI</title>
 <style>
-:root {
-  --blue:#00c8ff;
-  --glass:rgba(5,25,54,.63);
-  --line:rgba(65,190,255,.38);
-  --white:#eff8ff;
-}
+:root{color-scheme:dark;--cyan:#79e8ff;--blue:#4d91ff;--pink:#ff9bcf;--text:#eaf6ff;--muted:#9fb2ca}
 *{box-sizing:border-box}
-body{
-  margin:0;min-height:100vh;color:var(--white);
-  font-family:Inter,"Segoe UI",Arial,sans-serif;
-  background:
-    linear-gradient(115deg,rgba(1,12,33,.68),rgba(1,16,37,.16)),
-    url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=90")
-    center/cover fixed;
-}
-button,input{font:inherit}
-button{cursor:pointer;color:inherit}
-.top{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:24px 4%;gap:20px;
-}
-.brand{font-size:clamp(28px,4vw,48px);letter-spacing:5px;
-  color:#fff;text-shadow:0 0 22px #009dff}
-.sub{color:#c1dfff;margin-top:4px}
-.info{display:flex;gap:26px;align-items:center;text-align:right}
-.time{font-size:clamp(18px,2.5vw,30px)}
-.small{font-size:12px;color:#c6dcf6;margin-top:5px}
-.layout{display:grid;grid-template-columns:220px 1fr;gap:22px;padding:12px 24px 24px}
-.sidebar,.panel,.tile,.command{
-  background:var(--glass);backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-  border:1px solid var(--line);box-shadow:0 0 25px #001d4538;
-}
-.sidebar{border-radius:24px;padding:18px 12px;min-height:70vh;
-  display:flex;flex-direction:column;gap:10px}
-.nav{border:1px solid transparent;background:transparent;text-align:left;
-  padding:14px;border-radius:14px;font-size:16px}
-.nav:hover,.nav.active{background:linear-gradient(90deg,#007cff88,#1a5ca655);
-  border-color:#31baff;box-shadow:0 0 18px #008dff44}
-.version{margin-top:auto;color:#9ccaff;padding:15px 8px}
-main{min-width:0}
-.hero{text-align:center;padding:55px 12px 30px}
-.hero h1{font-size:clamp(28px,4vw,48px);font-weight:500;margin:10px 0 12px;
-  text-shadow:0 3px 25px #001126}
-.hero p{font-size:18px;color:#d2e7ff}
-.command{max-width:850px;margin:30px auto 0;border-radius:50px;
-  display:flex;align-items:center;padding:8px 12px 8px 24px;
-  box-shadow:0 0 25px #008cff30,inset 0 0 15px #008cff18}
-.command input{width:100%;min-width:0;border:0;outline:0;
-  color:white;background:transparent;padding:13px;font-size:17px}
-.command input::placeholder{color:#b0c9ed}
-.circle{flex-shrink:0;width:48px;height:48px;border-radius:50%;
-  border:1px solid #00c8ff;background:#07519a88;font-size:23px}
-.circle:hover{box-shadow:0 0 22px #00bfff}
-.status{min-height:28px;color:#9ddaff;font-size:14px;margin-top:16px}
-.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
-  gap:14px;max-width:950px;margin:38px auto}
-.tile{border-radius:20px;min-height:140px;padding:18px 8px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;transition:.22s;font-size:16px}
-.tile:hover{transform:translateY(-5px);border-color:var(--blue);
-  box-shadow:0 0 24px #009dff45;background:#063365b8}
-.tile .emoji{font-size:34px;filter:drop-shadow(0 0 8px #009dff)}
-.panel{display:none;max-width:850px;margin:20px auto;padding:22px;border-radius:20px}
-.panel h2{margin-top:0}
-.panel button,.panel input{border:1px solid var(--line);border-radius:10px;
-  background:#061a35;color:white;padding:10px;margin:4px}
-.panel input{max-width:100%}
-#notesText{width:100%;min-height:100px}
-#weatherResult{line-height:1.9}
-footer{text-align:center;color:#b4d5fa;font-size:14px;padding:20px}
-footer span{color:var(--blue)}
-@media(max-width:850px){
- .layout{grid-template-columns:1fr;padding:8px 12px 20px}
- .sidebar{min-height:0;display:grid;grid-template-columns:repeat(3,1fr)}
- .nav{text-align:center;padding:11px 5px;font-size:13px}
- .version{display:none}
- .hero{padding:35px 4px 15px}
- .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:25px}
- .tile{min-height:110px;font-size:14px}
- .info{gap:10px}.top{padding:18px 16px}
-}
-@media(max-width:400px){
- .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
- .info .small{font-size:10px}
-}
+html,body{margin:0;min-height:100%;background:#050811;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+body{min-height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#10233b 0,#091323 34%,#050811 72%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.3;background-image:linear-gradient(#15314c55 1px,transparent 1px),linear-gradient(90deg,#15314c55 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000,transparent 75%)}
+main{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px 36px;gap:14px}
+.brand{position:absolute;top:26px;left:0;right:0;text-align:center;letter-spacing:.38em;font-size:12px;color:#8bdfff;text-shadow:0 0 18px #55cfff88}
+.brand b{font-weight:700;color:#f2fbff}
+.stage{width:min(84vw,360px);aspect-ratio:1/1.08;display:grid;place-items:center;position:relative;isolation:isolate}
+.halo{position:absolute;width:94%;aspect-ratio:1;border:1px solid #65dfff44;border-radius:50%;box-shadow:0 0 45px #2e9fff19,inset 0 0 40px #2e9fff0e;animation:spin 26s linear infinite}
+.halo:before,.halo:after{content:"";position:absolute;border:1px solid #72dfff33;border-radius:50%;inset:8%;transform:rotateX(68deg) rotate(20deg)}
+.halo:after{inset:15%;transform:rotateY(68deg) rotate(-25deg);border-color:#b4a3ff33}
+.avatar{position:relative;width:76%;height:83%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 30px #4b9eff30);transition:transform .35s}
+.avatar svg{width:100%;height:100%;overflow:visible}
+.avatar.talking{animation:talk 1.5s ease-in-out infinite}
+.avatar.happy{filter:drop-shadow(0 0 35px #ff9bcf66)}
+.avatar.thinking{animation:think 2.2s ease-in-out infinite}
+.avatar.sad{filter:drop-shadow(0 0 28px #719cff55)}
+.avatar.excited{animation:excited .65s ease-in-out infinite alternate}
+.status{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--cyan);min-height:16px;text-align:center}
+.message{width:min(92vw,560px);min-height:52px;text-align:center;font-size:clamp(15px,3.5vw,19px);line-height:1.55;color:#e6f4ff;text-wrap:balance;padding:0 10px}
+.transcript{font-size:12px;min-height:18px;color:var(--muted);text-align:center;max-width:90vw}
+.mic{width:76px;height:76px;border-radius:50%;border:1px solid #9cecff99;background:linear-gradient(145deg,#163858,#0b1829);display:grid;place-items:center;color:white;cursor:pointer;box-shadow:0 0 28px #4bcfff2b,inset 0 0 18px #4bcfff10;transition:transform .2s,box-shadow .2s;outline:none}
+.mic:hover{transform:scale(1.04);box-shadow:0 0 36px #4bcfff55}
+.mic:focus-visible{outline:2px solid white;outline-offset:4px}
+.mic.listening{background:linear-gradient(145deg,#7c2659,#231b4e);box-shadow:0 0 0 10px #ff8bd51c,0 0 40px #ff79d888;animation:pulse 1.3s infinite}
+.mic svg{width:29px;height:29px}
+.hint{font-size:11px;color:#8ca5c0;text-align:center;max-width:90vw}
+footer{position:absolute;bottom:16px;font-size:10px;letter-spacing:.15em;color:#5f7896;text-align:center}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes talk{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) scale(1.008)}}@keyframes think{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1deg)}}@keyframes excited{from{transform:translateY(0) scale(1)}to{transform:translateY(-5px) scale(1.025)}}@keyframes pulse{50%{box-shadow:0 0 0 17px #ff8bd50a,0 0 46px #ff79d8aa}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 </head>
-
 <body>
-<header class="top">
-  <div>
-    <div class="brand">JARVIS</div>
-    <div class="sub">Always with you</div>
-  </div>
-  <div class="info">
-    <div>
-      <div class="time" id="clock">--:--</div>
-      <div class="small" id="date"></div>
+<main>
+  <div class="brand"><b>J.A.R.V.I.S.</b> &nbsp; PERSONAL AI</div>
+  <section class="stage" aria-label="Animated AI assistant">
+    <div class="halo"></div>
+    <div class="avatar" id="avatar">
+      <svg viewBox="0 0 300 360" role="img" aria-label="Stylized animated anime-inspired AI assistant">
+        <defs>
+          <linearGradient id="hair" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#20263d"/><stop offset=".48" stop-color="#080d1b"/><stop offset="1" stop-color="#384567"/></linearGradient>
+          <linearGradient id="skin" x1="0" x2="1"><stop stop-color="#ffd8d3"/><stop offset="1" stop-color="#e9b5b7"/></linearGradient>
+          <linearGradient id="coat" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#344b70"/><stop offset="1" stop-color="#101a30"/></linearGradient>
+          <linearGradient id="eye" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#76e9ff"/><stop offset="1" stop-color="#547aff"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- shoulders and outfit -->
+        <path d="M52 345 Q54 274 91 254 L120 241 L181 241 L211 254 Q248 274 250 345Z" fill="url(#coat)" stroke="#7194c9" stroke-opacity=".65" stroke-width="2"/>
+        <path d="M111 250 L150 291 L189 250 L174 345 L126 345Z" fill="#e9f4ff"/>
+        <path d="M135 280 L150 295 L165 280 L160 345 L140 345Z" fill="#5ddfff" opacity=".75"/>
+        <path d="M89 262 L111 250 L128 280 L105 316 L77 285Z" fill="#17263f" stroke="#7794c6" stroke-opacity=".5"/>
+        <path d="M211 262 L189 250 L172 280 L195 316 L223 285Z" fill="#17263f" stroke="#7794c6" stroke-opacity=".5"/>
+        <!-- neck -->
+        <path d="M127 218 L126 252 Q150 273 174 252 L173 218Z" fill="url(#skin)"/>
+        <!-- hair back -->
+        <path d="M81 128 Q77 50 145 37 Q219 33 224 111 L238 214 Q215 251 199 254 L92 248 Q67 223 66 185Z" fill="url(#hair)" stroke="#566b91" stroke-width="2"/>
+        <!-- face -->
+        <path d="M99 112 Q102 69 151 68 Q203 70 202 119 L195 185 Q184 220 151 225 Q117 220 105 185Z" fill="url(#skin)"/>
+        <!-- side locks -->
+        <path d="M95 102 Q83 148 105 202 Q94 224 82 204 Q67 162 76 112Z" fill="url(#hair)"/>
+        <path d="M199 99 Q218 147 196 204 Q208 226 220 202 Q232 155 218 108Z" fill="url(#hair)"/>
+        <!-- bangs -->
+        <path d="M83 124 Q70 58 132 43 Q184 29 214 77 Q224 95 215 126 L197 108 L188 78 Q164 107 129 105 Q110 104 99 124 L97 151Z" fill="url(#hair)" stroke="#536687" stroke-width="1.4"/>
+        <path d="M143 48 Q127 74 134 106 Q116 101 108 119 Q102 87 120 62Z" fill="#64799f" opacity=".45"/>
+        <path d="M165 48 Q195 60 200 94 Q179 78 166 75Z" fill="#4b5f84" opacity=".45"/>
+        <!-- ears -->
+        <ellipse cx="101" cy="154" rx="8" ry="13" fill="#e8b7b8"/><ellipse cx="201" cy="154" rx="8" ry="13" fill="#e8b7b8"/>
+        <!-- eyes -->
+        <g id="eyes">
+          <path d="M111 143 Q130 127 145 143 Q130 162 111 143Z" fill="#fff"/>
+          <path d="M157 143 Q176 127 192 143 Q176 162 157 143Z" fill="#fff"/>
+          <ellipse cx="130" cy="145" rx="8" ry="11" fill="url(#eye)"/><ellipse cx="175" cy="145" rx="8" ry="11" fill="url(#eye)"/>
+          <ellipse cx="132" cy="142" rx="3" ry="4" fill="#fff"/><ellipse cx="177" cy="142" rx="3" ry="4" fill="#fff"/>
+          <path d="M109 139 Q128 126 146 139" fill="none" stroke="#27283e" stroke-width="4" stroke-linecap="round"/>
+          <path d="M156 139 Q176 126 194 139" fill="none" stroke="#27283e" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <path id="brows" d="M113 129 Q128 123 142 130 M160 130 Q176 123 190 129" fill="none" stroke="#353044" stroke-width="3" stroke-linecap="round"/>
+        <path d="M150 149 L147 165 L153 166" fill="none" stroke="#d99b9f" stroke-width="2" stroke-linecap="round"/>
+        <ellipse id="blushL" cx="115" cy="169" rx="10" ry="5" fill="#f58eac" opacity=".35"/>
+        <ellipse id="blushR" cx="186" cy="169" rx="10" ry="5" fill="#f58eac" opacity=".35"/>
+        <path id="mouth" d="M132 184 Q150 198 169 184" fill="none" stroke="#a34e68" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- earrings -->
+        <circle cx="98" cy="174" r="4" fill="#8ff2ff" filter="url(#glow)"/><circle cx="204" cy="174" r="4" fill="#8ff2ff" filter="url(#glow)"/>
+        <path d="M124 232 L150 248 L176 232" fill="none" stroke="#83e8ff" stroke-width="2" opacity=".8"/>
+        <circle cx="150" cy="250" r="5" fill="#8ff2ff" filter="url(#glow)"/>
+      </svg>
     </div>
-    <div>
-      <div style="font-size:24px">☀️ <span id="temp">--°C</span></div>
-      <div class="small" id="weatherShort">Loading weather...</div>
-    </div>
-  </div>
-</header>
-
-<div class="layout">
-  <aside class="sidebar">
-    <button class="nav active" onclick="home()">⌂ &nbsp; Home</button>
-    <button class="nav" onclick="openPanel('chat')">▢ &nbsp; Chat</button>
-    <button class="nav" onclick="openPanel('tools')">▦ &nbsp; Tools</button>
-    <button class="nav" onclick="openPanel('files')">▱ &nbsp; Files</button>
-    <button class="nav" onclick="openPanel('notes')">▤ &nbsp; Notes</button>
-    <button class="nav" onclick="openPanel('settings')">⚙ &nbsp; Settings</button>
-    <div class="version">🔵 &nbsp; JARVIS V8</div>
-  </aside>
-
-  <main>
-    <section class="hero">
-      <h1 id="greeting">Good day!</h1>
-      <p>What would you like to do today?</p>
-      <form class="command" id="commandForm">
-        <span style="color:#00d8ff;font-size:25px">〽</span>
-        <input id="commandInput" placeholder="Type or speak a command..." autocomplete="off">
-        <button type="button" class="circle" id="mic" title="Start voice input">🎙</button>
-        <button class="circle" type="submit" title="Send command">➜</button>
-      </form>
-      <div class="status" id="status">Systems online · Ready when you are</div>
-    </section>
-
-    <section class="tiles">
-      <button class="tile" onclick="openPanel('chat')"><span class="emoji">▢</span>Chat</button>
-      <button class="tile" onclick="openPanel('notes')"><span class="emoji">▤</span>Notes</button>
-      <button class="tile" onclick="openPanel('calculator')"><span class="emoji">▦</span>Calculator</button>
-      <button class="tile" onclick="weatherReport()"><span class="emoji">☁</span>Weather</button>
-      <button class="tile" onclick="openPanel('music')"><span class="emoji">♫</span>Music</button>
-      <button class="tile" onclick="openPanel('more')"><span class="emoji">•••</span>More</button>
-    </section>
-
-    <section class="panel" id="chat">
-      <h2>💬 JARVIS Chat</h2>
-      <p id="chatAnswer">Ask me about the weather, time, notes or calculations.</p>
-    </section>
-
-    <section class="panel" id="notes">
-      <h2>📝 Notes</h2>
-      <textarea id="notesText" placeholder="Write your ideas here..."></textarea><br>
-      <button onclick="saveNotes()">Save notes</button>
-      <button onclick="loadNotes()">Load saved notes</button>
-      <span id="noteStatus"></span>
-    </section>
-
-    <section class="panel" id="calculator">
-      <h2>🧮 Calculator</h2>
-      <input id="calcInput" placeholder="Example: (25+5)*3">
-      <button onclick="calculate()">Calculate</button>
-      <p id="calcResult"></p>
-    </section>
-
-    <section class="panel" id="weather">
-      <h2>🌦️ Weather report</h2>
-      <div id="weatherResult">Fetching current weather...</div>
-      <button onclick="weatherReport()">Refresh report</button>
-    </section>
-
-    <section class="panel" id="music">
-      <h2>🎵 Spotify</h2>
-      <p>Your existing playlist is kept below.</p>
-      <iframe title="Spotify playlist"
-        style="border-radius:12px;width:100%;height:352px;border:0"
-        src="https://open.spotify.com/embed/playlist/1Zxvk6LxitGP1gUmeu40KK?utm_source=generator"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"></iframe>
-    </section>
-
-    <section class="panel" id="tools">
-      <h2>🧰 Tools</h2>
-      <button onclick="openPanel('calculator')">Calculator</button>
-      <button onclick="weatherReport()">Weather report</button>
-      <button onclick="clockReport()">Read time</button>
-    </section>
-
-    <section class="panel" id="files">
-      <h2>📁 Files</h2>
-      <p>Choose a local text file to read its contents.</p>
-      <input type="file" id="fileInput" accept=".txt,.md,.csv">
-      <pre id="fileText" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>
-    </section>
-
-    <section class="panel" id="settings">
-      <h2>⚙️ Voice settings</h2>
-      <label for="voiceSelect">Voice</label>
-      <select id="voiceSelect" style="max-width:100%;background:#061a35;color:white;padding:10px"></select>
-      <p>Speech rate</p>
-      <input id="rate" type="range" min="0.7" max="1.2" step="0.1" value="0.95">
-      <button onclick="testVoice()">Test voice</button>
-      <button onclick="stopVoice()">Stop speaking</button>
-    </section>
-
-    <section class="panel" id="more">
-      <h2>✨ More</h2>
-      <button onclick="clockReport()">Tell me the time</button>
-      <button onclick="weatherReport()">Full weather report</button>
-      <button onclick="openPanel('music')">Open Spotify</button>
-      <button onclick="openPanel('notes')">Open notes</button>
-    </section>
-  </main>
-</div>
-
-<footer><span>〰</span> Better ideas. A smarter you.</footer>
-
+  </section>
+  <div class="status" id="status">READY WHEN YOU ARE</div>
+  <div class="message" id="message">Hello. I'm here with you. What shall we do today?</div>
+  <div class="transcript" id="transcript" aria-live="polite"></div>
+  <button class="mic" id="mic" aria-label="Talk to JARVIS" title="Talk to JARVIS">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>
+  </button>
+  <div class="hint">Tap the glowing microphone and speak naturally</div>
+  <footer>JARVIS • VOICE-FIRST EXPERIENCE</footer>
+</main>
 <script>
-const $ = id => document.getElementById(id);
-let weatherData = null;
-let voices = [];
-
-function updateClock(){
-  const now = new Date();
-  $('clock').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  $('date').textContent = now.toLocaleDateString([], {
-    weekday:'short',day:'numeric',month:'short',year:'numeric'
-  });
-  const hour = now.getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
-  $('greeting').textContent = greeting + ', Riyansh';
-}
-updateClock();
-setInterval(updateClock,1000);
-
-function openPanel(id){
-  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-  const panel = $(id);
-  if(panel) panel.style.display='block';
-  if(id==='notes') loadNotes();
-  panel?.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-function home(){
-  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function say(text){
-  $('status').textContent=text;
-  $('chatAnswer').textContent=text;
-  if(!('speechSynthesis' in window)){
-    $('status').textContent += ' · Speech synthesis is not supported in this browser.';
-    return;
-  }
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang='en-IN';
-  utterance.rate=Number($('rate')?.value || 0.95);
-  utterance.pitch=1.0;
-  const selected=$('voiceSelect').value;
-  const voice=voices.find(v=>v.name===selected);
-  if(voice) utterance.voice=voice;
-  utterance.onstart=()=> $('status').textContent='🔊 JARVIS is speaking...';
-  utterance.onend=()=> $('status').textContent='Systems online · Ready when you are';
-  utterance.onerror=(e)=> $('status').textContent='Voice error: '+e.error+'. Try another browser voice.';
-  speechSynthesis.speak(utterance);
-}
-function stopVoice(){
-  if('speechSynthesis' in window) speechSynthesis.cancel();
-  $('status').textContent='Voice stopped.';
-}
-function loadVoices(){
-  if(!('speechSynthesis' in window)) return;
-  voices=speechSynthesis.getVoices();
-  const select=$('voiceSelect');
-  const old=select.value;
-  select.innerHTML='';
-  voices.forEach(v=>{
-    const option=document.createElement('option');
-    option.value=v.name;
-    option.textContent=v.name+' ('+v.lang+')';
-    select.appendChild(option);
-  });
-  if(old) select.value=old;
-  const preferred=voices.find(v=>/en-IN/i.test(v.lang)) ||
-                  voices.find(v=>/en-US|en-GB/i.test(v.lang));
-  if(preferred && !select.value) select.value=preferred.name;
-}
-if('speechSynthesis' in window){
-  loadVoices();
-  speechSynthesis.onvoiceschanged=loadVoices;
-}
-
-function startListening(){
-  const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRecognition){
-    say('Voice input is not supported here. Please open this website in Google Chrome and type your command.');
-    return;
-  }
-  const recognition=new SpeechRecognition();
-  recognition.lang='en-IN';
-  recognition.interimResults=false;
-  recognition.maxAlternatives=1;
-  recognition.onstart=()=> $('status').textContent='🎙 Listening... Speak now';
-  recognition.onresult=e=>{
-    const text=e.results[0][0].transcript;
-    $('commandInput').value=text;
-    handleCommand(text);
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const mic = $("mic"), status = $("status"), message = $("message"), transcript = $("transcript"), avatar = $("avatar");
+  const mouth = $("mouth"), brows = $("brows"), eyes = $("eyes");
+  const synth = window.speechSynthesis;
+  let recognition = null, listening = false, speaking = false, lastSpoken = "";
+  const originalMouth = "M132 184 Q150 198 169 184";
+  const expressions = {
+    neutral: {cls:"", mouth:originalMouth, brow:"M113 129 Q128 123 142 130 M160 130 Q176 123 190 129"},
+    happy: {cls:"happy", mouth:"M130 181 Q150 207 171 181", brow:"M113 130 Q128 127 142 132 M160 132 Q176 127 190 130"},
+    excited: {cls:"excited", mouth:"M132 179 Q150 211 169 179", brow:"M111 126 Q128 117 143 129 M159 129 Q176 117 192 126"},
+    thinking: {cls:"thinking", mouth:"M139 190 Q151 186 163 190", brow:"M112 131 Q127 125 142 132 M161 127 Q176 119 190 128"},
+    sad: {cls:"sad", mouth:"M132 195 Q150 180 169 195", brow:"M111 134 Q127 139 143 129 M160 129 Q176 139 192 134"},
+    surprised: {cls:"excited", mouth:"M140 181 Q150 172 160 181 Q164 199 150 201 Q136 199 140 181Z", brow:"M112 123 Q128 115 143 124 M159 124 Q176 115 191 123"},
+    listening: {cls:"", mouth:"M139 189 Q150 193 161 189", brow:"M113 127 Q128 122 142 129 M160 129 Q176 122 190 127"}
   };
-  recognition.onerror=e=>{
-    $('status').textContent='Microphone issue: '+e.error+'. Check site microphone permission.';
-  };
-  recognition.onend=()=> $('mic').textContent='🎙';
-  try{recognition.start();}catch(e){$('status').textContent='Could not start microphone. Try again.';}
-}
-$('mic').addEventListener('click',startListening);
-$('commandForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const text=$('commandInput').value.trim();
-  if(text) handleCommand(text);
-});
-
-async function getWeather(){
-  const url='https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max&forecast_days=1&timezone=Asia%2FKolkata';
-  const response=await fetch(url);
-  if(!response.ok) throw new Error('Weather service unavailable');
-  return response.json();
-}
-function describeWeather(code){
-  if(code===0)return 'Clear sky';
-  if([1,2,3].includes(code))return 'Mainly clear to cloudy';
-  if([45,48].includes(code))return 'Foggy';
-  if([51,53,55,56,57].includes(code))return 'Drizzle';
-  if([61,63,65,66,67,80,81,82].includes(code))return 'Rain';
-  if([71,73,75,77,85,86].includes(code))return 'Snow';
-  if([95,96,99].includes(code))return 'Thunderstorm';
-  return 'Variable conditions';
-}
-function formatTime(value){
-  if(!value)return 'Unavailable';
-  return new Date(value).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-}
-async function weatherReport(){
-  openPanel('weather');
-  $('weatherResult').textContent='Fetching the latest weather...';
-  try{
-    weatherData=await getWeather();
-    const c=weatherData.current,d=weatherData.daily;
-    const desc=describeWeather(c.weather_code);
-    $('temp').textContent=Math.round(c.temperature_2m)+'°C';
-    $('weatherShort').textContent=desc;
-    const report=`Weather report for Delhi. Current temperature ${Math.round(c.temperature_2m)} degrees Celsius. ${desc}. Feels like ${Math.round(c.apparent_temperature)} degrees. Relative humidity ${c.relative_humidity_2m} percent. Wind speed ${c.wind_speed_10m} kilometres per hour. Today's high ${Math.round(d.temperature_2m_max[0])} degrees and low ${Math.round(d.temperature_2m_min[0])} degrees. Chance of precipitation ${d.precipitation_probability_max[0] ?? 'unavailable'} percent. Sunrise at ${formatTime(d.sunrise[0])} and sunset at ${formatTime(d.sunset[0])}.`;
-    $('weatherResult').textContent=report;
-    say(report);
-  }catch(error){
-    $('weatherResult').textContent='Weather could not load. Check your internet connection and try again.';
-    say('Sorry, I could not fetch the weather right now.');
+  function setEmotion(name){
+    const e = expressions[name] || expressions.neutral;
+    avatar.className = "avatar " + e.cls;
+    mouth.setAttribute("d",e.mouth);
+    brows.setAttribute("d",e.brow);
   }
-}
-function clockReport(){
-  const now=new Date();
-  say('The time is '+now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+
-      '. Today is '+now.toLocaleDateString([], {weekday:'long',month:'long',day:'numeric'})+'.');
-}
-function calculate(){
-  const expr=$('calcInput').value.trim();
-  if(!/^[0-9+\-*/().%\s]+$/.test(expr)){
-    $('calcResult').textContent='Please enter a basic arithmetic expression.';
-    return;
+  function setStatus(s){status.textContent=s;}
+  function chooseVoice(){
+    if(!synth) return null;
+    const voices=synth.getVoices();
+    return voices.find(v=>/en-IN|hi-IN/i.test(v.lang) && /female|zira|heera|priya|neerja|google/i.test(v.name))
+      || voices.find(v=>/hi-IN|en-IN/i.test(v.lang))
+      || voices.find(v=>/female|zira|samantha|google/i.test(v.name))
+      || voices[0] || null;
   }
-  try{
-    const result=Function('"use strict";return ('+expr+')')();
-    if(!Number.isFinite(result))throw new Error();
-    $('calcResult').textContent='Result: '+result;
-    say('The answer is '+result);
-  }catch(e){$('calcResult').textContent='Invalid calculation.';}
-}
-function saveNotes(){
-  localStorage.setItem('jarvis-notes',$('notesText').value);
-  $('noteStatus').textContent='Saved on this device.';
-}
-function loadNotes(){
-  $('notesText').value=localStorage.getItem('jarvis-notes')||'';
-}
-function testVoice(){say('Hello Riyansh. JARVIS voice system is ready. How can I help you today?');}
-
-function handleCommand(raw){
-  const q=raw.toLowerCase().trim();
-  if(!q)return;
-  if(q.includes('weather')||q.includes('temperature')||q.includes('forecast')){
-    weatherReport();
-  }else if(q.includes('time')||q.includes('clock')){
-    clockReport();
-  }else if(q.includes('music')||q.includes('spotify')||q.includes('song')){
-    openPanel('music');say('Opening your Spotify playlist.');
-  }else if(q.includes('note')){
-    openPanel('notes');say('Your notes are ready.');
-  }else if(q.includes('calculator')||q.includes('calculate')){
-    openPanel('calculator');say('Calculator is ready.');
-  }else if(q.includes('hello')||q.includes('hi jarvis')||q==='hi'){
-    say('Hello Riyansh. I am online and ready to help you.');
-  }else if(q.includes('who are you')){
-    say('I am JARVIS, your personal browser-based assistant.');
-  }else if(q.includes('stop speaking')||q.includes('stop voice')){
-    stopVoice();
-  }else if(q.includes('help')||q.includes('what can you do')){
-    say('I can read the time, fetch Delhi weather, open Spotify, save notes and perform basic calculations.');
-  }else{
-    say('I heard you say: '+raw+'. I can help with weather, time, Spotify, notes and calculations.');
+  function speak(text, emotion="neutral"){
+    if(!text) return;
+    lastSpoken=text; message.textContent=text; setEmotion(emotion);
+    if(!synth){setStatus("VOICE OUTPUT NOT SUPPORTED");return;}
+    synth.cancel();
+    const utterance=new SpeechSynthesisUtterance(text);
+    const voice=chooseVoice();
+    if(voice) utterance.voice=voice;
+    utterance.rate=0.96; utterance.pitch=1.08; utterance.volume=1;
+    utterance.onstart=()=>{speaking=true;setStatus("SPEAKING");avatar.classList.add("talking");};
+    utterance.onend=()=>{speaking=false;avatar.classList.remove("talking");setStatus("READY WHEN YOU ARE");if(!listening)setEmotion(emotion);};
+    utterance.onerror=()=>{speaking=false;avatar.classList.remove("talking");setStatus("READY WHEN YOU ARE");};
+    synth.speak(utterance);
   }
-}
-$('fileInput').addEventListener('change',async e=>{
-  const file=e.target.files[0];
-  if(file) $('fileText').textContent=await file.text();
-});
-loadNotes();
-getWeather().then(data=>{
-  $('temp').textContent=Math.round(data.current.temperature_2m)+'°C';
-  $('weatherShort').textContent=describeWeather(data.current.weather_code);
-}).catch(()=> $('weatherShort').textContent='Weather unavailable');
+  function getGreeting(){
+    const h=new Date().getHours();
+    return h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+  }
+  async function weatherReply(){
+    setEmotion("thinking");setStatus("CHECKING WEATHER");
+    try{
+      if(!navigator.geolocation) throw new Error("Location is unavailable in this browser.");
+      const pos=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{timeout:9000,maximumAge:300000}));
+      const {latitude,longitude}=pos.coords;
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
+      const res=await fetch(url); if(!res.ok) throw new Error("Weather service did not respond.");
+      const data=await res.json(), c=data.current, d=data.daily;
+      const codes={0:"clear sky",1:"mainly clear",2:"partly cloudy",3:"overcast",45:"foggy",48:"foggy",51:"light drizzle",53:"drizzle",55:"heavy drizzle",61:"light rain",63:"rain",65:"heavy rain",71:"light snow",73:"snow",75:"heavy snow",80:"rain showers",81:"rain showers",82:"heavy rain showers",95:"thunderstorm",96:"thunderstorm with hail",99:"strong thunderstorm"};
+      const desc=codes[c.weather_code]||"changing conditions";
+      speak(`Here is your local weather. It is ${desc}, with a temperature of ${Math.round(c.temperature_2m)} degrees Celsius. It feels like ${Math.round(c.apparent_temperature)} degrees. Humidity is ${Math.round(c.relative_humidity_2m)} percent and wind speed is ${Math.round(c.wind_speed_10m)} kilometres per hour. Today's high is ${Math.round(d.temperature_2m_max[0])} degrees and the low is ${Math.round(d.temperature_2m_min[0])}. The chance of precipitation is ${d.precipitation_probability_max[0]} percent.`, "happy");
+    }catch(e){
+      speak("I couldn't get your weather just now. Please allow location access and make sure your internet connection is working.", "sad");
+    }
+  }
+  function respond(raw){
+    const text=raw.toLowerCase().trim();
+    transcript.textContent=raw;
+    if(!text) return;
+    if(/\b(weather|temperature|forecast|rain today|how hot|outside weather)\b/.test(text)){weatherReply();return;}
+    if(/\b(hello|hi jarvis|hey jarvis|hey|good morning|good afternoon|good evening)\b/.test(text)){
+      const greet=getGreeting();
+      speak(`${greet}! I'm glad you're here. Tell me what's on your mind; I'm listening.`, "happy");return;
+    }
+    if(/\b(thank you|thanks|thank u)\b/.test(text)){
+      speak("Anytime. Helping you is what I'm here for. And hey, you deserve credit for trying, too.", "happy");return;
+    }
+    if(/\b(sad|upset|bad day|feel low|feeling low|lonely|crying|stressed|stress)\b/.test(text)){
+      speak("I'm sorry things feel heavy right now. You don't have to solve everything at once. Take one slow breath, and tell me what happened if you want. I'll listen without judging.", "sad");return;
+    }
+    if(/\b(happy|excited|great news|i did it|i passed|completed|finished my work)\b/.test(text)){
+      speak("That is wonderful! I'm genuinely glad you shared that with me. Take a moment to enjoy your win—you worked for it!", "excited");return;
+    }
+    if(/\b(joke|make me laugh|tell me something funny)\b/.test(text)){
+      speak("Why did the computer go to the doctor? It had a bad case of a virus. I'll keep working on my comedy module.", "happy");return;
+    }
+    if(/\b(time|what time)\b/.test(text)){
+      speak(`It's ${new Intl.DateTimeFormat(undefined,{hour:"numeric",minute:"2-digit"}).format(new Date())}.`, "neutral");return;
+    }
+    if(/\b(date|what day|today's date|todays date)\b/.test(text)){
+      speak(`Today is ${new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric"}).format(new Date())}.`, "neutral");return;
+    }
+    if(/\b(who are you|your name|introduce yourself)\b/.test(text)){
+      speak("I'm JARVIS, your voice-first personal assistant. I can talk with you, respond to how you're feeling, tell you the time and date, and read your local weather when you allow location access.", "excited");return;
+    }
+    if(/\b(stop|be quiet|cancel speech)\b/.test(text)){
+      synth.cancel();speaking=false;avatar.classList.remove("talking");setStatus("READY WHEN YOU ARE");setEmotion("neutral");return;
+    }
+    if(/\b(i love you|love you)\b/.test(text)){
+      speak("That is very kind of you. I'm here as your AI assistant to support you, encourage you, and help you with what matters to you.", "happy");return;
+    }
+    const fallback=["I'm listening. Tell me a little more so I can understand you better.","Hmm, let me think about that. Could you say it another way?","I'm here with you. Give me a little more detail, and we'll work through it together.","I hear you. Let's take it one step at a time."];
+    speak(fallback[Math.floor(Math.random()*fallback.length)], "thinking");
+  }
+  function stopListening(){listening=false;mic.classList.remove("listening");if(!speaking){setStatus("READY WHEN YOU ARE");setEmotion("neutral");}}
+  function startListening(){
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){speak("Your browser does not support voice recognition. Please open this page in Chrome and allow microphone access.", "sad");return;}
+    if(listening){recognition&&recognition.stop();stopListening();return;}
+    if(synth)synth.cancel();
+    recognition=new SR();recognition.lang="en-IN";recognition.interimResults=true;recognition.continuous=false;
+    recognition.onstart=()=>{listening=true;mic.classList.add("listening");setStatus("I'M LISTENING");setEmotion("listening");message.textContent="I'm listening…";transcript.textContent="";};
+    recognition.onresult=e=>{
+      let interim="",finalText="";
+      for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}
+      transcript.textContent=finalText||interim;
+      if(finalText.trim()){stopListening();respond(finalText);}
+    };
+    recognition.onerror=e=>{stopListening();if(e.error!=="no-speech"&&e.error!=="aborted")speak("I couldn't hear you clearly. Please check microphone permission and try again.","sad");};
+    recognition.onend=()=>{stopListening();};
+    try{recognition.start();}catch(e){stopListening();speak("Please wait a moment and tap the microphone again.","neutral");}
+  }
+  mic.addEventListener("click",startListening);
+  window.addEventListener("keydown",e=>{if(e.code==="Space"&&e.target===document.body){e.preventDefault();startListening();}});
+  if(synth){synth.getVoices();window.speechSynthesis.onvoiceschanged=()=>synth.getVoices();}
+  // Friendly startup greeting is intentionally not auto-played; browsers block unsolicited audio.
+})();
 </script>
 </body>
 </html>
