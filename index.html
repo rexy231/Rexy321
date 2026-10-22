@@ -3,235 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#070b16">
-<title>JARVIS — Personal AI</title>
+<meta name="theme-color" content="#050811">
+<title>JARVIS</title>
 <style>
-:root{color-scheme:dark;--cyan:#79e8ff;--blue:#4d91ff;--pink:#ff9bcf;--text:#eaf6ff;--muted:#9fb2ca}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#050811;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-body{min-height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#10233b 0,#091323 34%,#050811 72%)}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.3;background-image:linear-gradient(#15314c55 1px,transparent 1px),linear-gradient(90deg,#15314c55 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000,transparent 75%)}
-main{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px 36px;gap:14px}
-.brand{position:absolute;top:26px;left:0;right:0;text-align:center;letter-spacing:.38em;font-size:12px;color:#8bdfff;text-shadow:0 0 18px #55cfff88}
-.brand b{font-weight:700;color:#f2fbff}
-.stage{width:min(84vw,360px);aspect-ratio:1/1.08;display:grid;place-items:center;position:relative;isolation:isolate}
-.halo{position:absolute;width:94%;aspect-ratio:1;border:1px solid #65dfff44;border-radius:50%;box-shadow:0 0 45px #2e9fff19,inset 0 0 40px #2e9fff0e;animation:spin 26s linear infinite}
-.halo:before,.halo:after{content:"";position:absolute;border:1px solid #72dfff33;border-radius:50%;inset:8%;transform:rotateX(68deg) rotate(20deg)}
-.halo:after{inset:15%;transform:rotateY(68deg) rotate(-25deg);border-color:#b4a3ff33}
-.avatar{position:relative;width:76%;height:83%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 30px #4b9eff30);transition:transform .35s}
-.avatar svg{width:100%;height:100%;overflow:visible}
-.avatar.talking{animation:talk 1.5s ease-in-out infinite}
-.avatar.happy{filter:drop-shadow(0 0 35px #ff9bcf66)}
-.avatar.thinking{animation:think 2.2s ease-in-out infinite}
-.avatar.sad{filter:drop-shadow(0 0 28px #719cff55)}
-.avatar.excited{animation:excited .65s ease-in-out infinite alternate}
-.status{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--cyan);min-height:16px;text-align:center}
-.message{width:min(92vw,560px);min-height:52px;text-align:center;font-size:clamp(15px,3.5vw,19px);line-height:1.55;color:#e6f4ff;text-wrap:balance;padding:0 10px}
-.transcript{font-size:12px;min-height:18px;color:var(--muted);text-align:center;max-width:90vw}
-.mic{width:76px;height:76px;border-radius:50%;border:1px solid #9cecff99;background:linear-gradient(145deg,#163858,#0b1829);display:grid;place-items:center;color:white;cursor:pointer;box-shadow:0 0 28px #4bcfff2b,inset 0 0 18px #4bcfff10;transition:transform .2s,box-shadow .2s;outline:none}
-.mic:hover{transform:scale(1.04);box-shadow:0 0 36px #4bcfff55}
-.mic:focus-visible{outline:2px solid white;outline-offset:4px}
-.mic.listening{background:linear-gradient(145deg,#7c2659,#231b4e);box-shadow:0 0 0 10px #ff8bd51c,0 0 40px #ff79d888;animation:pulse 1.3s infinite}
-.mic svg{width:29px;height:29px}
-.hint{font-size:11px;color:#8ca5c0;text-align:center;max-width:90vw}
-footer{position:absolute;bottom:16px;font-size:10px;letter-spacing:.15em;color:#5f7896;text-align:center}
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes talk{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) scale(1.008)}}@keyframes think{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1deg)}}@keyframes excited{from{transform:translateY(0) scale(1)}to{transform:translateY(-5px) scale(1.025)}}@keyframes pulse{50%{box-shadow:0 0 0 17px #ff8bd50a,0 0 46px #ff79d8aa}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050811;color:#eef8ff;font-family:Arial,system-ui,sans-serif}
+body{background:radial-gradient(ellipse at center,#142640 0,#07101d 48%,#03060d 100%)}
+main{height:100dvh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;padding:18px}
+main:before{content:"";position:absolute;inset:0;background:linear-gradient(#18314a30 1px,transparent 1px),linear-gradient(90deg,#18314a30 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse,#000,transparent 76%);pointer-events:none}
+.brand{position:absolute;top:24px;z-index:2;letter-spacing:.38em;font-size:12px;color:#8eeaff;text-shadow:0 0 16px #53d9ff77}
+.frame{position:relative;width:min(90vw,390px);height:min(66dvh,680px);border-radius:48% 48% 32px 32px;overflow:hidden;border:1px solid #8ae9ff66;box-shadow:0 0 38px #3faeff2b,0 0 90px #3faeff12;z-index:1;background:#081321}
+.frame:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#07101b0a 55%,#06101ee0 100%),linear-gradient(90deg,#5bdfff12,transparent 25%,transparent 75%,#5bdfff12)}
+video{width:100%;height:100%;object-fit:cover;display:block}
+.orbit{position:absolute;width:min(98vw,430px);aspect-ratio:1;border:1px solid #73ddff2c;border-radius:50%;pointer-events:none;animation:spin 35s linear infinite}
+.orbit:before,.orbit:after{content:"";position:absolute;inset:8%;border:1px solid #73ddff25;border-radius:50%;transform:rotateX(65deg)}
+.orbit:after{inset:17%;transform:rotateY(65deg)}
+.status{position:relative;z-index:2;margin-top:23px;min-height:16px;font-size:11px;letter-spacing:.22em;color:#83eaff;text-align:center}
+.message{position:relative;z-index:2;margin-top:12px;width:min(92vw,560px);min-height:52px;text-align:center;line-height:1.5;font-size:clamp(15px,4vw,19px);text-wrap:balance}
+@keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.orbit{animation:none}}
 </style>
 </head>
 <body>
 <main>
-  <div class="brand"><b>J.A.R.V.I.S.</b> &nbsp; PERSONAL AI</div>
-  <section class="stage" aria-label="Animated AI assistant">
-    <div class="halo"></div>
-    <div class="avatar" id="avatar">
-      <svg viewBox="0 0 300 360" role="img" aria-label="Stylized animated anime-inspired AI assistant">
-        <defs>
-          <linearGradient id="hair" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#20263d"/><stop offset=".48" stop-color="#080d1b"/><stop offset="1" stop-color="#384567"/></linearGradient>
-          <linearGradient id="skin" x1="0" x2="1"><stop stop-color="#ffd8d3"/><stop offset="1" stop-color="#e9b5b7"/></linearGradient>
-          <linearGradient id="coat" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#344b70"/><stop offset="1" stop-color="#101a30"/></linearGradient>
-          <linearGradient id="eye" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#76e9ff"/><stop offset="1" stop-color="#547aff"/></linearGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <!-- shoulders and outfit -->
-        <path d="M52 345 Q54 274 91 254 L120 241 L181 241 L211 254 Q248 274 250 345Z" fill="url(#coat)" stroke="#7194c9" stroke-opacity=".65" stroke-width="2"/>
-        <path d="M111 250 L150 291 L189 250 L174 345 L126 345Z" fill="#e9f4ff"/>
-        <path d="M135 280 L150 295 L165 280 L160 345 L140 345Z" fill="#5ddfff" opacity=".75"/>
-        <path d="M89 262 L111 250 L128 280 L105 316 L77 285Z" fill="#17263f" stroke="#7794c6" stroke-opacity=".5"/>
-        <path d="M211 262 L189 250 L172 280 L195 316 L223 285Z" fill="#17263f" stroke="#7794c6" stroke-opacity=".5"/>
-        <!-- neck -->
-        <path d="M127 218 L126 252 Q150 273 174 252 L173 218Z" fill="url(#skin)"/>
-        <!-- hair back -->
-        <path d="M81 128 Q77 50 145 37 Q219 33 224 111 L238 214 Q215 251 199 254 L92 248 Q67 223 66 185Z" fill="url(#hair)" stroke="#566b91" stroke-width="2"/>
-        <!-- face -->
-        <path d="M99 112 Q102 69 151 68 Q203 70 202 119 L195 185 Q184 220 151 225 Q117 220 105 185Z" fill="url(#skin)"/>
-        <!-- side locks -->
-        <path d="M95 102 Q83 148 105 202 Q94 224 82 204 Q67 162 76 112Z" fill="url(#hair)"/>
-        <path d="M199 99 Q218 147 196 204 Q208 226 220 202 Q232 155 218 108Z" fill="url(#hair)"/>
-        <!-- bangs -->
-        <path d="M83 124 Q70 58 132 43 Q184 29 214 77 Q224 95 215 126 L197 108 L188 78 Q164 107 129 105 Q110 104 99 124 L97 151Z" fill="url(#hair)" stroke="#536687" stroke-width="1.4"/>
-        <path d="M143 48 Q127 74 134 106 Q116 101 108 119 Q102 87 120 62Z" fill="#64799f" opacity=".45"/>
-        <path d="M165 48 Q195 60 200 94 Q179 78 166 75Z" fill="#4b5f84" opacity=".45"/>
-        <!-- ears -->
-        <ellipse cx="101" cy="154" rx="8" ry="13" fill="#e8b7b8"/><ellipse cx="201" cy="154" rx="8" ry="13" fill="#e8b7b8"/>
-        <!-- eyes -->
-        <g id="eyes">
-          <path d="M111 143 Q130 127 145 143 Q130 162 111 143Z" fill="#fff"/>
-          <path d="M157 143 Q176 127 192 143 Q176 162 157 143Z" fill="#fff"/>
-          <ellipse cx="130" cy="145" rx="8" ry="11" fill="url(#eye)"/><ellipse cx="175" cy="145" rx="8" ry="11" fill="url(#eye)"/>
-          <ellipse cx="132" cy="142" rx="3" ry="4" fill="#fff"/><ellipse cx="177" cy="142" rx="3" ry="4" fill="#fff"/>
-          <path d="M109 139 Q128 126 146 139" fill="none" stroke="#27283e" stroke-width="4" stroke-linecap="round"/>
-          <path d="M156 139 Q176 126 194 139" fill="none" stroke="#27283e" stroke-width="4" stroke-linecap="round"/>
-        </g>
-        <path id="brows" d="M113 129 Q128 123 142 130 M160 130 Q176 123 190 129" fill="none" stroke="#353044" stroke-width="3" stroke-linecap="round"/>
-        <path d="M150 149 L147 165 L153 166" fill="none" stroke="#d99b9f" stroke-width="2" stroke-linecap="round"/>
-        <ellipse id="blushL" cx="115" cy="169" rx="10" ry="5" fill="#f58eac" opacity=".35"/>
-        <ellipse id="blushR" cx="186" cy="169" rx="10" ry="5" fill="#f58eac" opacity=".35"/>
-        <path id="mouth" d="M132 184 Q150 198 169 184" fill="none" stroke="#a34e68" stroke-width="3.5" stroke-linecap="round"/>
-        <!-- earrings -->
-        <circle cx="98" cy="174" r="4" fill="#8ff2ff" filter="url(#glow)"/><circle cx="204" cy="174" r="4" fill="#8ff2ff" filter="url(#glow)"/>
-        <path d="M124 232 L150 248 L176 232" fill="none" stroke="#83e8ff" stroke-width="2" opacity=".8"/>
-        <circle cx="150" cy="250" r="5" fill="#8ff2ff" filter="url(#glow)"/>
-      </svg>
-    </div>
-  </section>
-  <div class="status" id="status">READY WHEN YOU ARE</div>
-  <div class="message" id="message">Hello. I'm here with you. What shall we do today?</div>
-  <div class="transcript" id="transcript" aria-live="polite"></div>
-  <button class="mic" id="mic" aria-label="Talk to JARVIS" title="Talk to JARVIS">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>
-  </button>
-  <div class="hint">Tap the glowing microphone and speak naturally</div>
-  <footer>JARVIS • VOICE-FIRST EXPERIENCE</footer>
+  <div class="brand">J.A.R.V.I.S.</div>
+  <div class="orbit"></div>
+  <div class="frame">
+    <video id="avatarVideo" autoplay muted loop playsinline preload="auto">
+      <source src="1000004826.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="status" id="status">STARTING JARVIS</div>
+  <div class="message" id="message" aria-live="polite">Please allow microphone access when your browser asks.</div>
 </main>
 <script>
 (() => {
   "use strict";
-  const $ = id => document.getElementById(id);
-  const mic = $("mic"), status = $("status"), message = $("message"), transcript = $("transcript"), avatar = $("avatar");
-  const mouth = $("mouth"), brows = $("brows"), eyes = $("eyes");
-  const synth = window.speechSynthesis;
-  let recognition = null, listening = false, speaking = false, lastSpoken = "";
-  const originalMouth = "M132 184 Q150 198 169 184";
-  const expressions = {
-    neutral: {cls:"", mouth:originalMouth, brow:"M113 129 Q128 123 142 130 M160 130 Q176 123 190 129"},
-    happy: {cls:"happy", mouth:"M130 181 Q150 207 171 181", brow:"M113 130 Q128 127 142 132 M160 132 Q176 127 190 130"},
-    excited: {cls:"excited", mouth:"M132 179 Q150 211 169 179", brow:"M111 126 Q128 117 143 129 M159 129 Q176 117 192 126"},
-    thinking: {cls:"thinking", mouth:"M139 190 Q151 186 163 190", brow:"M112 131 Q127 125 142 132 M161 127 Q176 119 190 128"},
-    sad: {cls:"sad", mouth:"M132 195 Q150 180 169 195", brow:"M111 134 Q127 139 143 129 M160 129 Q176 139 192 134"},
-    surprised: {cls:"excited", mouth:"M140 181 Q150 172 160 181 Q164 199 150 201 Q136 199 140 181Z", brow:"M112 123 Q128 115 143 124 M159 124 Q176 115 191 123"},
-    listening: {cls:"", mouth:"M139 189 Q150 193 161 189", brow:"M113 127 Q128 122 142 129 M160 129 Q176 122 190 127"}
-  };
-  function setEmotion(name){
-    const e = expressions[name] || expressions.neutral;
-    avatar.className = "avatar " + e.cls;
-    mouth.setAttribute("d",e.mouth);
-    brows.setAttribute("d",e.brow);
-  }
-  function setStatus(s){status.textContent=s;}
-  function chooseVoice(){
-    if(!synth) return null;
-    const voices=synth.getVoices();
-    return voices.find(v=>/en-IN|hi-IN/i.test(v.lang) && /female|zira|heera|priya|neerja|google/i.test(v.name))
-      || voices.find(v=>/hi-IN|en-IN/i.test(v.lang))
-      || voices.find(v=>/female|zira|samantha|google/i.test(v.name))
-      || voices[0] || null;
-  }
-  function speak(text, emotion="neutral"){
-    if(!text) return;
-    lastSpoken=text; message.textContent=text; setEmotion(emotion);
-    if(!synth){setStatus("VOICE OUTPUT NOT SUPPORTED");return;}
+  const statusEl=document.getElementById("status");
+  const messageEl=document.getElementById("message");
+  const video=document.getElementById("avatarVideo");
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const synth=window.speechSynthesis;
+  let recognition=null, restarting=false, speaking=false, retryTimer=null;
+  const setStatus=s=>statusEl.textContent=s;
+  function say(text){
+    messageEl.textContent=text;
+    if(!synth){setStatus("VOICE OUTPUT UNAVAILABLE");return;}
     synth.cancel();
-    const utterance=new SpeechSynthesisUtterance(text);
-    const voice=chooseVoice();
-    if(voice) utterance.voice=voice;
-    utterance.rate=0.96; utterance.pitch=1.08; utterance.volume=1;
-    utterance.onstart=()=>{speaking=true;setStatus("SPEAKING");avatar.classList.add("talking");};
-    utterance.onend=()=>{speaking=false;avatar.classList.remove("talking");setStatus("READY WHEN YOU ARE");if(!listening)setEmotion(emotion);};
-    utterance.onerror=()=>{speaking=false;avatar.classList.remove("talking");setStatus("READY WHEN YOU ARE");};
-    synth.speak(utterance);
+    const u=new SpeechSynthesisUtterance(text);
+    // Browser/system voice is used here; it cannot guarantee the exact voice from the reference video.
+    const voices=synth.getVoices();
+    const v=voices.find(x=>/en-IN|hi-IN/i.test(x.lang)&&/female|google|heera|priya|zira/i.test(x.name))
+      ||voices.find(x=>/en-IN|hi-IN/i.test(x.lang))||voices.find(x=>/female|samantha|google/i.test(x.name))||voices[0];
+    if(v)u.voice=v;
+    u.rate=.96;u.pitch=1.08;u.volume=1;
+    u.onstart=()=>{speaking=true;setStatus("SPEAKING");};
+    u.onend=()=>{speaking=false;setStatus("LISTENING");startRecognition();};
+    u.onerror=()=>{speaking=false;setStatus("LISTENING");startRecognition();};
+    synth.speak(u);
   }
-  function getGreeting(){
-    const h=new Date().getHours();
-    return h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+  function weather(){
+    setStatus("CHECKING WEATHER");
+    if(!navigator.geolocation){say("I can't access location in this browser, so I can't check your local weather.");return;}
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      try{
+        const {latitude,longitude}=pos.coords;
+        const url=`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
+        const r=await fetch(url);if(!r.ok)throw new Error("weather");
+        const d=await r.json(),c=d.current,day=d.daily;
+        const codes={0:"clear sky",1:"mainly clear",2:"partly cloudy",3:"overcast",45:"foggy",48:"foggy",51:"light drizzle",53:"drizzle",55:"heavy drizzle",61:"light rain",63:"rain",65:"heavy rain",71:"light snow",73:"snow",75:"heavy snow",80:"rain showers",81:"rain showers",82:"heavy rain showers",95:"a thunderstorm",96:"a thunderstorm with hail",99:"a strong thunderstorm"};
+        say(`Here is your weather. It is ${codes[c.weather_code]||"changing"} and ${Math.round(c.temperature_2m)} degrees Celsius. It feels like ${Math.round(c.apparent_temperature)} degrees. Humidity is ${Math.round(c.relative_humidity_2m)} percent. Wind speed is ${Math.round(c.wind_speed_10m)} kilometres per hour. Today's high is ${Math.round(day.temperature_2m_max[0])} degrees and low is ${Math.round(day.temperature_2m_min[0])}. The chance of precipitation is ${day.precipitation_probability_max[0]} percent.`);
+      }catch(e){say("Sorry, I couldn't fetch the weather right now. Please check your internet connection.");}
+    },()=>say("Please allow location access so I can tell you your local weather."),{timeout:10000,maximumAge:300000});
   }
-  async function weatherReply(){
-    setEmotion("thinking");setStatus("CHECKING WEATHER");
-    try{
-      if(!navigator.geolocation) throw new Error("Location is unavailable in this browser.");
-      const pos=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{timeout:9000,maximumAge:300000}));
-      const {latitude,longitude}=pos.coords;
-      const url=`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
-      const res=await fetch(url); if(!res.ok) throw new Error("Weather service did not respond.");
-      const data=await res.json(), c=data.current, d=data.daily;
-      const codes={0:"clear sky",1:"mainly clear",2:"partly cloudy",3:"overcast",45:"foggy",48:"foggy",51:"light drizzle",53:"drizzle",55:"heavy drizzle",61:"light rain",63:"rain",65:"heavy rain",71:"light snow",73:"snow",75:"heavy snow",80:"rain showers",81:"rain showers",82:"heavy rain showers",95:"thunderstorm",96:"thunderstorm with hail",99:"strong thunderstorm"};
-      const desc=codes[c.weather_code]||"changing conditions";
-      speak(`Here is your local weather. It is ${desc}, with a temperature of ${Math.round(c.temperature_2m)} degrees Celsius. It feels like ${Math.round(c.apparent_temperature)} degrees. Humidity is ${Math.round(c.relative_humidity_2m)} percent and wind speed is ${Math.round(c.wind_speed_10m)} kilometres per hour. Today's high is ${Math.round(d.temperature_2m_max[0])} degrees and the low is ${Math.round(d.temperature_2m_min[0])}. The chance of precipitation is ${d.precipitation_probability_max[0]} percent.`, "happy");
-    }catch(e){
-      speak("I couldn't get your weather just now. Please allow location access and make sure your internet connection is working.", "sad");
+  function respond(input){
+    const t=input.toLowerCase().trim();
+    if(!t)return;
+    if(/\b(weather|temperature|forecast|rain today|how hot)\b/.test(t)){weather();return;}
+    if(/\b(hello|hi|hey|good morning|good afternoon|good evening)\b/.test(t)){
+      const h=new Date().getHours();say(`${h<12?"Good morning":h<17?"Good afternoon":"Good evening"}. I'm here and listening. What would you like to talk about?`);return;
     }
+    if(/\b(time|what time)\b/.test(t)){say(`It is ${new Intl.DateTimeFormat(undefined,{hour:"numeric",minute:"2-digit"}).format(new Date())}.`);return;}
+    if(/\b(date|what day|today's date|todays date)\b/.test(t)){say(`Today is ${new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric"}).format(new Date())}.`);return;}
+    if(/\b(sad|upset|lonely|stressed|bad day|feel low|feeling low)\b/.test(t)){say("I'm sorry you're feeling this way. You don't have to handle everything at once. I'm listening; tell me what happened if you'd like.");return;}
+    if(/\b(happy|excited|great news|i did it|i passed|completed)\b/.test(t)){say("That's wonderful news! I'm glad you told me. Take a moment to enjoy what you've achieved.");return;}
+    if(/\b(thank you|thanks)\b/.test(t)){say("You're welcome. I'm always ready to help.");return;}
+    if(/\b(who are you|your name)\b/.test(t)){say("I'm JARVIS, your voice-first assistant. I can listen for your commands, answer a few everyday requests, and read your local weather.");return;}
+    if(/\b(stop speaking|be quiet|cancel speech)\b/.test(t)){synth.cancel();speaking=false;setStatus("LISTENING");startRecognition();return;}
+    say("I heard you. I can help with basic voice commands right now, but I don't yet have a full language-model brain connected. Please say that another way.");
   }
-  function respond(raw){
-    const text=raw.toLowerCase().trim();
-    transcript.textContent=raw;
-    if(!text) return;
-    if(/\b(weather|temperature|forecast|rain today|how hot|outside weather)\b/.test(text)){weatherReply();return;}
-    if(/\b(hello|hi jarvis|hey jarvis|hey|good morning|good afternoon|good evening)\b/.test(text)){
-      const greet=getGreeting();
-      speak(`${greet}! I'm glad you're here. Tell me what's on your mind; I'm listening.`, "happy");return;
-    }
-    if(/\b(thank you|thanks|thank u)\b/.test(text)){
-      speak("Anytime. Helping you is what I'm here for. And hey, you deserve credit for trying, too.", "happy");return;
-    }
-    if(/\b(sad|upset|bad day|feel low|feeling low|lonely|crying|stressed|stress)\b/.test(text)){
-      speak("I'm sorry things feel heavy right now. You don't have to solve everything at once. Take one slow breath, and tell me what happened if you want. I'll listen without judging.", "sad");return;
-    }
-    if(/\b(happy|excited|great news|i did it|i passed|completed|finished my work)\b/.test(text)){
-      speak("That is wonderful! I'm genuinely glad you shared that with me. Take a moment to enjoy your win—you worked for it!", "excited");return;
-    }
-    if(/\b(joke|make me laugh|tell me something funny)\b/.test(text)){
-      speak("Why did the computer go to the doctor? It had a bad case of a virus. I'll keep working on my comedy module.", "happy");return;
-    }
-    if(/\b(time|what time)\b/.test(text)){
-      speak(`It's ${new Intl.DateTimeFormat(undefined,{hour:"numeric",minute:"2-digit"}).format(new Date())}.`, "neutral");return;
-    }
-    if(/\b(date|what day|today's date|todays date)\b/.test(text)){
-      speak(`Today is ${new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric"}).format(new Date())}.`, "neutral");return;
-    }
-    if(/\b(who are you|your name|introduce yourself)\b/.test(text)){
-      speak("I'm JARVIS, your voice-first personal assistant. I can talk with you, respond to how you're feeling, tell you the time and date, and read your local weather when you allow location access.", "excited");return;
-    }
-    if(/\b(stop|be quiet|cancel speech)\b/.test(text)){
-      synth.cancel();speaking=false;avatar.classList.remove("talking");setStatus("READY WHEN YOU ARE");setEmotion("neutral");return;
-    }
-    if(/\b(i love you|love you)\b/.test(text)){
-      speak("That is very kind of you. I'm here as your AI assistant to support you, encourage you, and help you with what matters to you.", "happy");return;
-    }
-    const fallback=["I'm listening. Tell me a little more so I can understand you better.","Hmm, let me think about that. Could you say it another way?","I'm here with you. Give me a little more detail, and we'll work through it together.","I hear you. Let's take it one step at a time."];
-    speak(fallback[Math.floor(Math.random()*fallback.length)], "thinking");
-  }
-  function stopListening(){listening=false;mic.classList.remove("listening");if(!speaking){setStatus("READY WHEN YOU ARE");setEmotion("neutral");}}
-  function startListening(){
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR){speak("Your browser does not support voice recognition. Please open this page in Chrome and allow microphone access.", "sad");return;}
-    if(listening){recognition&&recognition.stop();stopListening();return;}
-    if(synth)synth.cancel();
-    recognition=new SR();recognition.lang="en-IN";recognition.interimResults=true;recognition.continuous=false;
-    recognition.onstart=()=>{listening=true;mic.classList.add("listening");setStatus("I'M LISTENING");setEmotion("listening");message.textContent="I'm listening…";transcript.textContent="";};
-    recognition.onresult=e=>{
-      let interim="",finalText="";
-      for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}
-      transcript.textContent=finalText||interim;
-      if(finalText.trim()){stopListening();respond(finalText);}
+  function startRecognition(){
+    if(!SR){setStatus("VOICE RECOGNITION NOT SUPPORTED");messageEl.textContent="Open this page in a compatible browser such as Chrome and use a secure HTTPS website.";return;}
+    if(speaking||restarting)return;
+    if(recognition){try{recognition.stop()}catch(e){}}
+    recognition=new SR();
+    recognition.lang="en-IN";recognition.continuous=false;recognition.interimResults=false;
+    recognition.onstart=()=>{restarting=false;setStatus("LISTENING");messageEl.textContent="I'm listening…";};
+    recognition.onresult=e=>{const spoken=e.results[e.results.length-1][0].transcript;messageEl.textContent=spoken;try{recognition.stop()}catch(e){}respond(spoken);};
+    recognition.onerror=e=>{
+      restarting=false;
+      if(e.error==="not-allowed"||e.error==="service-not-allowed"){setStatus("MICROPHONE PERMISSION NEEDED");messageEl.textContent="Allow microphone access in your browser settings, then reload this page.";return;}
+      if(e.error==="audio-capture"){setStatus("MICROPHONE NOT FOUND");return;}
+      scheduleRestart();
     };
-    recognition.onerror=e=>{stopListening();if(e.error!=="no-speech"&&e.error!=="aborted")speak("I couldn't hear you clearly. Please check microphone permission and try again.","sad");};
-    recognition.onend=()=>{stopListening();};
-    try{recognition.start();}catch(e){stopListening();speak("Please wait a moment and tap the microphone again.","neutral");}
+    recognition.onend=()=>{restarting=false;if(!speaking)scheduleRestart();};
+    try{restarting=true;recognition.start()}catch(e){restarting=false;scheduleRestart();}
   }
-  mic.addEventListener("click",startListening);
-  window.addEventListener("keydown",e=>{if(e.code==="Space"&&e.target===document.body){e.preventDefault();startListening();}});
-  if(synth){synth.getVoices();window.speechSynthesis.onvoiceschanged=()=>synth.getVoices();}
-  // Friendly startup greeting is intentionally not auto-played; browsers block unsolicited audio.
+  function scheduleRestart(){clearTimeout(retryTimer);retryTimer=setTimeout(()=>{if(!speaking)startRecognition()},800);}
+  video.play().catch(()=>{messageEl.textContent="Tap the page once to start the avatar video, then allow microphone access."});
+  if(synth)synth.getVoices();
+  // The page attempts to start listening automatically. Browsers may require permission/user interaction.
+  window.addEventListener("load",()=>setTimeout(startRecognition,900));
 })();
 </script>
 </body>
