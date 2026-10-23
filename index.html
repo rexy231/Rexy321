@@ -7,32 +7,26 @@
 <title>JARVIS</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050811;color:#eef8ff;font-family:Arial,system-ui,sans-serif}
-body{background:radial-gradient(ellipse at center,#142640 0,#07101d 48%,#03060d 100%)}
-main{height:100dvh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;padding:18px}
-main:before{content:"";position:absolute;inset:0;background:linear-gradient(#18314a30 1px,transparent 1px),linear-gradient(90deg,#18314a30 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse,#000,transparent 76%);pointer-events:none}
+main{height:100dvh;width:100%;display:flex;align-items:center;justify-content:flex-end;flex-direction:column;position:relative;padding:24px 18px 7vh;isolation:isolate}
+#avatarVideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:-3;background:#050811}
+main:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#02071122 0%,#02071105 38%,#020711d9 100%),linear-gradient(90deg,#02071155,transparent 24%,transparent 76%,#02071155);pointer-events:none}
 .brand{position:absolute;top:24px;z-index:2;letter-spacing:.38em;font-size:12px;color:#8eeaff;text-shadow:0 0 16px #53d9ff77}
-.frame{position:relative;width:min(90vw,390px);height:min(66dvh,680px);border-radius:48% 48% 32px 32px;overflow:hidden;border:1px solid #8ae9ff66;box-shadow:0 0 38px #3faeff2b,0 0 90px #3faeff12;z-index:1;background:#081321}
-.frame:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#07101b0a 55%,#06101ee0 100%),linear-gradient(90deg,#5bdfff12,transparent 25%,transparent 75%,#5bdfff12)}
-video{width:100%;height:100%;object-fit:cover;display:block}
-.orbit{position:absolute;width:min(98vw,430px);aspect-ratio:1;border:1px solid #73ddff2c;border-radius:50%;pointer-events:none;animation:spin 35s linear infinite}
-.orbit:before,.orbit:after{content:"";position:absolute;inset:8%;border:1px solid #73ddff25;border-radius:50%;transform:rotateX(65deg)}
-.orbit:after{inset:17%;transform:rotateY(65deg)}
-.status{position:relative;z-index:2;margin-top:23px;min-height:16px;font-size:11px;letter-spacing:.22em;color:#83eaff;text-align:center}
-.message{position:relative;z-index:2;margin-top:12px;width:min(92vw,560px);min-height:52px;text-align:center;line-height:1.5;font-size:clamp(15px,4vw,19px);text-wrap:balance}
-@keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.orbit{animation:none}}
+.orbit{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(94vw,520px);aspect-ratio:1;border:1px solid #73ddff2c;border-radius:50%;pointer-events:none;animation:spin 35s linear infinite;z-index:-1}
+.orbit:before,.orbit:after{content:"";position:absolute;inset:8%;border:1px solid #73ddff25;border-radius:50%;transform:rotateX(65deg)}.orbit:after{inset:17%;transform:rotateY(65deg)}
+.status{position:relative;z-index:2;margin-top:18px;min-height:16px;font-size:11px;letter-spacing:.22em;color:#83eaff;text-align:center;text-shadow:0 1px 8px #000}
+.message{position:relative;z-index:2;margin-top:12px;width:min(92vw,560px);min-height:52px;text-align:center;line-height:1.5;font-size:clamp(15px,4vw,19px);text-wrap:balance;text-shadow:0 1px 10px #000}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}@media(prefers-reduced-motion:reduce){.orbit{animation:none}}
 </style>
 </head>
 <body>
 <main>
   <div class="brand">J.A.R.V.I.S.</div>
   <div class="orbit"></div>
-  <div class="frame">
-    <video id="avatarVideo" autoplay muted loop playsinline preload="auto">
-      <source src="1000004826.mp4" type="video/mp4">
-    </video>
-  </div>
+  <video id="avatarVideo" autoplay muted loop playsinline preload="auto">
+    <source src="jarvis_avatar.mp4" type="video/mp4">
+  </video>
   <div class="status" id="status">STARTING JARVIS</div>
-  <div class="message" id="message" aria-live="polite">Please allow microphone access when your browser asks.</div>
+  <div class="message" id="message" aria-live="polite">Starting up. Allow microphone access when your browser asks.</div>
 </main>
 <script>
 (() => {
@@ -108,7 +102,7 @@ video{width:100%;height:100%;object-fit:cover;display:block}
     try{restarting=true;recognition.start()}catch(e){restarting=false;scheduleRestart();}
   }
   function scheduleRestart(){clearTimeout(retryTimer);retryTimer=setTimeout(()=>{if(!speaking)startRecognition()},800);}
-  video.play().catch(()=>{messageEl.textContent="Tap the page once to start the avatar video, then allow microphone access."});
+  video.play().catch(()=>{messageEl.textContent="If the video does not start, tap the page once, then allow microphone access."});
   if(synth)synth.getVoices();
   // The page attempts to start listening automatically. Browsers may require permission/user interaction.
   window.addEventListener("load",()=>setTimeout(startRecognition,900));
