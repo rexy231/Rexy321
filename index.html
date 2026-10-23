@@ -1,112 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#050811">
-<title>JARVIS</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050811"><title>JARVIS — Avatar Test</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050811;color:#eef8ff;font-family:Arial,system-ui,sans-serif}
-main{height:100dvh;width:100%;display:flex;align-items:center;justify-content:flex-end;flex-direction:column;position:relative;padding:24px 18px 7vh;isolation:isolate}
-#avatarVideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:-3;background:#050811}
-main:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#02071122 0%,#02071105 38%,#020711d9 100%),linear-gradient(90deg,#02071155,transparent 24%,transparent 76%,#02071155);pointer-events:none}
-.brand{position:absolute;top:24px;z-index:2;letter-spacing:.38em;font-size:12px;color:#8eeaff;text-shadow:0 0 16px #53d9ff77}
-.orbit{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(94vw,520px);aspect-ratio:1;border:1px solid #73ddff2c;border-radius:50%;pointer-events:none;animation:spin 35s linear infinite;z-index:-1}
-.orbit:before,.orbit:after{content:"";position:absolute;inset:8%;border:1px solid #73ddff25;border-radius:50%;transform:rotateX(65deg)}.orbit:after{inset:17%;transform:rotateY(65deg)}
-.status{position:relative;z-index:2;margin-top:18px;min-height:16px;font-size:11px;letter-spacing:.22em;color:#83eaff;text-align:center;text-shadow:0 1px 8px #000}
-.message{position:relative;z-index:2;margin-top:12px;width:min(92vw,560px);min-height:52px;text-align:center;line-height:1.5;font-size:clamp(15px,4vw,19px);text-wrap:balance;text-shadow:0 1px 10px #000}
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}@media(prefers-reduced-motion:reduce){.orbit{animation:none}}
-</style>
-</head>
-<body>
-<main>
-  <div class="brand">J.A.R.V.I.S.</div>
-  <div class="orbit"></div>
-  <video id="avatarVideo" autoplay muted loop playsinline preload="auto">
-    <source src="jarvis_avatar.mp4" type="video/mp4">
-  </video>
-  <div class="status" id="status">STARTING JARVIS</div>
-  <div class="message" id="message" aria-live="polite">Starting up. Allow microphone access when your browser asks.</div>
-</main>
-<script>
-(() => {
-  "use strict";
-  const statusEl=document.getElementById("status");
-  const messageEl=document.getElementById("message");
-  const video=document.getElementById("avatarVideo");
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const synth=window.speechSynthesis;
-  let recognition=null, restarting=false, speaking=false, retryTimer=null;
-  const setStatus=s=>statusEl.textContent=s;
-  function say(text){
-    messageEl.textContent=text;
-    if(!synth){setStatus("VOICE OUTPUT UNAVAILABLE");return;}
-    synth.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    // Browser/system voice is used here; it cannot guarantee the exact voice from the reference video.
-    const voices=synth.getVoices();
-    const v=voices.find(x=>/en-IN|hi-IN/i.test(x.lang)&&/female|google|heera|priya|zira/i.test(x.name))
-      ||voices.find(x=>/en-IN|hi-IN/i.test(x.lang))||voices.find(x=>/female|samantha|google/i.test(x.name))||voices[0];
-    if(v)u.voice=v;
-    u.rate=.96;u.pitch=1.08;u.volume=1;
-    u.onstart=()=>{speaking=true;setStatus("SPEAKING");};
-    u.onend=()=>{speaking=false;setStatus("LISTENING");startRecognition();};
-    u.onerror=()=>{speaking=false;setStatus("LISTENING");startRecognition();};
-    synth.speak(u);
-  }
-  function weather(){
-    setStatus("CHECKING WEATHER");
-    if(!navigator.geolocation){say("I can't access location in this browser, so I can't check your local weather.");return;}
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      try{
-        const {latitude,longitude}=pos.coords;
-        const url=`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
-        const r=await fetch(url);if(!r.ok)throw new Error("weather");
-        const d=await r.json(),c=d.current,day=d.daily;
-        const codes={0:"clear sky",1:"mainly clear",2:"partly cloudy",3:"overcast",45:"foggy",48:"foggy",51:"light drizzle",53:"drizzle",55:"heavy drizzle",61:"light rain",63:"rain",65:"heavy rain",71:"light snow",73:"snow",75:"heavy snow",80:"rain showers",81:"rain showers",82:"heavy rain showers",95:"a thunderstorm",96:"a thunderstorm with hail",99:"a strong thunderstorm"};
-        say(`Here is your weather. It is ${codes[c.weather_code]||"changing"} and ${Math.round(c.temperature_2m)} degrees Celsius. It feels like ${Math.round(c.apparent_temperature)} degrees. Humidity is ${Math.round(c.relative_humidity_2m)} percent. Wind speed is ${Math.round(c.wind_speed_10m)} kilometres per hour. Today's high is ${Math.round(day.temperature_2m_max[0])} degrees and low is ${Math.round(day.temperature_2m_min[0])}. The chance of precipitation is ${day.precipitation_probability_max[0]} percent.`);
-      }catch(e){say("Sorry, I couldn't fetch the weather right now. Please check your internet connection.");}
-    },()=>say("Please allow location access so I can tell you your local weather."),{timeout:10000,maximumAge:300000});
-  }
-  function respond(input){
-    const t=input.toLowerCase().trim();
-    if(!t)return;
-    if(/\b(weather|temperature|forecast|rain today|how hot)\b/.test(t)){weather();return;}
-    if(/\b(hello|hi|hey|good morning|good afternoon|good evening)\b/.test(t)){
-      const h=new Date().getHours();say(`${h<12?"Good morning":h<17?"Good afternoon":"Good evening"}. I'm here and listening. What would you like to talk about?`);return;
-    }
-    if(/\b(time|what time)\b/.test(t)){say(`It is ${new Intl.DateTimeFormat(undefined,{hour:"numeric",minute:"2-digit"}).format(new Date())}.`);return;}
-    if(/\b(date|what day|today's date|todays date)\b/.test(t)){say(`Today is ${new Intl.DateTimeFormat(undefined,{weekday:"long",month:"long",day:"numeric"}).format(new Date())}.`);return;}
-    if(/\b(sad|upset|lonely|stressed|bad day|feel low|feeling low)\b/.test(t)){say("I'm sorry you're feeling this way. You don't have to handle everything at once. I'm listening; tell me what happened if you'd like.");return;}
-    if(/\b(happy|excited|great news|i did it|i passed|completed)\b/.test(t)){say("That's wonderful news! I'm glad you told me. Take a moment to enjoy what you've achieved.");return;}
-    if(/\b(thank you|thanks)\b/.test(t)){say("You're welcome. I'm always ready to help.");return;}
-    if(/\b(who are you|your name)\b/.test(t)){say("I'm JARVIS, your voice-first assistant. I can listen for your commands, answer a few everyday requests, and read your local weather.");return;}
-    if(/\b(stop speaking|be quiet|cancel speech)\b/.test(t)){synth.cancel();speaking=false;setStatus("LISTENING");startRecognition();return;}
-    say("I heard you. I can help with basic voice commands right now, but I don't yet have a full language-model brain connected. Please say that another way.");
-  }
-  function startRecognition(){
-    if(!SR){setStatus("VOICE RECOGNITION NOT SUPPORTED");messageEl.textContent="Open this page in a compatible browser such as Chrome and use a secure HTTPS website.";return;}
-    if(speaking||restarting)return;
-    if(recognition){try{recognition.stop()}catch(e){}}
-    recognition=new SR();
-    recognition.lang="en-IN";recognition.continuous=false;recognition.interimResults=false;
-    recognition.onstart=()=>{restarting=false;setStatus("LISTENING");messageEl.textContent="I'm listening…";};
-    recognition.onresult=e=>{const spoken=e.results[e.results.length-1][0].transcript;messageEl.textContent=spoken;try{recognition.stop()}catch(e){}respond(spoken);};
-    recognition.onerror=e=>{
-      restarting=false;
-      if(e.error==="not-allowed"||e.error==="service-not-allowed"){setStatus("MICROPHONE PERMISSION NEEDED");messageEl.textContent="Allow microphone access in your browser settings, then reload this page.";return;}
-      if(e.error==="audio-capture"){setStatus("MICROPHONE NOT FOUND");return;}
-      scheduleRestart();
-    };
-    recognition.onend=()=>{restarting=false;if(!speaking)scheduleRestart();};
-    try{restarting=true;recognition.start()}catch(e){restarting=false;scheduleRestart();}
-  }
-  function scheduleRestart(){clearTimeout(retryTimer);retryTimer=setTimeout(()=>{if(!speaking)startRecognition()},800);}
-  video.play().catch(()=>{messageEl.textContent="If the video does not start, tap the page once, then allow microphone access."});
-  if(synth)synth.getVoices();
-  // The page attempts to start listening automatically. Browsers may require permission/user interaction.
-  window.addEventListener("load",()=>setTimeout(startRecognition,900));
-})();
-</script>
-</body>
-</html>
+:root{color-scheme:dark;--cyan:#75e8ff;--panel:#061427d9}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030711;color:#eafaff;font-family:Arial,system-ui,sans-serif}body{background:radial-gradient(ellipse at 50% 38%,#102b4c 0,#061121 48%,#02050b 100%)}
+main{position:relative;width:100%;height:100dvh;overflow:hidden;isolation:isolate}.brand{position:absolute;z-index:5;top:18px;left:20px;letter-spacing:.3em;color:var(--cyan);font-size:13px;text-shadow:0 0 18px #45caff}.sub{display:block;letter-spacing:.08em;font-size:10px;margin-top:5px;color:#b3d9f4}.orb{position:absolute;width:min(95vw,620px);aspect-ratio:1;border:1px solid #69dfff33;border-radius:50%;left:50%;top:45%;transform:translate(-50%,-50%);box-shadow:0 0 80px #168cff12,inset 0 0 80px #168cff10}.orb:before,.orb:after{content:"";position:absolute;inset:8%;border:1px solid #69dfff25;border-radius:50%;transform:rotateX(65deg)}.orb:after{inset:19%;transform:rotateY(60deg)}
+.avatar-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.avatar{position:absolute;height:min(88dvh,920px);width:auto;max-width:100vw;object-fit:contain;bottom:-3%;filter:drop-shadow(0 0 26px #318dff24);transform-origin:50% 78%;animation:idle 4.5s ease-in-out infinite}.avatar.talking{animation:talkbody .42s ease-in-out infinite alternate}.mouth{position:absolute;left:50%;top:39.5%;width:clamp(15px,2.5vw,26px);height:7px;transform:translateX(-50%);border-radius:50%;background:#541b2b;opacity:0;box-shadow:inset 0 1px 2px #16070d;z-index:2}.avatar-wrap.talking .mouth{opacity:.88;animation:mouth .13s infinite alternate}.mouth:after{content:"";position:absolute;left:15%;right:15%;bottom:1px;height:2px;background:#ffb4bd;border-radius:50%}
+@keyframes idle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(.25deg)}}@keyframes talkbody{from{transform:translateY(0) rotate(-.25deg)}to{transform:translateY(-3px) rotate(.25deg)}}@keyframes mouth{from{height:3px;transform:translateX(-50%) scaleX(.8)}to{height:12px;transform:translateX(-50%) scaleX(1.08)}}
+.bottom{position:absolute;z-index:5;left:18px;right:18px;bottom:max(18px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:12px}.status{font-size:11px;letter-spacing:.2em;color:var(--cyan);text-shadow:0 1px 8px #000}.message{width:min(92vw,560px);text-align:center;line-height:1.5;font-size:clamp(14px,3.8vw,18px);text-shadow:0 1px 8px #000;min-height:48px}.mic{border:1px solid #66dfff;border-radius:50%;width:58px;height:58px;background:#041326d9;color:#8eeeff;font-size:24px;box-shadow:0 0 22px #00bfff33;cursor:pointer}.mic:active{transform:scale(.96)}.hint{font-size:10px;color:#9cb9cc;text-align:center;max-width:90vw}.weather{position:absolute;top:18px;right:16px;border:1px solid #56cfff55;background:#041326b8;border-radius:12px;padding:10px 12px;font-size:11px;color:#c8e9ff;max-width:42vw;z-index:5}.weather strong{display:block;font-size:16px;color:white;margin-bottom:4px}@media(max-width:520px){.brand{top:14px;left:14px}.weather{top:58px;right:12px}.avatar{height:min(79dvh,760px);bottom:7%}.bottom{bottom:max(12px,env(safe-area-inset-bottom))}.orb{top:43%}}
+</style></head><body><main>
+<div class="brand">J.A.R.V.I.S.<span class="sub">VOICE AVATAR · TEST BUILD</span></div><div class="orb"></div><div class="weather" id="weather"><strong>WEATHER</strong>Say “weather” to check locally</div>
+<div class="avatar-wrap" id="avatarWrap"><img class="avatar" id="avatar" src="jarvis_avatar.png" alt="JARVIS anime avatar"><span class="mouth" aria-hidden="true"></span></div>
+<div class="bottom"><div class="status" id="status">READY</div><div class="message" id="message" aria-live="polite">Hi! I'm JARVIS. Tap the microphone once to start voice mode.</div><button class="mic" id="mic" aria-label="Start voice listening">🎙</button><div class="hint">Prototype: mouth/body motion is visual approximation, not a fully rigged Live2D model.</div></div>
+</main><script>
+(()=>{'use strict';const status=document.querySelector('#status'),message=document.querySelector('#message'),wrap=document.querySelector('#avatarWrap'),mic=document.querySelector('#mic'),weatherBox=document.querySelector('#weather');const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const synth=window.speechSynthesis;let rec=null,listening=false,speaking=false,restart=false;
+function setStatus(s){status.textContent=s}function speak(text){message.textContent=text;if(!synth){setStatus('SPEECH OUTPUT UNAVAILABLE');return}synth.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-IN';u.rate=.96;u.pitch=1.08;const vs=synth.getVoices();const v=vs.find(x=>/en-IN|hi-IN/i.test(x.lang))||vs.find(x=>/female|samantha|google/i.test(x.name));if(v)u.voice=v;u.onstart=()=>{speaking=true;wrap.classList.add('talking');setStatus('JARVIS SPEAKING')};u.onend=()=>{speaking=false;wrap.classList.remove('talking');setStatus('READY');if(listening)startListen()};u.onerror=()=>{speaking=false;wrap.classList.remove('talking');setStatus('READY')};synth.speak(u)}
+async function weather(){setStatus('CHECKING WEATHER');if(!navigator.geolocation){speak('Location is not available in this browser.');return}navigator.geolocation.getCurrentPosition(async p=>{try{const q=p.coords;const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${q.latitude}&longitude=${q.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`);if(!r.ok)throw 0;const d=await r.json(),c=d.current,day=d.daily,codes={0:'clear sky',1:'mainly clear',2:'partly cloudy',3:'overcast',45:'foggy',48:'foggy',51:'light drizzle',53:'drizzle',55:'heavy drizzle',61:'light rain',63:'rain',65:'heavy rain',80:'rain showers',81:'rain showers',82:'heavy rain showers',95:'a thunderstorm',96:'a thunderstorm with hail',99:'a strong thunderstorm'};weatherBox.innerHTML=`<strong>${Math.round(c.temperature_2m)}°C · ${codes[c.weather_code]||'changing'}</strong>Feels ${Math.round(c.apparent_temperature)}° · Humidity ${Math.round(c.relative_humidity_2m)}%`;speak(`Here is your weather. It is ${codes[c.weather_code]||'changing'} and ${Math.round(c.temperature_2m)} degrees Celsius. It feels like ${Math.round(c.apparent_temperature)} degrees. Humidity is ${Math.round(c.relative_humidity_2m)} percent. Wind speed is ${Math.round(c.wind_speed_10m)} kilometres per hour. Today's high is ${Math.round(day.temperature_2m_max[0])} degrees and low is ${Math.round(day.temperature_2m_min[0])}. Chance of precipitation is ${day.precipitation_probability_max[0]} percent.`)}catch(e){speak('Sorry, I could not fetch the weather. Check your internet and try again.')}},()=>speak('Please allow location access to get your local weather.'),{timeout:10000,maximumAge:300000})}
+function respond(input){const t=input.toLowerCase();if(/weather|temperature|forecast|rain today|how hot/.test(t))return weather();if(/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(t))return speak('Hey! I am here and listening. What would you like to talk about?');if(/\b(time|what time)\b/.test(t))return speak('It is '+new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date())+'.');if(/\b(date|what day|today's date|todays date)\b/.test(t))return speak('Today is '+new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(new Date())+'.');if(/\b(sad|upset|lonely|stressed|bad day|feel low|feeling low)\b/.test(t))return speak('I am sorry things feel hard right now. I am listening. Want to tell me what happened?');if(/\b(happy|excited|great news|i did it|i passed|completed)\b/.test(t))return speak('That sounds exciting! I am glad you shared it with me.');if(/\b(thank you|thanks)\b/.test(t))return speak('You are welcome! I am ready to help.');if(/\b(who are you|your name)\b/.test(t))return speak('I am JARVIS, your voice-first assistant prototype.');if(/\b(stop speaking|be quiet|cancel speech)\b/.test(t)){synth.cancel();speaking=false;wrap.classList.remove('talking');setStatus('READY');return}return speak('I heard you. This prototype has basic commands only; a full conversational AI connection is still needed for open-ended replies.')}
+function startListen(){if(!SR){setStatus('VOICE RECOGNITION NOT SUPPORTED');message.textContent='Open this page in Chrome on an HTTPS site and check browser support.';return}if(speaking||restart)return;try{rec=new SR();rec.lang='en-IN';rec.continuous=false;rec.interimResults=false;rec.onstart=()=>{restart=false;setStatus('LISTENING');message.textContent='I am listening…'};rec.onresult=e=>{const t=e.results[e.results.length-1][0].transcript;message.textContent=t;respond(t)};rec.onerror=e=>{restart=false;setStatus(e.error==='not-allowed'?'MICROPHONE PERMISSION NEEDED':'VOICE INPUT ISSUE');if(e.error==='not-allowed')message.textContent='Allow microphone permission in your browser, then tap the microphone again.'};rec.onend=()=>{restart=false;if(listening&&!speaking)setTimeout(startListen,700)};restart=true;rec.start()}catch(e){restart=false;setStatus('TAP MIC TO RETRY')}}
+mic.addEventListener('click',()=>{listening=true;startListen()});if(synth)synth.getVoices();})();
+</script></body></html>
